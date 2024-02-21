@@ -16,6 +16,8 @@
 
 ```
 conda env create -n rag python=3.11
+conda activate rag
+pip install -r requirements.txt
 conda install ipykernel
 python -m ipykernel install --user --name=rag
 jupyter notebook
