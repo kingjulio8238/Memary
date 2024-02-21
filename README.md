@@ -25,3 +25,4 @@ jupyter notebook
 
 ## Update
 - [2024/02/19](docs/update_021924.md)
+- [2024/02/20](docs/update_022024.md)
