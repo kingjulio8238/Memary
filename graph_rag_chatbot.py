@@ -296,7 +296,7 @@ if "messages" not in st.session_state.keys():  # Initialize the chat messages hi
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Ask me question from the knowledge in **Guardians of the Galaxy Vol. 3.**",
+            "content": "Ask me question from the knowledge in **Harry Potter 1.**",
         }
     ]
 
@@ -325,7 +325,7 @@ with st.sidebar:
 ## How it works
 """
     )
-    prompt = st.text_input(label="", value="Who is Rocket?")
+    prompt = st.text_input(label="", value="Who is Harry Potter?")
 
     if st.button("Inspect 🔎"):
         response = kg_index_query_engine.query(prompt)
