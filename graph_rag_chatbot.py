@@ -37,11 +37,6 @@ Settings.chunk_size = 512
 
 # Graph Store
 
-# os.environ["NEBULA_USER"] = st.secrets["graphd_user"]
-# os.environ["NEBULA_PASSWORD"] = st.secrets["graphd_password"]
-# os.environ[
-#     "NEBULA_ADDRESS"
-# ] = f"{st.secrets['graphd_host']}:{st.secrets['graphd_port']}"
 os.environ["NEBULA_USER"] = "root"
 os.environ["NEBULA_PASSWORD"] = "nebula"
 os.environ["NEBULA_ADDRESS"] = "127.0.0.1:9669"
