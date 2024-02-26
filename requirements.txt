@@ -18,3 +18,4 @@ llama-parse==0.3.4
 llamaindex-py-client==0.1.13
 streamlit
 pyvis
+pytest
