@@ -7,6 +7,8 @@ from datetime import datetime
 import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
+import pandas as pd
+
 from llama_index.core import (
     KnowledgeGraphIndex,
     Settings,
@@ -197,3 +199,14 @@ with tab2:
     graph = create_graph(nodes, edges)
     graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
     components.html(graph_html, height=500, scrolling=True)
+
+    if len(memory_stream) > 0:
+        memory_items = memory_stream.get_memory()
+        # Convert to DataFrame
+        memory_items_dicts = [item.to_dict() for item in memory_items]
+        df = pd.DataFrame(memory_items_dicts)
+        st.write("Memory Stream")
+        st.dataframe(df)
+        memory_stream.save_memory()
+
+# Tell me about Harry.
