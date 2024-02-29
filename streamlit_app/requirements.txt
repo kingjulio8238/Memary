@@ -1,0 +1,5 @@
+llama_index==0.10.14
+neo4j==5.17.0
+python-dotenv==1.0.1
+pyvis==0.3.2
+streamlit==1.31.1
