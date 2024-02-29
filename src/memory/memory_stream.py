@@ -28,7 +28,6 @@ class MemoryStream:
 
     def add_memory(self, data):
         self.memory.extend(data)
-        logging.info("Memory added successfully.")
 
     def get_memory(self):
         return self.memory
