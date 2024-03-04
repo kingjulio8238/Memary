@@ -1,10 +1,14 @@
 import os
+import sys
 import random
 import textwrap
+from datetime import datetime
 
 import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
+import pandas as pd
+
 from llama_index.core import (
     KnowledgeGraphIndex,
     Settings,
@@ -18,6 +22,9 @@ from llama_index.llms.openai import OpenAI
 from neo4j import GraphDatabase
 from pyvis.network import Network
 
+sys.path.append("..")
+from src.memory import MemoryStream, MemoryItem
+
 load_dotenv()
 
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_KEY")
@@ -27,6 +34,7 @@ username = "neo4j"
 password = os.getenv("NEO4J_PW")
 url = os.getenv("NEO4J_URL")
 database = "neo4j"
+memory_stream_json = "memory_stream.json"
 
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 Settings.llm = llm
@@ -39,6 +47,14 @@ graph_store = Neo4jGraphStore(
     database=database,
 )
 
+memory_stream = MemoryStream(file_name=memory_stream_json)
+
+def add_memory_item(entities):
+    memory_items = []
+    for entity in entities:
+        memory_items.append(MemoryItem(str(entity), datetime.now().replace(microsecond=0)))
+    memory_stream.add_memory(memory_items)
+    print("memory_stream: ", memory_stream.get_memory())
 
 def get_response(query):
     storage_context = StorageContext.from_defaults(graph_store=graph_store)
@@ -107,7 +123,8 @@ def add_chapter(paths):
     )
 
 
-def fill_graph(nodes, edges, cypher_query):
+def fill_graph(nodes, edges, cypher_query, save_memory_stream=False):
+    entities = []
     with GraphDatabase.driver(
         uri=os.getenv("NEO4J_URL"), auth=("neo4j", os.getenv("NEO4J_PW"))
     ) as driver:
@@ -122,6 +139,10 @@ def fill_graph(nodes, edges, cypher_query):
                 nodes.add(n1_id)
                 nodes.add(n2_id)
                 edges.append((n1_id, n2_id, rels))
+                entities.extend([n1_id, n2_id])
+
+    if save_memory_stream:
+        add_memory_item(list(set(entities)))
 
 
 tab1, tab2 = st.tabs(["Knowledge Graph", "Recursive Retrieval"])
@@ -168,7 +189,7 @@ with tab2:
 
     nodes = set()
     edges = []  # (node1, node2, [relationships])
-    fill_graph(nodes, edges, cypher_query)
+    fill_graph(nodes, edges, cypher_query, save_memory_stream=generate_clicked)
 
     wrapped_text = textwrap.fill(answer, width=60)
     st.text(wrapped_text)
@@ -178,3 +199,14 @@ with tab2:
     graph = create_graph(nodes, edges)
     graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
     components.html(graph_html, height=500, scrolling=True)
+
+    if len(memory_stream) > 0:
+        memory_items = memory_stream.get_memory()
+        # Convert to DataFrame
+        memory_items_dicts = [item.to_dict() for item in memory_items]
+        df = pd.DataFrame(memory_items_dicts)
+        st.write("Memory Stream")
+        st.dataframe(df)
+        memory_stream.save_memory()
+
+# Tell me about Harry.
