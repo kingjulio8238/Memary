@@ -2,15 +2,10 @@
 
 ## Introduction
 
--   Used Nebula Graph to store knowledge graph
--   Utilized [chat memory buffer](https://docs.llamaindex.ai/en/latest/examples/chat_engine/chat_engine_context.html#chat-engine-context-mode) function for memory stream (TBD)
+-   Used Neo4j Graph to store knowledge graph
+-   Customized [Memory Stream](src/memory/memory_stream.py) to store entities of personal knowledge
 
 ## Installation
-
-### Nebula Graph Docker-Compose
-- [Quickly deploy NebulaGraph using Docker](https://docs.nebula-graph.io/3.6.0/2.quick-start/1.quick-start-workflow/#quickly_deploy_nebulagraph_using_docker)
-- run `curl -fsSL nebula-up.siwei.io/install.sh | bash`
-
 
 ### Using conda env on Notebook
 
@@ -22,6 +17,10 @@ conda install ipykernel
 python -m ipykernel install --user --name=rag
 jupyter notebook
 ```
+
+### Run Streamlit Application
+
+[README for Streamlit](streamlit_app/README.md)
 
 ## Update
 - [2024/02/19](docs/update_021924.md)
