@@ -4,7 +4,7 @@ from datetime import datetime
 from collections import defaultdict
 
 from src.memory import BaseMemory
-from src.memory.types import EntityMemoryItem
+from src.memory.types import KnowledgeMemoryItem
 
 class EntityKnowledgeStore(BaseMemory):
 
@@ -28,7 +28,7 @@ class EntityKnowledgeStore(BaseMemory):
         try:
             with open(self.file_name, 'r') as file:
                 self.memory = [
-                    EntityMemoryItem.from_dict(item)
+                    KnowledgeMemoryItem.from_dict(item)
                     for item in json.load(file)
                 ]
             logging.info(
@@ -45,7 +45,7 @@ class EntityKnowledgeStore(BaseMemory):
         for item in memory_stream:
             entity_memory[item.entity] += 1
         return [
-            EntityMemoryItem(entity=entity, count=count, date=datetime.now())
+            KnowledgeMemoryItem(entity=entity, count=count, date=datetime.now())
             for entity, count in entity_memory.items()
         ]
 
