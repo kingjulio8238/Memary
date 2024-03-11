@@ -9,6 +9,7 @@ class BaseMemory(ABC):
         self.file_name = file_name
         self.entity = entity
         self.memory = []
+        self.knowledge_memory = []
         self.init_memory()
 
     @abstractmethod
