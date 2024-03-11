@@ -13,7 +13,9 @@ class MemoryStream(BaseMemory):
         return len(self.memory)
 
     def init_memory(self):
-        """Initializes memory."""
+        """Initializes memory
+        self.memory: list[MemoryItem]
+        """
         self.load_memory_from_file()
         if self.entity:
             self.add_memory(self.entity)
