@@ -40,10 +40,14 @@ class BaseMemory(ABC):
         """Removes memory items older than a specified number of days."""
         pass
 
+    @property
+    def memory_to_save(self):
+        return self.memory
+
     def save_memory(self):
         if self.file_name:
             with open(self.file_name, 'w') as file:
-                json.dump([item.to_dict() for item in self.memory], file, default=str, indent=4)
+                json.dump([item.to_dict() for item in self.memory_to_save], file, default=str, indent=4)
                 logging.info(f"Memory saved to {self.file_name} successfully.")
         else:
             logging.info("No file name provided. Memory not saved.")
