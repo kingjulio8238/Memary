@@ -46,3 +46,5 @@ class EntityKnowledgeStore(BaseMemory):
             for entity, count in entity_memory.items()
         ]
 
+    def get_memory(self) -> list:
+        return self.knowledge_memory
