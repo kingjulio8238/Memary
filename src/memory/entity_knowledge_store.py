@@ -10,35 +10,39 @@ class EntityKnowledgeStore(BaseMemory):
         super().__init__(file_name)
 
     def init_memory(self):
+        """Initializes memory.
+        self.entity_memory: list[EntityMemoryItem]
+        """
         self.load_memory_from_file()
+        if self.entity:
+            self.add_memory(self.entity)
 
-        memory = defaultdict(lambda: {"count": 0, "date": None})
-        # Process each item in the provided data
-        for item in self.memory:
-            entity = item["entity"]
-            date = datetime.fromisoformat(item["date"])
+    @property
+    def memory_to_save(self):
+        return self.knowledge_memory
 
-            # Update count
-            memory[entity]["count"] += 1
+    def load_memory_from_file(self):
+        try:
+            with open(self.file_name, 'r') as file:
+                self.memory = [
+                    EntityMemoryItem.from_dict(item)
+                    for item in json.load(file)
+                ]
+            logging.info(
+                f"Entity Memory loaded from {self.file_name} successfully.")
+        except FileNotFoundError:
+            logging.info(
+                "File not found. Starting with an empty entity memory.")
 
-            # Update the most recent date if necessary
-            if memory[entity]["date"] is None or date > memory[entity]["date"]:
-                memory[entity]["date"] = date
+    def add_memory(self, memory_stream: list):
+        self.knowledge_memory.extend(memory_stream)
 
-        # Convert summary_data to the desired output format
-        self.entity_memory = [
-            {
-                "entity": key,
-                "count": value["count"],
-                "date": value["date"].isoformat()
-            } for key, value in memory.items()]
+    def convert_memory_to_entity_memory(self, memory_stream: list) -> list:
+        entity_memory = defaultdict(int)
+        for item in memory_stream:
+            entity_memory[item.entity] += 1
+        return [
+            EntityMemoryItem(entity=entity, count=count, date=datetime.now())
+            for entity, count in entity_memory.items()
+        ]
 
-        # Print the summary list
-        for entity_memory in self.entity_memory:
-            print(entity_memory)
-
-    def add_memory(self, memory_stream):
-        self.memory.extend(memory_stream)
-
-    def get_memory(self):
-        return self.memory
