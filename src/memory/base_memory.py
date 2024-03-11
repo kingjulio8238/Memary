@@ -1,8 +1,6 @@
 import json
 import logging
 
-from src.memory import MemoryItem
-
 from abc import ABC, abstractmethod
 
 class BaseMemory(ABC):
