@@ -8,6 +8,10 @@ logging.basicConfig(level=logging.INFO)
 
 class MemoryStream(BaseMemory):
 
+    def __len__(self):
+        """Returns the number of items in the memory."""
+        return len(self.memory)
+
     def init_memory(self):
         """Initializes memory."""
         self.load_memory_from_file()
