@@ -2,7 +2,8 @@ import json
 import logging
 from datetime import datetime, timedelta
 
-from src.memory import BaseMemory, MemoryItem
+from src.memory import BaseMemory
+from src.memory.types import MemoryItem
 
 logging.basicConfig(level=logging.INFO)
 
