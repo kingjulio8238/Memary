@@ -5,9 +5,10 @@ from src.memory import (
     BaseMemory, MemoryStream, EntityMemoryItem)
 
 class EntityKnowledgeStore(BaseMemory):
-    def __init__(self, file_name=None):
-        self.entity_memory = []
-        super().__init__(file_name)
+
+    def __len__(self):
+        """Returns the number of items in the memory."""
+        return len(self.knowledge_memory)
 
     def init_memory(self):
         """Initializes memory.
