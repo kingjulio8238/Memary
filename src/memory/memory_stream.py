@@ -15,8 +15,8 @@ class MemoryStream(BaseMemory):
     def init_memory(self):
         """Initializes memory."""
         self.load_memory_from_file()
-        if self.data:
-            self.add_memory(self.data)
+        if self.entity:
+            self.add_memory(self.entity)
 
     def add_memory(self, data):
         self.memory.extend(data)
