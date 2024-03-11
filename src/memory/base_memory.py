@@ -13,32 +13,29 @@ class BaseMemory(ABC):
         self.memory = []
         self.init_memory()
 
+    @abstractmethod
     def __len__(self):
         """Returns the number of items in the memory."""
-        return len(self.memory)
+        pass
 
     @abstractmethod
     def init_memory(self):
         """Initializes memory."""
         pass
 
+    @abstractmethod
     def load_memory_from_file(self):
-        """Loads memory items from a file."""
-        try:
-            with open(self.file_name, 'r') as file:
-                self.memory = [MemoryItem.from_dict(item) for item in json.load(file)]
-            logging.info(f"Memory loaded from {self.file_name} successfully.")
-        except FileNotFoundError:
-            logging.info("File not found. Starting with an empty memory.")
-
+        """Loads memory from a file."""
+        pass
 
     @abstractmethod
     def add_memory(self, data):
         """Adds new memory data."""
         pass
 
+    @abstractmethod
     def get_memory(self):
-        return self.memory
+        pass
 
     @abstractmethod
     def remove_old_memory(self, days):
