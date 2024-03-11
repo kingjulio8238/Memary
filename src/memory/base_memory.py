@@ -6,10 +6,10 @@ from src.memory import MemoryItem
 from abc import ABC, abstractmethod
 
 class BaseMemory(ABC):
-    def __init__(self, file_name: str, data=None):
+    def __init__(self, file_name: str, entity: str=None):
         """Initializes the memory storage."""
         self.file_name = file_name
-        self.data = data
+        self.entity = entity
         self.memory = []
         self.init_memory()
 
