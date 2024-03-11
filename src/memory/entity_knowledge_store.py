@@ -3,8 +3,8 @@ import logging
 from datetime import datetime
 from collections import defaultdict
 
-from src.memory import (
-    BaseMemory, MemoryStream, EntityMemoryItem)
+from src.memory import BaseMemory
+from src.memory.types import EntityMemoryItem
 
 class EntityKnowledgeStore(BaseMemory):
 
