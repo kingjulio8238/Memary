@@ -21,7 +21,7 @@ class EntityKnowledgeStore(BaseMemory):
             self.add_memory(self.entity)
 
     @property
-    def memory_to_save(self):
+    def return_memory(self):
         return self.knowledge_memory
 
     def load_memory_from_file(self):

@@ -36,7 +36,10 @@ class BaseMemory(ABC):
     def get_memory(self):
         pass
 
-    @abstractmethod
+    @property
+    def return_memory(self):
+        return self.memory
+
     def remove_old_memory(self, days):
         """Removes memory items older than a specified number of days."""
         pass
@@ -48,7 +51,7 @@ class BaseMemory(ABC):
     def save_memory(self):
         if self.file_name:
             with open(self.file_name, 'w') as file:
-                json.dump([item.to_dict() for item in self.memory_to_save], file, default=str, indent=4)
+                json.dump([item.to_dict() for item in self.return_memory], file, default=str, indent=4)
                 logging.info(f"Memory saved to {self.file_name} successfully.")
         else:
             logging.info("No file name provided. Memory not saved.")

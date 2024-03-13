@@ -21,6 +21,10 @@ class MemoryStream(BaseMemory):
         if self.entity:
             self.add_memory(self.entity)
 
+    @property
+    def return_memory(self):
+        return self.memory
+
     def add_memory(self, data):
         self.memory.extend(data)
 
