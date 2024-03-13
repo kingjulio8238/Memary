@@ -1,10 +1,9 @@
 import json
 import logging
-from datetime import datetime
-from collections import defaultdict
 
 from src.memory import BaseMemory
 from src.memory.types import KnowledgeMemoryItem
+
 
 class EntityKnowledgeStore(BaseMemory):
 
@@ -40,16 +39,49 @@ class EntityKnowledgeStore(BaseMemory):
             )
 
     def add_memory(self, memory_stream: list):
-        self.knowledge_memory.extend(memory_stream)
+        """To add new memory to the entity knowledge store
+        we should convert the memory to knowledge memory and then update the knowledge memory
 
-    def convert_memory_to_entity_memory(self, memory_stream: list) -> list:
-        entity_memory = defaultdict(int)
-        for item in memory_stream:
-            entity_memory[item.entity] += 1
-        return [
-            KnowledgeMemoryItem(entity=entity, count=count, date=datetime.now())
-            for entity, count in entity_memory.items()
-        ]
+        Args:
+            memory_stream (list): list of MemoryItem
+        """
+        knowledge_meory = self._convert_memory_to_knowledge_memory(
+            memory_stream)
+        self._update_knowledge_memory(knowledge_meory)
+
+    def _update_knowledge_memory(self, knowledge_memory: list):
+        """update self.knowledge memory with new knowledge memory items
+
+        Args:
+            knowledge_memory (list): list of KnowledgeMemoryItem
+        """
+        for item in knowledge_memory:
+            for i, entity in enumerate(self.knowledge_memory):
+                if entity.entity == item.entity:
+                    self.knowledge_memory[i].date = item.date
+                    self.knowledge_memory[i].count += item.count
+                    break
+            else:
+                self.knowledge_memory.append(item)
+
+    def _convert_memory_to_knowledge_memory(
+            self, memory_stream: list) -> list[KnowledgeMemoryItem]:
+        """Converts memory to knowledge memory
+
+        Returns:
+            knowledge_memory (list): list of KnowledgeMemoryItem
+        """
+        knowledge_memory = []
+
+        entities = set([item.entity for item in memory_stream])
+        for entity in entities:
+            memory_dates = [
+                item.date for item in memory_stream if item.entity == entity
+            ]
+            knowledge_memory.append(
+                KnowledgeMemoryItem(entity, len(memory_dates),
+                                    max(memory_dates)))
+        return knowledge_memory
 
     def get_memory(self) -> list:
         return self.knowledge_memory
