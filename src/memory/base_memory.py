@@ -2,6 +2,7 @@ import json
 import logging
 
 from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
 
 class BaseMemory(ABC):
     def __init__(self, file_name: str, entity: str=None):
@@ -42,11 +43,9 @@ class BaseMemory(ABC):
 
     def remove_old_memory(self, days):
         """Removes memory items older than a specified number of days."""
-        pass
-
-    @property
-    def memory_to_save(self):
-        return self.memory
+        cutoff_date = datetime.now() - timedelta(days=days)
+        self.memory = [item for item in self.return_memory if item.date >= cutoff_date]
+        logging.info("Old memory removed successfully.")
 
     def save_memory(self):
         if self.file_name:
