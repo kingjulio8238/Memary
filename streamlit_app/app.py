@@ -69,8 +69,40 @@ def get_response(query):
     response = query_engine.query(
         query,
     )
+    if return_entity:
+        return response, get_entity(query_engine.retrieve(query))
     return response
 
+def get_entity(retrieve) -> list[str]:
+    """retrieve is a list of QueryBundle objects.
+    A retrieved QueryBundle object has a "node" attribute,
+    which has a "metadata" attribute.
+
+    example for "kg_rel_map":
+    kg_rel_map = {
+        'Harry': [['DREAMED_OF', 'Unknown relation'], ['FELL_HARD_ON', 'Concrete floor']],
+        'Potter': [['WORE', 'Round glasses'], ['HAD', 'Dream']]
+    }
+
+    Args:
+        retrieve (list[NodeWithScore]): list of NodeWithScore objects
+    return:
+        list[str]: list of string entities
+    """
+    ENTITY_EXCEPTIONS = ['Unknown relation']
+
+    entities = []
+    kg_rel_map = retrieve[0].node.metadata["kg_rel_map"]
+    for key, items in kg_rel_map.items():
+        # key is the entity of question
+        entities.append(key)
+        # items is a list of [relationship, entity]
+        entities.extend(item[1] for item in items)
+    entities = list(set(entities))
+    for exceptions in ENTITY_EXCEPTIONS:
+        if exceptions in entities:
+            entities.remove(exceptions)
+    return entities
 
 def create_graph(nodes, edges):
     g = Network(
