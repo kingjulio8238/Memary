@@ -56,7 +56,7 @@ def add_memory_item(entities):
     memory_stream.add_memory(memory_items)
     print("memory_stream: ", memory_stream.get_memory())
 
-def get_response(query):
+def get_response(query, return_entity=False):
     storage_context = StorageContext.from_defaults(graph_store=graph_store)
 
     graph_rag_retriever = KnowledgeGraphRAGRetriever(
@@ -69,8 +69,40 @@ def get_response(query):
     response = query_engine.query(
         query,
     )
+    if return_entity:
+        return response, get_entity(query_engine.retrieve(query))
     return response
 
+def get_entity(retrieve) -> list[str]:
+    """retrieve is a list of QueryBundle objects.
+    A retrieved QueryBundle object has a "node" attribute,
+    which has a "metadata" attribute.
+
+    example for "kg_rel_map":
+    kg_rel_map = {
+        'Harry': [['DREAMED_OF', 'Unknown relation'], ['FELL_HARD_ON', 'Concrete floor']],
+        'Potter': [['WORE', 'Round glasses'], ['HAD', 'Dream']]
+    }
+
+    Args:
+        retrieve (list[NodeWithScore]): list of NodeWithScore objects
+    return:
+        list[str]: list of string entities
+    """
+    ENTITY_EXCEPTIONS = ['Unknown relation']
+
+    entities = []
+    kg_rel_map = retrieve[0].node.metadata["kg_rel_map"]
+    for key, items in kg_rel_map.items():
+        # key is the entity of question
+        entities.append(key)
+        # items is a list of [relationship, entity]
+        entities.extend(item[1] for item in items)
+    entities = list(set(entities))
+    for exceptions in ENTITY_EXCEPTIONS:
+        if exceptions in entities:
+            entities.remove(exceptions)
+    return entities
 
 def create_graph(nodes, edges):
     g = Network(
@@ -123,7 +155,7 @@ def add_chapter(paths):
     )
 
 
-def fill_graph(nodes, edges, cypher_query, save_memory_stream=False):
+def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
         uri=os.getenv("NEO4J_URL"), auth=("neo4j", os.getenv("NEO4J_PW"))
@@ -140,9 +172,6 @@ def fill_graph(nodes, edges, cypher_query, save_memory_stream=False):
                 nodes.add(n2_id)
                 edges.append((n1_id, n2_id, rels))
                 entities.extend([n1_id, n2_id])
-
-    if save_memory_stream:
-        add_memory_item(list(set(entities)))
 
 
 tab1, tab2 = st.tabs(["Knowledge Graph", "Recursive Retrieval"])
@@ -181,7 +210,8 @@ with tab2:
     st.write("")
 
     if generate_clicked:
-        response = get_response(query)
+        response, entities = get_response(query, return_entity=True)
+        add_memory_item(entities)
         cypher_query = generate_string(
             list(list(response.metadata.values())[0]["kg_rel_map"].keys())
         )
@@ -189,7 +219,7 @@ with tab2:
 
     nodes = set()
     edges = []  # (node1, node2, [relationships])
-    fill_graph(nodes, edges, cypher_query, save_memory_stream=generate_clicked)
+    fill_graph(nodes, edges, cypher_query)
 
     wrapped_text = textwrap.fill(answer, width=60)
     st.text(wrapped_text)
