@@ -32,10 +32,12 @@ class EntityKnowledgeStore(BaseMemory):
                     for item in json.load(file)
                 ]
             logging.info(
-                f"Entity Memory loaded from {self.file_name} successfully.")
+                f"Entity Knowledge Memory loaded from {self.file_name} successfully."
+            )
         except FileNotFoundError:
             logging.info(
-                "File not found. Starting with an empty entity memory.")
+                "File not found. Starting with an empty entity knowledge memory."
+            )
 
     def add_memory(self, memory_stream: list):
         self.knowledge_memory.extend(memory_stream)
