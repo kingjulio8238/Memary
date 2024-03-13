@@ -1,6 +1,5 @@
 import json
 import logging
-from datetime import datetime, timedelta
 
 from src.memory import BaseMemory
 from src.memory.types import MemoryItem
@@ -38,8 +37,3 @@ class MemoryStream(BaseMemory):
             logging.info(f"Memory loaded from {self.file_name} successfully.")
         except FileNotFoundError:
             logging.info("File not found. Starting with an empty memory.")
-
-    def remove_old_memory(self, days):
-        cutoff_date = datetime.now() - timedelta(days=days)
-        self.memory = [item for item in self.memory if item.date >= cutoff_date]
-        logging.info("Old memory removed successfully.")
