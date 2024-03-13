@@ -1,4 +1,12 @@
 # Recursive Retrieval Updates
+## Update 3/13/24
+- Set up queyring of web corpus using Perplexity
+  - really great optionality in specific model to use
+    - llama-2-13b-chat
+    - mistral-7b-instruct
+    - pplx-7b-chat-alpha
+    - 
+
 ## Update 3/12/24
 - Set up querying of web corpus using Llama 2
   - information is succesfully injected into KG
