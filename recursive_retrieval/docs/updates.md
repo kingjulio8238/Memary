@@ -3,8 +3,14 @@
 - Set up queyring of web corpus using Perplexity
   - really great optionality in specific model to use
     - mistral-7b-instruct
-    - pplx-7b-chat-alpha
+    - mixtral-8x7b-instruct
+    - sonar-small-chat (perplexity model)
+    - others found here: https://docs.perplexity.ai/docs/model-cards
   - interesting update from perplexity recently: *Deprecation and removal of codellama-34b-instruct and llama-2-70b-chat*
+  - test results under /tests
+- Overall querying external source and adding to KG is successful
+- When using RAG retrieval, hard to identify key entities at times for newly added nodes
+- Looking into why the retrieval process is a little buggy
 
 ## Update 3/12/24
 - Set up querying of web corpus using Llama 2
