@@ -28,7 +28,7 @@ class MemoryStream(BaseMemory):
     def add_memory(self, data):
         self.memory.extend(data)
 
-    def get_memory(self) -> list:
+    def get_memory(self) -> list[MemoryItem]:
         return self.memory
 
     def load_memory_from_file(self):
