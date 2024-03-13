@@ -6,6 +6,7 @@ from src.memory.types import MemoryItem
 
 logging.basicConfig(level=logging.INFO)
 
+
 class MemoryStream(BaseMemory):
 
     def __len__(self):
@@ -33,7 +34,9 @@ class MemoryStream(BaseMemory):
     def load_memory_from_file(self):
         try:
             with open(self.file_name, 'r') as file:
-                self.memory = [MemoryItem.from_dict(item) for item in json.load(file)]
+                self.memory = [
+                    MemoryItem.from_dict(item) for item in json.load(file)
+                ]
             logging.info(f"Memory loaded from {self.file_name} successfully.")
         except FileNotFoundError:
             logging.info("File not found. Starting with an empty memory.")
