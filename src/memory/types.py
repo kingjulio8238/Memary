@@ -20,7 +20,7 @@ class MemoryItem:
         )
 
 @dataclass
-class EntityMemoryItem:
+class KnowledgeMemoryItem:
     entity: str
     count: int
     date: datetime
