@@ -56,7 +56,7 @@ def add_memory_item(entities):
     memory_stream.add_memory(memory_items)
     print("memory_stream: ", memory_stream.get_memory())
 
-def get_response(query):
+def get_response(query, return_entity=False):
     storage_context = StorageContext.from_defaults(graph_store=graph_store)
 
     graph_rag_retriever = KnowledgeGraphRAGRetriever(
@@ -155,7 +155,7 @@ def add_chapter(paths):
     )
 
 
-def fill_graph(nodes, edges, cypher_query, save_memory_stream=False):
+def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
         uri=os.getenv("NEO4J_URL"), auth=("neo4j", os.getenv("NEO4J_PW"))
@@ -172,9 +172,6 @@ def fill_graph(nodes, edges, cypher_query, save_memory_stream=False):
                 nodes.add(n2_id)
                 edges.append((n1_id, n2_id, rels))
                 entities.extend([n1_id, n2_id])
-
-    if save_memory_stream:
-        add_memory_item(list(set(entities)))
 
 
 tab1, tab2 = st.tabs(["Knowledge Graph", "Recursive Retrieval"])
@@ -213,7 +210,8 @@ with tab2:
     st.write("")
 
     if generate_clicked:
-        response = get_response(query)
+        response, entities = get_response(query, return_entity=True)
+        add_memory_item(entities)
         cypher_query = generate_string(
             list(list(response.metadata.values())[0]["kg_rel_map"].keys())
         )
@@ -221,7 +219,7 @@ with tab2:
 
     nodes = set()
     edges = []  # (node1, node2, [relationships])
-    fill_graph(nodes, edges, cypher_query, save_memory_stream=generate_clicked)
+    fill_graph(nodes, edges, cypher_query)
 
     wrapped_text = textwrap.fill(answer, width=60)
     st.text(wrapped_text)
