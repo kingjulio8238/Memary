@@ -1,4 +1,11 @@
 # Recursive Retrieval Updates
+## Update 3/14/24
+- Set up querying of web corpus using Gemma, but through locally hosted model using Ollama
+  - no API calls on external server that could be easily integrated with llama index frameworks
+  - initial observation is that it is much slower to slower to locally host
+  - Ollama can be used to host all of the open source models as well
+  - very easy Ollama integration with llama index 
+
 ## Update 3/13/24
 - Set up queyring of web corpus using Perplexity
   - really great optionality in specific model to use
