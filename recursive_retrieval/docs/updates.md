@@ -5,6 +5,7 @@
   - initial observation is that it is much slower to slower to locally host
   - Ollama can be used to host all of the open source models as well
   - very easy Ollama integration with llama index 
+  - using https://docs.llamaindex.ai/en/latest/examples/llm/ollama.html
 
 ## Update 3/13/24
 - Set up queyring of web corpus using Perplexity
