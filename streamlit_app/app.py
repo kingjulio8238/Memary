@@ -22,7 +22,7 @@ from neo4j import GraphDatabase
 from pyvis.network import Network
 
 sys.path.append("..")
-from src.memory import MemoryStream
+from src.memory import MemoryStream, EntityKnowledgeStore
 
 load_dotenv()
 
@@ -34,6 +34,7 @@ password = os.getenv("NEO4J_PW")
 url = os.getenv("NEO4J_URL")
 database = "neo4j"
 memory_stream_json = "memory_stream.json"
+entity_knowledge_store_json = "entity_knowledge_store.json"
 
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 Settings.llm = llm
@@ -46,7 +47,8 @@ graph_store = Neo4jGraphStore(
     database=database,
 )
 
-memory_stream = MemoryStream(file_name=memory_stream_json)
+memory_stream = MemoryStream(memory_stream_json)
+entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
 
 def add_memory_item(entities):
     memory_stream.add_memory(entities)
@@ -234,5 +236,15 @@ with tab2:
         st.write("Memory Stream")
         st.dataframe(df)
         memory_stream.save_memory()
+
+        st.text("Entity Knowledge Store")
+        entity_knowledge_store.add_memory(memory_stream.get_memory())
+        entity_knowledge_store.save_memory()
+
+        # Convert to DataFrame
+        knowledge_memory_items = entity_knowledge_store.get_memory()
+        knowledge_memory_items_dicts = [item.to_dict() for item in knowledge_memory_items]
+        df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
+        st.dataframe(df_knowledge)
 
 # Tell me about Harry.
