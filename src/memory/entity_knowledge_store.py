@@ -2,7 +2,7 @@ import json
 import logging
 
 from src.memory import BaseMemory
-from src.memory.types import KnowledgeMemoryItem
+from src.memory.types import KnowledgeMemoryItem, MemoryItem
 
 
 class EntityKnowledgeStore(BaseMemory):
@@ -38,7 +38,7 @@ class EntityKnowledgeStore(BaseMemory):
                 "File not found. Starting with an empty entity knowledge memory."
             )
 
-    def add_memory(self, memory_stream: list):
+    def add_memory(self, memory_stream: list[MemoryItem]):
         """To add new memory to the entity knowledge store
         we should convert the memory to knowledge memory and then update the knowledge memory
 
