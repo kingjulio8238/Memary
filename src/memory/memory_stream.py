@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 
 from src.memory import BaseMemory
 from src.memory.types import MemoryItem
@@ -25,8 +26,12 @@ class MemoryStream(BaseMemory):
     def return_memory(self):
         return self.memory
 
-    def add_memory(self, data):
-        self.memory.extend(data)
+    def add_memory(self, entities):
+        self.memory.extend([
+            MemoryItem(str(entity),
+                       datetime.now().replace(microsecond=0))
+            for entity in entities
+        ])
 
     def get_memory(self) -> list[MemoryItem]:
         return self.memory

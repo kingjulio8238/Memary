@@ -2,7 +2,6 @@ import os
 import sys
 import random
 import textwrap
-from datetime import datetime
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -23,7 +22,7 @@ from neo4j import GraphDatabase
 from pyvis.network import Network
 
 sys.path.append("..")
-from src.memory import MemoryStream, MemoryItem
+from src.memory import MemoryStream
 
 load_dotenv()
 
@@ -50,10 +49,7 @@ graph_store = Neo4jGraphStore(
 memory_stream = MemoryStream(file_name=memory_stream_json)
 
 def add_memory_item(entities):
-    memory_items = []
-    for entity in entities:
-        memory_items.append(MemoryItem(str(entity), datetime.now().replace(microsecond=0)))
-    memory_stream.add_memory(memory_items)
+    memory_stream.add_memory(entities)
     print("memory_stream: ", memory_stream.get_memory())
 
 def get_response(query, return_entity=False):
