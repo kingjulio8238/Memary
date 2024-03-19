@@ -1,45 +1,42 @@
-from langchain.llms import OpenAI
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-from typing import List, Dict
+from langchain_core.output_parsers import JsonOutputParser
+from typing import List
 import os
+from entity_extraction.output import Output
 from dotenv import load_dotenv
 
-load_dotenv()
-
-
-def custom_entity_extract_fn(query: str) -> List[Dict[str, str]]:
+def custom_entity_extract_fn(query: str):
+    return ["Harry potter"]
+    load_dotenv()
     llm = OpenAI(openai_api_key=os.getenv("OPENAI_KEY"), temperature=0)
-    
+    parser = JsonOutputParser(pydantic_object=Output)
+
     template = """
     You are an expert entity extraction system. Extract the following entities from the given text:
-    - PERSON: Names of people
-    - ORGANIZATION: Names of companies or organizations
-    - LOCATION: Names of locations or places
-    - OBJECTS: Names of tangible things
     
-    Provide the extracted entities in the following JSON format:
-    [
-        {{
-            "entity_type": "PERSON",
-            "entity_value": "Extracted person name"
-        }},
-        {{
-            "entity_type": "ORGANIZATION",
-            "entity_value": "Extracted organization name"
-        }},
-        ...
-    ]
-    
+    Format: {format_instructions}
+
     Text: {query}
-    
-    Extracted Entities:
     """
-    
-    prompt = PromptTemplate(template=template, input_variables=["query"])
-    chain = LLMChain(llm=llm, prompt=prompt)
-    
-    result = chain.invoke(query)
-    entities = eval(result)
-    
-    return entities
+
+    prompt = PromptTemplate(
+        template=template,
+        input_variables=["query"],
+        partial_variables={"format_instructions": parser.get_format_instructions()},
+    )
+
+    chain = prompt | llm | parser
+    result = chain.invoke({"query": query})
+
+    l = []
+    for category in result:
+        for entity in result[category]:
+            l.append(entity)
+
+    return l
+
+
+# testing
+# print(custom_entity_extract_fn("who is harry potter"))
