@@ -1,4 +1,19 @@
 # Recursive Retrieval Updates
+## Update 3/19/24
+- Enhancing retrieval with llm
+  - passing in llm to `KnowledgeGraphRAGRetriever` allows model to make jumps in entity extraction process (ie return entities not specifically mentioned)
+    - ex. `query`: Tell me about Sirius Black. `entities`: ['Harry Potter'] (assuming Sirius Black is not an existing entity)
+  - passing in llm to `RetrieverQueryEngine` allows model to directly mix in info from llm and KG in response
+  - overall behavior is a bit nondeterministic
+  - likely best to not use llm on either step in order to ensure information gets added to KG
+- Custom entity extraction
+  - under entity_extraction folder
+  - work in progress - uses LangChain to pipe prompt (with template) &rarr; llm &rarr; pydantic json format
+  - issue in custom function not being called, look into if there's time
+- External querying using Perplexity now works
+  - run entirety of external_perplexity.ipynb with new query
+  - need to test effectiveness
+
 ## Update 3/14/24
 - Set up querying of web corpus using Gemma, but through locally hosted model using Ollama
   - no API calls on external server that could be easily integrated with llama index frameworks

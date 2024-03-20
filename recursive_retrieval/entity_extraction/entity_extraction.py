@@ -7,8 +7,7 @@ import os
 from entity_extraction.output import Output
 from dotenv import load_dotenv
 
-def custom_entity_extract_fn(query: str):
-    return ["Harry potter"]
+def custom_entity_extract_fn(query: str) -> List[str]:
     load_dotenv()
     llm = OpenAI(openai_api_key=os.getenv("OPENAI_KEY"), temperature=0)
     parser = JsonOutputParser(pydantic_object=Output)
@@ -36,7 +35,6 @@ def custom_entity_extract_fn(query: str):
             l.append(entity)
 
     return l
-
 
 # testing
 # print(custom_entity_extract_fn("who is harry potter"))
