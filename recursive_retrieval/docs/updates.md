@@ -1,4 +1,10 @@
 # Recursive Retrieval Updates
+## Update 3/21/24
+- Custom synonym expansion
+  - leveraging llm to produce larger range of synonyms of key entities found in query
+  - custom formatting to fit neo4j
+  - seems to dramatically improve web query &rarr; finding in graph afterwards using recursive retrieval
+
 ## Update 3/19/24
 - Enhancing retrieval with llm
   - passing in llm to `KnowledgeGraphRAGRetriever` allows model to make jumps in entity extraction process (ie return entities not specifically mentioned)
