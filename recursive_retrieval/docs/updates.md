@@ -4,6 +4,7 @@
   - leveraging llm to produce larger range of synonyms of key entities found in query
   - custom formatting to fit neo4j
   - seems to dramatically improve web query &rarr; finding in graph afterwards using recursive retrieval
+  - further testing to fine tune the prompt for increased accuracy
 
 ## Update 3/19/24
 - Enhancing retrieval with llm
