@@ -1,11 +1,14 @@
-from langchain_openai import OpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from langchain_core.output_parsers import JsonOutputParser
-from typing import List
 import os
-from entity_extraction.output import Output
+from typing import List
+
 from dotenv import load_dotenv
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_openai import OpenAI
+
+from entity_extraction.output import Output
+
 
 def custom_entity_extract_fn(query: str) -> List[str]:
     load_dotenv()
@@ -23,7 +26,9 @@ def custom_entity_extract_fn(query: str) -> List[str]:
     prompt = PromptTemplate(
         template=template,
         input_variables=["query"],
-        partial_variables={"format_instructions": parser.get_format_instructions()},
+        partial_variables={
+            "format_instructions": parser.get_format_instructions()
+        },
     )
 
     chain = prompt | llm | parser
@@ -35,6 +40,7 @@ def custom_entity_extract_fn(query: str) -> List[str]:
             l.append(entity)
 
     return l
+
 
 # testing
 # print(custom_entity_extract_fn("who is harry potter"))
