@@ -1,7 +1,8 @@
 import unittest
 import os
 from datetime import datetime, timedelta
-from src.memory import MemoryStream, MemoryItem
+from src.memory import MemoryStream
+from src.memory.types import MemoryItem
 
 class TestMemoryStream(unittest.TestCase):
     def setUp(self):
