@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "I have a meeting with memAray team tomorrow at 10:00 AM, participants are John, Smith, and Alex."
+  },
+  {
+    "role": "system",
+    "content": "Okay, I have added the meeting to your calendar."
+  }
+]
