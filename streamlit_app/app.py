@@ -1,4 +1,3 @@
-import os
 import sys
 import random
 import textwrap
@@ -7,163 +6,26 @@ import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
 import pandas as pd
-
-from llama_index.core import (
-    KnowledgeGraphIndex,
-    Settings,
-    SimpleDirectoryReader,
-    StorageContext,
-)
-from llama_index.core.query_engine import RetrieverQueryEngine
-from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
-from llama_index.graph_stores.neo4j import Neo4jGraphStore
-from llama_index.core.llms import ChatMessage
-from llama_index.llms.openai import OpenAI
-from llama_index.llms.perplexity import Perplexity
-from neo4j import GraphDatabase
 from pyvis.network import Network
-from synonym_expand.synonym import custom_synonym_expand_fn
+from neo4j import GraphDatabase
 
-sys.path.append("..")
-from src.memory import MemoryStream, EntityKnowledgeStore
+sys.path.append("../")
+sys.path.append("/home/young/project/memAry/RAG")
+from src.agent.chat_agent import ChatAgent
 
-load_dotenv()
+load_dotenv('streamlit_app/environ.env')
 
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_KEY")
-
-
-username = "neo4j"
-password = os.getenv("NEO4J_PW")
-url = os.getenv("NEO4J_URL")
-database = "neo4j"
-memory_stream_json = "memory_stream.json"
-entity_knowledge_store_json = "entity_knowledge_store.json"
-pplx_api_key = os.getenv('PERPLEXITY_API_KEY')
-
-llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
-query_llm = Perplexity(
-    api_key=pplx_api_key, model="sonar-small-online", temperature=0.5
-)
-Settings.llm = llm
-Settings.chunk_size = 512
-
-graph_store = Neo4jGraphStore(
-    username=username,
-    password=password,
-    url=url,
-    database=database,
-)
-
-memory_stream = MemoryStream(memory_stream_json)
-entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
-
-def add_memory_item(entities):
-    memory_stream.add_memory(entities)
-    print("memory_stream: ", memory_stream.get_memory())
-
-def check_KG(query):
-    storage_context = StorageContext.from_defaults(graph_store=graph_store)
-
-    graph_rag_retriever = KnowledgeGraphRAGRetriever(
-        storage_context=storage_context,
-        verbose=True,
-        llm=llm,
-        retriever_mode="keyword",
-        with_nl2graphquery=True,
-        synonym_expand_fn=custom_synonym_expand_fn,
-    )
-
-    query_engine = RetrieverQueryEngine.from_args(
-        graph_rag_retriever,
-    )
-    response = query_engine.query(
-        query,
-    )
-
-    if response.metadata is None:
-        return False
-    return True
-
-def external_query(query):
-    # 1) must query the web
-    messages_dict = [
-        {"role": "system", "content": "Be precise and concise."},
-        {"role": "user", "content": query},
-    ]
-    messages = [ChatMessage(**msg) for msg in messages_dict]
-
-    external_response = query_llm.chat(messages)
-
-    # 2) answer needs to be stored into txt file for loading into KG
-    with open('data/external_response.txt', 'w') as f:
-        print(external_response, file=f)
-    return str(external_response)
-
-def load_KG():
-    storage_context = StorageContext.from_defaults(graph_store=graph_store)
-    documents = SimpleDirectoryReader(
-        input_files=['data/external_response.txt']
-    ).load_data()
-
-    index = KnowledgeGraphIndex.from_documents(
-        documents,
-        storage_context=storage_context,
-        max_triplets_per_chunk=5,
-    )
-
-def get_response(query, return_entity=False):
-    storage_context = StorageContext.from_defaults(graph_store=graph_store)
-
-    graph_rag_retriever = KnowledgeGraphRAGRetriever(
-        storage_context=storage_context,
-        verbose=True,
-        llm=llm,
-        retriever_mode="keyword",
-        with_nl2graphquery=True,
-        synonym_expand_fn=custom_synonym_expand_fn,
-    )
-
-    query_engine = RetrieverQueryEngine.from_args(
-        graph_rag_retriever,
-    )
-    response = query_engine.query(
-        query,
-    )
-
-    if return_entity:
-        return response, get_entity(query_engine.retrieve(query))
-    return response
-
-def get_entity(retrieve) -> list[str]:
-    """retrieve is a list of QueryBundle objects.
-    A retrieved QueryBundle object has a "node" attribute,
-    which has a "metadata" attribute.
-
-    example for "kg_rel_map":
-    kg_rel_map = {
-        'Harry': [['DREAMED_OF', 'Unknown relation'], ['FELL_HARD_ON', 'Concrete floor']],
-        'Potter': [['WORE', 'Round glasses'], ['HAD', 'Dream']]
-    }
-
-    Args:
-        retrieve (list[NodeWithScore]): list of NodeWithScore objects
-    return:
-        list[str]: list of string entities
-    """
-    ENTITY_EXCEPTIONS = ['Unknown relation']
-
-    entities = []
-    kg_rel_map = retrieve[0].node.metadata["kg_rel_map"]
-    for key, items in kg_rel_map.items():
-        # key is the entity of question
-        entities.append(key)
-        # items is a list of [relationship, entity]
-        entities.extend(item[1] for item in items)
-    entities = list(set(entities))
-    for exceptions in ENTITY_EXCEPTIONS:
-        if exceptions in entities:
-            entities.remove(exceptions)
-    return entities
+system_persona_txt = "data/system_persona.txt"
+user_persona_txt = "data/user_persona.txt"
+past_chat_json = "data/past_chat.json"
+memory_stream_json = "data/memory_stream.json"
+entity_knowledge_store_json = "data/entity_knowledge_store.json"
+chat_agent = ChatAgent("Personal Agent",
+                  memory_stream_json,
+                  entity_knowledge_store_json,
+                  system_persona_txt,
+                  user_persona_txt,
+                  past_chat_json)
 
 def create_graph(nodes, edges):
     g = Network(
@@ -198,23 +60,10 @@ def generate_string(entities):
     return cypher_query
 
 
-def add_chapter(paths):
-    documents = SimpleDirectoryReader(
-        input_files=paths  # paths is list of chapters
-    ).load_data()
-    storage_context = StorageContext.from_defaults(graph_store=graph_store)
-
-    index = KnowledgeGraphIndex.from_documents(
-        documents,
-        storage_context=storage_context,
-        max_triplets_per_chunk=2,
-    )
-
-
 def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
-        uri=os.getenv("NEO4J_URL"), auth=("neo4j", os.getenv("NEO4J_PW"))
+        uri=chat_agent.neo4j_url, auth=(chat_agent.neo4j_username, chat_agent.neo4j_password)
     ) as driver:
         with driver.session() as session:
             result = session.run(cypher_query)
@@ -249,7 +98,7 @@ with tab1:
 
     if add_clicked:
         paths = [f"data/harry_potter/{val}.txt"]
-        add_chapter(paths)
+        chat_agent.add_chapter(paths)
 
     fill_graph(nodes, edges, cypher_query)
     graph = create_graph(nodes, edges)
@@ -269,21 +118,29 @@ with tab2:
 
     if generate_clicked:
         external_response = ""
-        if check_KG(query):
-            response, entities = get_response(query, return_entity=True)
-            add_memory_item(entities)
+        rag_response = "There was no information in knowledge_graph to answer your question."
+        chat_agent.add_chat('user', query, [])
+        if chat_agent.check_KG(query):
+            rag_response, entities = chat_agent.get_rag_response(query, return_entity=True)
+            chat_agent.add_chat('user', 'rag: ' + str(rag_response), entities)
             cypher_query = generate_string(
-                list(list(response.metadata.values())[0]["kg_rel_map"].keys())
+                list(list(rag_response.metadata.values())[0]["kg_rel_map"].keys())
             )
-            answer = str(response)
         else:
             # get response
             external_response = "No response found in knowledge graph, querying web instead with "
-            external_response += external_query(query)
+            external_response += chat_agent.external_query(query)
             display_external = textwrap.fill(external_response, width=80)
             st.text(display_external)
             # load into KG
-            load_KG()
+            chat_agent.load_KG()
+        answer = chat_agent.get_response()
+        st.title("RAG Response")
+        st.text(str(rag_response))
+        st.title("Perplexity Response")
+        st.text(str(external_response))
+        st.title("Memory Response")
+        st.text(str(answer))
 
     nodes = set()
     edges = []  # (node1, node2, [relationships])
@@ -298,21 +155,17 @@ with tab2:
     graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
     components.html(graph_html, height=500, scrolling=True)
 
-    if len(memory_stream) > 0:
-        memory_items = memory_stream.get_memory()
-        # Convert to DataFrame
+    if len(chat_agent.memory_stream) > 0:
+        # Memory Stream
+        memory_items = chat_agent.memory_stream.get_memory()
         memory_items_dicts = [item.to_dict() for item in memory_items]
         df = pd.DataFrame(memory_items_dicts)
         st.write("Memory Stream")
         st.dataframe(df)
-        memory_stream.save_memory()
 
-        st.text("Entity Knowledge Store")
-        entity_knowledge_store.add_memory(memory_stream.get_memory())
-        entity_knowledge_store.save_memory()
-
-        # Convert to DataFrame
-        knowledge_memory_items = entity_knowledge_store.get_memory()
+        # Entity Knowledge Store
+        knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
         knowledge_memory_items_dicts = [item.to_dict() for item in knowledge_memory_items]
         df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
+        st.text("Entity Knowledge Store")
         st.dataframe(df_knowledge)
