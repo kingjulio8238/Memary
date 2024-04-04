@@ -83,5 +83,5 @@ class EntityKnowledgeStore(BaseMemory):
                                     max(memory_dates)))
         return knowledge_memory
 
-    def get_memory(self) -> list:
+    def get_memory(self) -> list[KnowledgeMemoryItem]:
         return self.knowledge_memory
