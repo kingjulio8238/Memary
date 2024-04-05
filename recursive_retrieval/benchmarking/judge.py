@@ -22,7 +22,15 @@ def custom_response_evaluator(query: str, response: str) -> Dict[str, int]:
     For informativeness, focus on how comprehensive and relevant the contents of the response is to the given query.
     For accuracy, focus on the correctness and decree of preciseness that the response has.
     Hold the scores you give to the highest quality with higher numbers given only to the best of the best.
+
+    Here is an example: Given the query "tell me about harry potter", and the given response Harry Potter is a series of seven fantasy novels written by British author J.K. Rowling. The novels chronicle the life of a young wizard named Harry Potter and his friends Hermione Granger and Ron Weasley, who are all students at the Hogwarts School of Witchcraft and Wizardry.
+    The series follows Harry's life from age 11 to 17. In the first book, Harry learns that his parents were killed by the dark wizard Lord Voldemort when Harry was a baby, and that Harry survived the attack with a lightning-shaped scar on his forehead. Harry then begins attending Hogwarts, where he makes friends, encounters professors like Severus Snape, and faces off against Voldemort and his followers.
+    The Harry Potter books have been massively popular, spawning a highly successful film series that ran from 2001 to 2011, as well as a play, video games, theme park attractions, and a vast amount of fan fiction.
+    The series is considered a landmark of 20th and 21st century children's literature.
+    In summary, Harry Potter is a beloved fantasy series that has had a tremendous cultural impact through its books, films, and expanded universe.
     
+    The judge should give a score of 300 for conciseness, 600 to informativeness, 900 for accuracy.
+
     Format: {format_instructions}
 
     Query: {query}
