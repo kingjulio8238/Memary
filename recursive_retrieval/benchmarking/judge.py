@@ -30,7 +30,7 @@ def custom_response_evaluator(query: str, response: str) -> Dict[str, int]:
     In summary, Harry Potter is a beloved fantasy series that has had a tremendous cultural impact through its books, films, and expanded universe.
     
     The judge should give a score of 300 for conciseness, 600 to informativeness, 900 for accuracy.
-
+    
     Format: {format_instructions}
 
     Query: {query}

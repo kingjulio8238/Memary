@@ -32,4 +32,3 @@ def benchmark(model_name: str, data_points: List, conciseness: List, informative
         conciseness.append(result['conciseness'])
         informativeness.append(result['informativeness'])
         accuracy.append(result['accuracy'])
-
