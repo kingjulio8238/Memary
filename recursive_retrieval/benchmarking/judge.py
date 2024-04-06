@@ -8,7 +8,6 @@ from langchain_openai import OpenAI
 
 from output import Output
 
-# TODO: Try inserting into the template some examples of queries and responses that user would personally give scores of x, y, z to.
 
 def custom_response_evaluator(query: str, response: str) -> Dict[str, int]:
     load_dotenv()
