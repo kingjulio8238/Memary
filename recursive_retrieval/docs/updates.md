@@ -1,4 +1,11 @@
 # Recursive Retrieval Updates
+## Update 4/6/24
+- LLM "Judge"
+  - analyze quality of perplexity models (sonar-small-online, mistral, mixtral) on conciseness, informativeness, and accuracy
+  - potential improvements should focus on quality of the prompt fed into GPT3.5 (or use GPT4)
+  - results indicate sonar is best, but due to cost, mistral is best option for filling KG
+- Incorporate Mistral model for external querying in streamlit app
+
 ## Update 3/21/24
 - Custom synonym expansion
   - leveraging llm to produce larger range of synonyms of key entities found in query
