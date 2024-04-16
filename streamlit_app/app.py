@@ -42,7 +42,7 @@ pplx_api_key = os.getenv('PERPLEXITY_API_KEY')
 
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 query_llm = Perplexity(
-    api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
+    api_key=pplx_api_key, model="sonar-small-online", temperature=0.5
 )
 Settings.llm = llm
 Settings.chunk_size = 512
