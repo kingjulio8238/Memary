@@ -3,7 +3,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from typing import List
 import os
-from src.synonym_expand.output import Output
+from synonym_expand.output import Output
 from dotenv import load_dotenv
 
 def custom_synonym_expand_fn(keywords: str) -> List[str]:
