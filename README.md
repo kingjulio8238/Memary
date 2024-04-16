@@ -1,2 +1,2 @@
 # memary
-More memory for autonomous agents. Overcoming finite context windows. 
+Longterm memory for autonomous agents. Overcoming finite context windows. 
