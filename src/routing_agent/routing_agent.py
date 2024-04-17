@@ -15,14 +15,19 @@ from llama_index.llms.perplexity import Perplexity
 
 from synonym_expand.synonym import custom_synonym_expand_fn
 
+from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+from typing import List
+
+from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
+
 
 class RoutingAgent:
     def __init__(self) -> None:
         load_dotenv()
+        # getting necessary API keys
         os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_KEY")
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
         pplx_api_key = os.getenv("PERPLEXITY_API_KEY")
-        self.gmaps = googlemaps.Client(key=googlemaps_api_key)
 
         # Neo4j credentials
         self.neo4j_username = "neo4j"
@@ -30,13 +35,19 @@ class RoutingAgent:
         self.neo4j_url = os.getenv("NEO4J_URL")
         database = "neo4j"
 
+        # initialize APIs
+        self.openai_mm_llm = OpenAIMultiModal(
+            model="gpt-4-vision-preview", api_key=os.getenv("OPENAI_KEY"), max_new_tokens=300
+        )
         llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
+        self.gmaps = googlemaps.Client(key=googlemaps_api_key)
         Settings.llm = llm
         Settings.chunk_size = 512
-
+        
+        # initialize Neo4j graph resources
         graph_store = Neo4jGraphStore(
             username=self.neo4j_username,
             password=self.neo4j_password,
@@ -57,11 +68,12 @@ class RoutingAgent:
             graph_rag_retriever,
         )
 
-        searchKGTool = FunctionTool.from_defaults(fn=self.searchKG)
+        searchKG_tool = FunctionTool.from_defaults(fn=self.searchKG)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
+        vision_tool = FunctionTool.from_defaults(fn=self.vision)
 
         self.agent = ReActAgent.from_tools(
-            [searchKGTool, locate_tool], llm=llm, verbose=True
+            [searchKG_tool, locate_tool, vision_tool], llm=llm, verbose=True
         )
 
     def external_query(self, query: str):
@@ -76,7 +88,6 @@ class RoutingAgent:
 
     def searchKG(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
-
         response = self.query_engine.query(query)
 
         if response.metadata is None:
@@ -84,18 +95,24 @@ class RoutingAgent:
         else:
             return response
 
-    def locate(self, query: str) -> int:
+    def locate(self, query: str) -> str:
         """Finds the current geographical location"""
-
         location = geocoder.ip("me")
         lattitude, longitude = location.latlng[0], location.latlng[1]
+
         reverse_geocode_result = self.gmaps.reverse_geocode((lattitude, longitude))
         formatted_address = reverse_geocode_result[0]["formatted_address"]
         return "Your address is" + formatted_address
+    
+    def vision(self, query: str, img_url: str) -> str:
+        """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
+        img_docs = load_image_urls([img_url])
+        response = self.openai_mm_llm.complete(prompt=query, image_documents=img_docs)
+        return response
 
     def query(self, query: str) -> str:
         self.agent.chat(query)
 
 
 r = RoutingAgent()
-r.query("where am i?")
+r.query("what color is the cow depicted in this image: https://static.wikia.nocookie.net/minecraft_gamepedia/images/1/1c/Red_Mooshroom_JE4.png/revision/latest?cb=20200510033824, and tell me a little more about the game that the cow comes from")
