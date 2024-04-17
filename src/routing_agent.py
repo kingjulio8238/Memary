@@ -67,12 +67,12 @@ class RoutingAgent:
             graph_rag_retriever,
         )
 
-        searchKG_tool = FunctionTool.from_defaults(fn=self.searchKG)
+        search_tool = FunctionTool.from_defaults(fn=self.search)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
 
         self.agent = ReActAgent.from_tools(
-            [searchKG_tool, locate_tool, vision_tool], llm=llm, verbose=True
+            [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
         )
 
     def external_query(self, query: str):
@@ -85,7 +85,7 @@ class RoutingAgent:
 
         return str(external_response)
 
-    def searchKG(self, query: str) -> str:
+    def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
         response = self.query_engine.query(query)
 
@@ -118,7 +118,5 @@ class RoutingAgent:
 
 
 # testing
-r = RoutingAgent()
-r.query(
-    "Tell me a little about the character depicted in this image: https://static.independent.co.uk/s3fs-public/thumbnails/image/2013/09/12/17/potter.jpg, and then tell me aobut his relationship to dumbledore"
-)
+# r = RoutingAgent()
+# r.query("who is harry potter")
