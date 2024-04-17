@@ -6,19 +6,16 @@ from dotenv import load_dotenv
 from llama_index.core import Settings, StorageContext
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
+from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
 from llama_index.graph_stores.neo4j import Neo4jGraphStore
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
+from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from synonym_expand.synonym import custom_synonym_expand_fn
-
-from llama_index.multi_modal_llms.openai import OpenAIMultiModal
-from typing import List
-
-from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
 
 
 class RoutingAgent:
@@ -37,7 +34,9 @@ class RoutingAgent:
 
         # initialize APIs
         self.openai_mm_llm = OpenAIMultiModal(
-            model="gpt-4-vision-preview", api_key=os.getenv("OPENAI_KEY"), max_new_tokens=300
+            model="gpt-4-vision-preview",
+            api_key=os.getenv("OPENAI_KEY"),
+            max_new_tokens=300,
         )
         llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
@@ -46,7 +45,7 @@ class RoutingAgent:
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
         Settings.llm = llm
         Settings.chunk_size = 512
-        
+
         # initialize Neo4j graph resources
         graph_store = Neo4jGraphStore(
             username=self.neo4j_username,
@@ -103,7 +102,7 @@ class RoutingAgent:
         reverse_geocode_result = self.gmaps.reverse_geocode((lattitude, longitude))
         formatted_address = reverse_geocode_result[0]["formatted_address"]
         return "Your address is" + formatted_address
-    
+
     def vision(self, query: str, img_url: str) -> str:
         """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
         img_docs = load_image_urls([img_url])
@@ -111,8 +110,15 @@ class RoutingAgent:
         return response
 
     def query(self, query: str) -> str:
-        self.agent.chat(query)
+        # get the response from react agent
+        response = self.agent.chat(query)
+        # write response to file for KG writeback
+        with open('data/external_response.txt', 'w') as f:
+            print(response, file=f)
 
 
+# testing
 r = RoutingAgent()
-r.query("what color is the cow depicted in this image: https://static.wikia.nocookie.net/minecraft_gamepedia/images/1/1c/Red_Mooshroom_JE4.png/revision/latest?cb=20200510033824, and tell me a little more about the game that the cow comes from")
+r.query(
+    "Tell me a little about the character depicted in this image: https://static.independent.co.uk/s3fs-public/thumbnails/image/2013/09/12/17/potter.jpg, and then tell me aobut his relationship to dumbledore"
+)
