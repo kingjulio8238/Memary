@@ -16,6 +16,7 @@ from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from synonym_expand.synonym import custom_synonym_expand_fn
+from KG import KG
 
 
 class RoutingAgent:
@@ -67,6 +68,8 @@ class RoutingAgent:
             graph_rag_retriever,
         )
 
+        self.KG = KG()
+
         search_tool = FunctionTool.from_defaults(fn=self.search)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
@@ -116,7 +119,6 @@ class RoutingAgent:
         with open('data/external_response.txt', 'w') as f:
             print(response, file=f)
 
+        # write back to KG directly for now
+        self.KG.write_to_KG()
 
-# testing
-# r = RoutingAgent()
-# r.query("who is harry potter")
