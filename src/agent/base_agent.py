@@ -141,6 +141,8 @@ class Agent(object):
         # write response to file for KG writeback
         with open("data/external_response.txt", "w") as f:
             print(response, file=f)
+        # write back to the KG
+        self.write_back()
         return response
 
     def write_back(self):
@@ -224,8 +226,8 @@ class Agent(object):
         """Get response from the ReAct."""
         response = self.query(query)
 
-        if return_entity and self.check_KG(query):
-            # check if request wants entities, and if routing agent agent is able to use KG
+        if return_entity:
+            # the query above already adds final response to KG so entities will be present in the KG
             return response, self.get_entity(self.query_engine.retrieve(query))
         return response
 
