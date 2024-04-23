@@ -1,40 +1,42 @@
 import os
-from llama_index.core import (
-    KnowledgeGraphIndex,
-    Settings,
-    SimpleDirectoryReader,
-    StorageContext,
-)
+
+import geocoder
+import googlemaps
+from dotenv import load_dotenv
+from llama_index.core import (KnowledgeGraphIndex, Settings,
+                              SimpleDirectoryReader, StorageContext)
+from llama_index.core.agent import ReActAgent
+from llama_index.core.llms import ChatMessage
+from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
+from llama_index.core.tools import FunctionTool
 from llama_index.graph_stores.neo4j import Neo4jGraphStore
-from llama_index.core.llms import ChatMessage
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
-from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
-from llama_index.core.tools import FunctionTool
+from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
-
-from src.synonym_expand.synonym import custom_synonym_expand_fn
-from src.memory import MemoryStream, EntityKnowledgeStore
 from src.agent.data_types import Message
 from src.agent.llm_api.tools import openai_chat_completions_request
-from dotenv import load_dotenv
-from llama_index.multi_modal_llms.openai import OpenAIMultiModal
-import geocoder
-from llama_index.core.agent import ReActAgent
-import googlemaps
-
+from src.memory import EntityKnowledgeStore, MemoryStream
+from src.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
-ENTITY_EXCEPTIONS = ['Unknown relation']
+ENTITY_EXCEPTIONS = ["Unknown relation"]
 
 
 class Agent(object):
     """Agent manages the RAG model, the ReAct agent, and the memory stream."""
 
-    def __init__(self, name, memory_stream_json, entity_knowledge_store_json,
-                 system_persona_txt, user_persona_txt, past_chat_json):
+    def __init__(
+        self,
+        name,
+        memory_stream_json,
+        entity_knowledge_store_json,
+        system_persona_txt,
+        user_persona_txt,
+        past_chat_json,
+    ):
         load_dotenv()
         # getting necessary API keys
         os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -91,25 +93,22 @@ class Agent(object):
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
-        self.entity_knowledge_store = EntityKnowledgeStore(
-            entity_knowledge_store_json)
+        self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
 
-        self.message = Message(system_persona_txt, user_persona_txt,
-                               past_chat_json)
-        
+        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json)
 
     def __str__(self):
         return f"Agent {self.name}"
 
     def external_query(self, query: str):
-            messages_dict = [
-                {"role": "system", "content": "Be precise and concise."},
-                {"role": "user", "content": query},
-            ]
-            messages = [ChatMessage(**msg) for msg in messages_dict]
-            external_response = self.query_llm.chat(messages)
+        messages_dict = [
+            {"role": "system", "content": "Be precise and concise."},
+            {"role": "user", "content": query},
+        ]
+        messages = [ChatMessage(**msg) for msg in messages_dict]
+        external_response = self.query_llm.chat(messages)
 
-            return str(external_response)
+        return str(external_response)
 
     def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
@@ -140,10 +139,10 @@ class Agent(object):
         response = self.routing_agent.chat(query)
         self.routing_agent.reset()
         # write response to file for KG writeback
-        with open('data/external_response.txt', 'w') as f:
+        with open("data/external_response.txt", "w") as f:
             print(response, file=f)
         return response
-    
+
     def write_back(self):
         documents = SimpleDirectoryReader(
             input_files=["data/external_response.txt"]
@@ -154,7 +153,7 @@ class Agent(object):
             storage_context=self.storage_context,
             max_triplets_per_chunk=8,
         )
-    
+
     def check_KG(self, query: str) -> bool:
         """Check if the query is in the knowledge graph.
 
@@ -177,28 +176,35 @@ class Agent(object):
             dict: llm_message in chatgpt format
         """
         llm_message_chatgpt = self.message.llm_message
-        llm_message_chatgpt['messages'] = [
-            context.to_dict()
-            for context in self.message.llm_message['messages']
+        llm_message_chatgpt["messages"] = [
+            context.to_dict() for context in self.message.llm_message["messages"]
         ]
-        llm_message_chatgpt['messages'].append({
-            'role':
-            'user',
-            'content':
-            'Memory Stream:' + str([
-                memory.to_dict()
-                for memory in self.message.llm_message.pop('memory_stream')
-            ])
-        })
-        llm_message_chatgpt['messages'].append({
-            'role':
-            'user',
-            'content':
-            'Knowledge Entity Store:' + str([
-                entity.to_dict() for entity in self.message.llm_message.pop(
-                    'knowledge_entity_store')
-            ])
-        })
+        llm_message_chatgpt["messages"].append(
+            {
+                "role": "user",
+                "content": "Memory Stream:"
+                + str(
+                    [
+                        memory.to_dict()
+                        for memory in self.message.llm_message.pop("memory_stream")
+                    ]
+                ),
+            }
+        )
+        llm_message_chatgpt["messages"].append(
+            {
+                "role": "user",
+                "content": "Knowledge Entity Store:"
+                + str(
+                    [
+                        entity.to_dict()
+                        for entity in self.message.llm_message.pop(
+                            "knowledge_entity_store"
+                        )
+                    ]
+                ),
+            }
+        )
         return llm_message_chatgpt
 
     def get_response(self) -> str:
@@ -208,10 +214,10 @@ class Agent(object):
             str: response from the RAG model
         """
         llm_message_chatgpt = self._change_llm_message_chatgpt()
-        response = openai_chat_completions_request(self.model_endpoint,
-                                                self.openai_api_key,
-                                                llm_message_chatgpt)
-        response = str(response['choices'][0]['message']['content'])
+        response = openai_chat_completions_request(
+            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
+        )
+        response = str(response["choices"][0]["message"]["content"])
         return response
 
     def get_routing_agent_response(self, query, return_entity=False):
