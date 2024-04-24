@@ -21,7 +21,7 @@ The above process includes the routing agent, knoweldge graph and memory module 
 Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
 ## Installation
-1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it
+1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. 
 
 2. Install Python dependencies:
    ```
@@ -47,7 +47,7 @@ While we didn't place strong emphasis on equipping the agent with many tools, we
   - **CV** - answers a query based on a provided image using gpt-4-vision-preview. 
   - **Search** - queries the knowledge graph for a response based on existing nodes, and executes an external search if no related entities exist.    
 - How does it work?
-  - Takes in each query &rarr; selects a tool &rarr; executes and finds an answer to current step &rarr; repeats this process until it reaches a satisfactory answer
+  - Takes in each query &rarr; selects a tool &rarr; executes and finds an answer to current step &rarr; repeats this process until it reaches a satisfactory answer. 
 - Purpose in larger system
   - Each response from the agent is saved in the knowledge graph. You can view responses from various tools as distinct elements that contribute to the user's knowledge.
 - Future contributions
@@ -96,7 +96,7 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
   - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs. 
 
 ## Future Integrations
-Currently memary is setup so that the routing agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many sub queries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided and once multiprocessing has been added to the system these components can easily be integrated into the main `ChatAgent` class. The diagram below shows what how the newly integrated system would work.
+Currently memary is structured so that the routing agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many sub queries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided and once multiprocessing has been added to the system these components can easily be integrated into the main `ChatAgent` class. The diagram below shows what how the newly integrated system would work.
 
 ![Future Integrations](https://github.com/kingjulio8238/memary/assets/120517860/213f9547-6dcb-4adf-9715-b54e707072d3)
 
