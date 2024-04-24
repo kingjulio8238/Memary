@@ -98,7 +98,7 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
 ## Future Integrations
 The source code for several other components that are not yet integrated into the main `ChatAgent` class. These include query decompostion and reranking. The diagram below shows what how the newly integrated system would work.
 
-![Future Contributions](https://github.com/kingjulio8238/memary/assets/120517860/daa53e9e-96f2-485d-ae64-44348023d898)
+![Future Integrations](https://github.com/kingjulio8238/memary/assets/120517860/213f9547-6dcb-4adf-9715-b54e707072d3)
 
 ### Query decomposition
 - What is query decomposition?
