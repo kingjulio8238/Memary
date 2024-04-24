@@ -81,9 +81,7 @@ While we didn't place strong emphasis on equipping the agent with many tools, we
 ### Memory Module
 ![memory module diagram](https://github.com/kingjulio8238/memary/assets/120517860/3b2aad33-d221-4858-b051-a181ee9ec421)
 - What is the memory module?
-
 The memory module is made up of the Memory Stream and Entity Knowledge Store. The memory module was influenced by the design of [K-LaMP](https://arxiv.org/pdf/2311.06318.pdf) proposed by Microsoft Research. 
-
 1. The Memory Stream captures all entities inserted into the KG and their associated timestamps. This stream reflects the breadth of the users' knowledge ie. concepts users have had exposure to but no depth of exposure is inferred. 
    - Timeline Analysis: Map out a timeline of interactions, highlighting moments of high engagement or shifts in topic focus. This helps in understanding the evolution of the user's interests over time.
    - Extract Themes: Look for recurring themes or topics within the interactions. This thematic analysis can help in anticipating user interests or questions even before they are explicitly stated.
