@@ -20,6 +20,7 @@ Raw source code for these components can also be found in their respective direc
 
 ## Installation
 1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it
+
 2. Install Python dependencies:
    ```
    pip install -r requirements.txt
@@ -27,8 +28,10 @@ Raw source code for these components can also be found in their respective direc
 
 ## Demo
 todo: add video of demo? 
+
 To run the Streamlit app: 
 1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials. 
+
 2. Run:
    ```
    streamlit run streamlit_app/app.py
@@ -36,16 +39,16 @@ To run the Streamlit app:
 
 ## Detailed Component Breakdown
 ### Routing Agent
-![a text](diagrams/routing_agent.png)
+                                             ![a text](diagrams/routing_agent.png)
 - Uses the [ReAct agent](https://react-lm.github.io/) to plan and execute a query given the tools provided. This type of agent has the ability to reason over which of the tools to use next to further the response, feed inputs into the selected tool and repeat the process with the output until it determines that the answer is satisfactory. 
 - Current tool suite:
+While we didn't place strong emphasis on equipping the agent with many tools, we hope to see memary help agents in the community equipped with a vast array of tools covering multi-modalities. 
   - **Location** - determines the user's current location and nearby sorroundings using geocoder and googlemaps.
   - **CV** - answers a query based on a provided image using gpt-4-vision-preview. 
   - **Search** - queries the knowledge graph for a response based on existing nodes, and executes an external search if no related entities exist.    
-While we didn't place strong emphasis on equipping the agent with many tools, we hope to see memary help agents in the community equipped with a vast array of tools covering multi-modalities. 
 - How does it work?
   - Takes in each query &rarr; selects a tool &rarr; executes and finds an answer to current step &rarr; repeats this process until it reaches a satisfactory answer
-- Purpose of larger system
+- Purpose in larger system
   - Each response from the agent is saved in the knowledge graph. You can view responses from various tools as distinct elements that contribute to the user's knowledge.
 - Future contributions
   - Make your own agent! Add as many tools as possible! Each tool is an expansion of the agent's ability to answer a wide variety of queries.
