@@ -1,4 +1,4 @@
-# memary: Open-source longterm memory for autonomous agents 
+# memary: Open-Source Longterm Memory for Autonomous Agents 
 
 todo: add video of demo? 
 
