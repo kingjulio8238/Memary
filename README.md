@@ -1,5 +1,7 @@
 # memary: Open-Source longterm memory for autonomous agents 
 
+todo: add video of demo? 
+
 ## Why use memary? 
 Agents use LLMs that are currently constraint to finite context windows. memary overcomes this limitation by allowing your agents to store a large corpus of information in knowledge graphs, infer user knowledge through our memory modules, and only retrieve relevant information for meaningful responses. 
 
@@ -27,8 +29,6 @@ Raw source code for these components can also be found in their respective direc
    ```
 
 ## Demo
-todo: add video of demo? OR add @top
-
 To run the Streamlit app: 
 1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials. 
 
@@ -123,5 +123,21 @@ Currently memary is setup so that the routing agent can only process one query a
   - Self-Learning: Whenever queries are decomposed, those examples will be appended to the engine’s example store as a feedback loop for improved future performance.
 
 ### Reranking
-![Reranking Diagram](https://github.com/kingjulio8238/memary/assets/120517860/6aa4b280-1395-4632-83b8-625bbcdbc373)
+![Reranking Diagram](https://github.com/kingjulio8238/memary/assets/120517860/3f15b40f-c591-43ab-aa10-727b6997727d)
 
+- What is reranking?
+  - Reranking is the process of scoring nodes based on their relevancy. 
+- Why rerank agent responses?
+  - Ensure that the various responses to sub queries, when merged, are relevant to the original query prior to decomposition.
+- Our Approach
+  - We benchmarked three models to determine which one would best work for reranking: BM25 Reranking Fusion, Cohere Rerank, and ColBERT Rerank. After testing BM25,  it was clear that the model was not able to classify the different responses and provide a simple merged answer. Instead of answering the question, it combined all the information on the page, introducing irrelevant information.
+  - Next, when testing out Cohere, the model performed better than BM25 but was still not classifying the paragraphs well. The reranking was not always accurate, as it performed well for some questions but was not able to rank others. Furthermore, the ranking was still pretty inaccurate, performing between 0.25 - 0.5 out of 1. 
+  - Finally, we tested ColBERT rerank, and it was found that this model performed best compared to the other two. ColBERT was able to synthesize results from the given data and ranked them very accurately, with reranking scores between 0.6 - 0.7 out of 1. With this, ColBERT had the most potential, being able to determine which responses were most related and important to answering the query. 
+- Purpose in larger system
+  - Passes the reranking result to the knowledge graph for storage and to the model as one source of context for inference. 
+- Future contributions
+  - Once agent multiprocessing is integrated, reranking can be integrated into the `ChatAgent` class. 
+  - Future Benchmarking: Include the Cohere Rerank 3 model to the [reranking analysis](https://docs.google.com/document/d/1gHzvgktqnHcg7wbIuKHr6W5NMYk6UVlJkRQfSqzk9e4/edit). The data used for benchmarking can be found [here](https://docs.google.com/document/d/1knfJRsoEzjKziilmF_ZwSwMRBvYbF0yNlRdpDteDiW4/edit?usp=sharing). Add to it!
+
+## Contributors 
+todo
