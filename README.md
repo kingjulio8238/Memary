@@ -5,7 +5,7 @@ Agents use LLMs that are currently constraint to finite context windows. memary 
 
 ## Features
 - **Routing Agent:** Leverage a ReAct agent to route a query for execution amongst many tools. 
-- **Knowledge Graph Creation:** Leverage Neo4j to create knowledge graphs storing agent responses.
+- **Knowledge Graph Creation & Retrieval:** Leverage Neo4j to create knowledge graphs storing agent responses for later retrieval.
 - **Memory Stream:** Track all entities stored in the knowledge graph using entity extraction. This stream reflects the user's breadth of knowledge.
 - **Entity Knowledge Store:** Group and order all the entities in the memory stream and pass top N entities into the context window. This knowledge store reflects the user's depth of knowledge. 
 
