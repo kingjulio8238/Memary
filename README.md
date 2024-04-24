@@ -1,7 +1,15 @@
-# Overview
-## General
-Longterm memory for autonomous agents. Overcoming finite context windows. 
+# memary: Open-Source longterm memory for autonomous agents 
 
+## Why use memary? 
+LLMs are currently constraint to finite context windows. memary overcomes this limitation by allowing your agents to store a large corpus of information in knowledge graphs, infer user knowledge through our memory modules, and only pass relevant information into the context window prior to inference for meaningful responses. 
+
+## Features
+- **Routing Agent:** Leverage a ReAct agent to route a query for execution amongst many tools. 
+- **Knowledge Graph Creation:** Leverage Neo4j to create knowledge graphs storing agent responses.
+- **Memory Stream:** Track all entities stored in the knowledge graph using entity extraction. This stream reflects the user's breadth of knowledge.
+- **Entity Knowledge Store:** Group and order all the entities in the memory stream and pass top N entities into the context window. This knowledge store reflects the user's depth of knowledge. 
+
+## How it works 
 The current structure of memary is detailed in the diagram below.
 
 ![a text](diagrams/system.jpeg)
@@ -18,6 +26,7 @@ Raw source code for these components can also be found in their respective direc
    ```
 
 ## Demo
+todo: add video of demo? 
 To run the Streamlit app: 
 1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials. 
 2. Run:
@@ -28,20 +37,20 @@ To run the Streamlit app:
 ## Detailed Component Breakdown
 ### Routing Agent
 ![a text](diagrams/routing_agent.png)
-- Uses the [ReAct agent](https://react-lm.github.io/) model to return a response based on the tools that are provided. This type of agent has the ability to reason over which of the tools to use next to further the response, feed inputs into the selected tool and repeat the process with the output until it determines that the answer is satisfactory. 
-- What is the purpose?
-  - The agent is able to make decisions on which tools to use and in which order taking into account different dependencies and purposes of substeps in order to create the most suitable response based on the tools available to the agent.
+- Uses the [ReAct agent](https://react-lm.github.io/) to plan and execute a query given the tools provided. This type of agent has the ability to reason over which of the tools to use next to further the response, feed inputs into the selected tool and repeat the process with the output until it determines that the answer is satisfactory. 
 - Current tool suite:
-  - **Location** - determines the current location of the user using geocoder and googlemaps
-  - **CV** - answers a query based on a provided image using gpt-4-vision-preview
-  - **Search** - queries the knowledge graph for a response based on existing nodes, and executes an external search if no related entities exist
+  - **Location** - determines the user's current location and nearby sorroundings using geocoder and googlemaps.
+  - **CV** - answers a query based on a provided image using gpt-4-vision-preview. 
+  - **Search** - queries the knowledge graph for a response based on existing nodes, and executes an external search if no related entities exist.    
+While we didn't place strong emphasis on equipping the agent with many tools, we hope to see memary help agents in the community equipped with a vast array of tools covering multi-modalities. 
 - How does it work?
   - Takes in each query &rarr; selects a tool &rarr; executes and finds an answer to current step &rarr; repeats this process until it reaches a satisfactory answer
 - Purpose of larger system
-  - Decides which tools to use based on subqueries. Passes all responses to the reranking module (one response for each subquery) 
+  - Each response from the agent is saved in the knowledge graph. You can view responses from various tools as distinct elements that contribute to the user's knowledge.
 - Future contributions
   - Make your own agent! Add as many tools as possible! Each tool is an expansion of the agent's ability to answer a wide variety of queries.
-  - Create a LLM Judge that scores the routing agent and provides feedback 
+  - Create a LLM Judge that scores the routing agent and provides feedback. 
+  - Integrate multiprocessing so that the agent can process multiple sub queries simultaneously. We have open sourced the query decomposition and reranking code to help with this! 
 
 ### Knowledge Graph
 ![a text](diagrams/kg.png)
