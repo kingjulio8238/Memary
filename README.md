@@ -96,23 +96,27 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
   - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs. 
 
 ## Future Integrations
-The source code for several other components that are not yet integrated into the main `ChatAgent` class. These include query decompostion and reranking. The diagram below shows what how the newly integrated system would work.
+Currently memary is setup so that the routing agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many sub queries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided and once multiprocessing has been added to the system these components can easily be integrated into the main `ChatAgent` class. The diagram below shows what how the newly integrated system would work.
 
 ![Future Integrations](https://github.com/kingjulio8238/memary/assets/120517860/213f9547-6dcb-4adf-9715-b54e707072d3)
 
-### Query decomposition
+### Query Decomposition
+![QD Diagram](https://github.com/kingjulio8238/memary/assets/120517860/e8663b07-66c4-4c08-82d3-cef8eb9c2554)
+
 - What is query decomposition?
-  - LLM preprocessing technique that breaks down advanced queries into simpler queries to expedite the LLM’s ability to answer the prompt. It is important to note that this process leaves simple queries unchanged.
+  - A preprocessing technique that breaks down complex queries into simpler queries to expedite the LLM’s ability to answer the prompt. It is important to note that this process leaves simple queries unchanged.
 - Why decompose?
   - User queries are complex and multifaceted, and base-model LLMs are often unable to fully understand all aspects of the query in order to create a succinct and accurate response.
-  - Allows the same LLM to answer easier questions, and synthesize those answers to output a much better response.
+  - Allows a LLM of similar capabilities to answer easier questions, and synthesize those answers to provide an improved response.
 - How it works
-  - Initially, a LlamaIndex fine tuned query engine approach was taken. However, a LangChain query engine was found to be faster and easier to use. LangChain’s `PydanticToolsParser` framework was used. The query_engine_with_examples has been given 87 pre-decomposed queries (complex query + set of subqueries) to determine a pattern. Users can invoke the engine with individual queries, or collate them into a list and invoke by batch. 
+  - Initially, a LlamaIndex fine tuned query engine approach was taken. However, the LangChain query engine was found to be faster and easier to use. LangChain’s `PydanticToolsParser` framework was used. The query_engine_with_examples has been given 87 pre-decomposed queries (complex query + set of subqueries) to determine a pattern. Users can invoke the engine with individual queries, or collate them into a list and invoke by batch. 
 - Purpose in larger system
-  - In a parallel system, the Routing Agent will be able to parse multiple queries at once. The query decomposer will pass all subqueries (or original query if no subqueries exist) to the Routing Agent at once.
-  - Simultaneously, the query decomposer will pass the original query to the reranker to allow it to optimize the output from the routing agent
+  - In a parallel system, the agent will be able to parse multiple queries at once. The query decomposer (QD) will pass all subqueries (or original query if no subqueries exist) to the agent at once.
+  - Simultaneously, QD will pass the original query to the reranking module to rerank the agent responses based on its relevancy to the pre-decomposed query. 
 - Future contributions
-  - When multiprocessing system is provided, QD will be integrated. All inputted queries will be passed to QD, and the proper (sub)queries wil be passed to the routing agent for parallel processing.
-  - Self-Learning: Whenever queries are decomposed properly, those examples will be appended to the engine’s example store for it to improve itself.
+  - Once agent multiprocessing is integrated, QD will be valuable to leverage. All user queries will be passed to QD, and the (sub)queries wil be passed to the routing agent for parallel processing.
+  - Self-Learning: Whenever queries are decomposed, those examples will be appended to the engine’s example store as a feedback loop for improved future performance.
 
 ### Reranking
+![Reranking Diagram](https://github.com/kingjulio8238/memary/assets/120517860/6aa4b280-1395-4632-83b8-625bbcdbc373)
+
