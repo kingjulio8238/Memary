@@ -79,21 +79,20 @@ While we didn't place strong emphasis on equipping the agent with many tools, we
    -  Graph optimizations to reduce latency of search times. 
 
 ### Memory Module
-![a text](diagrams/memory.png)
-- What is the memory module? 
-    - Memory Stream (Breadth of user knowledge) that captures all entities involved in conversations, including questions, answers, and their timestamps.
-      1. Identify Key Entities: Extract the most frequently mentioned entities or those tied to the most significant interactions. This could be based on direct mentions, relevance to the user's stated preferences or needs, or frequency of occurrence.
-      2. Timeline Analysis: Map out a timeline of interactions, highlighting moments of high engagement or shifts in topic focus. This helps in understanding the evolution of the user's interests or concerns over time.
-      3. Extract Themes: Look for recurring themes or topics within the interactions. This thematic analysis can help in anticipating user interests or questions even before they are explicitly stated.
-    - Entity Knowledge Store (Depth of user knowledge) that tracks the frequency and recency of references to each entity.
-      1. Rank Entities by Relevance: Use both frequency and recency to rank entities in terms of current relevance to the user. An entity frequently mentioned and referenced recently is likely of high importance.
-      2. Categorize Entities: Group entities into categories based on their nature or the context in which they're mentioned (e.g., technical terms, personal interests). This categorization aids in quickly accessing relevant information tailored to the user's inquiries.
-      3. Highlight Changes Over Time: Identify any significant changes in the entities' ranking or categorization over time. A shift in the most frequently mentioned entities could indicate a change in the user's interests or needs.
+![memory module diagram](https://github.com/kingjulio8238/memary/assets/120517860/3b2aad33-d221-4858-b051-a181ee9ec421)
+- What is the memory module?
+The memory module is made up of the Memory Stream and Entity Knowledge Store. The memory module was influenced by the design of [K-LaMP](https://arxiv.org/pdf/2311.06318.pdf) proposed by Microsoft Research. 
+   1. The Memory Stream captures all entities inserted into the KG and their associated timestamps. This stream reflects the breadth of the users' knowledge ie. concepts users have had exposure to but no depth of exposure is inferred. 
+     - Timeline Analysis: Map out a timeline of interactions, highlighting moments of high engagement or shifts in topic focus. This helps in understanding the evolution of the user's interests over time.
+     - Extract Themes: Look for recurring themes or topics within the interactions. This thematic analysis can help in anticipating user interests or questions even before they are explicitly stated.
+   2. The Entity Knowledge Store tracks the frequency and recency of references to each entity stored in the memory stream. This knowledge store reflects users' depth of knowledge ie. concepts they are more familiar with than others. 
+     - Rank Entities by Relevance: Use both frequency and recency to rank entities. An entity frequently mentioned (high count) and referenced recently is likely of high importance and the user is well aware of this concept. 
+     - Categorize Entities: Group entities into categories based on their nature or the context in which they're mentioned (e.g., technical terms, personal interests). This categorization aids in quickly accessing relevant information tailored to the user's inquiries.
+     - Highlight Changes Over Time: Identify any significant changes in the entities' ranking or categorization over time. A shift in the most frequently mentioned entities could indicate a change in the user's interests or knowledge.
 - Purpose in larger system
-  - Compress/summarize certain info in the memory stream & entity knowledge store (related to query) and pass to the LLM’s finite context window alongside the reranked response for inference to provide the user a familiar/personalized response.
-  - Personalize Responses: Use the key entities and themes identified to tailor your responses more closely to the user's current interests and historical context.
-  - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate the user's future questions or needs, providing proactive and insightful responses.
-  - Maintain Contextual Relevance: Ensure that responses are not only personalized but also contextually relevant by aligning with the most recent and frequent entities and themes.
+  - Compress/summarize the top N ranked entities in the entity knowledge store and pass to the LLM’s finite context window alongside the agent's response and chat history for inference. 
+  - Personalize Responses: Use the key categorized entities and themes associated with the user to tailor agent responses more closely to the user's current interests and knowledge level/expertise.
+  - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs. 
 
 ## Future Integrations
 The source code for several other components that are not yet integrated into the main `ChatAgent` class. These include query decompostion and reranking. The diagram below shows what how the newly integrated system would work.
