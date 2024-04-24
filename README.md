@@ -139,5 +139,9 @@ Currently memary is structured so that the routing agent can only process one qu
   - Once agent multiprocessing is integrated, reranking can be integrated into the `ChatAgent` class. 
   - Future Benchmarking: Include the Cohere Rerank 3 model to the [reranking analysis](https://docs.google.com/document/d/1gHzvgktqnHcg7wbIuKHr6W5NMYk6UVlJkRQfSqzk9e4/edit). The data used for benchmarking can be found [here](https://docs.google.com/document/d/1knfJRsoEzjKziilmF_ZwSwMRBvYbF0yNlRdpDteDiW4/edit?usp=sharing). Add to it!
 
-## Contributors 
-todo
+## Contributing 
+We welcome contributions from the community and hope to see memary advance as agents do! 
+
+Initial Contributors: Julian Saks, Kevin Li, Seyeong Han, Arnav Chopra, Aishwarya Balaji, Anshu Siripurapu (Hook 'em!) 
+
+
