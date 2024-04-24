@@ -27,7 +27,7 @@ Raw source code for these components can also be found in their respective direc
    ```
 
 ## Demo
-todo: add video of demo? 
+todo: add video of demo? OR add @top
 
 To run the Streamlit app: 
 1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials. 
