@@ -1,6 +1,7 @@
 import sys
 import random
 import textwrap
+import os
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -9,11 +10,15 @@ import pandas as pd
 from pyvis.network import Network
 from neo4j import GraphDatabase
 
-sys.path.append("../")
-sys.path.append("/home/young/project/memAry/RAG")
+# src should sit in the same level as /streamlit_app
+curr_dir = os.getcwd()
+parent_dir = os.path.dirname(curr_dir)
+print(parent_dir)
+sys.path.append(parent_dir)
+
 from src.agent.chat_agent import ChatAgent
 
-load_dotenv('streamlit_app/environ.env')
+load_dotenv()
 
 system_persona_txt = "data/system_persona.txt"
 user_persona_txt = "data/user_persona.txt"
@@ -129,7 +134,9 @@ with tab2:
         else:
             # get response
             external_response = "No response found in knowledge graph, querying web instead with "
-            external_response += chat_agent.external_query(query)
+            query_answer = chat_agent.external_query(query)
+            external_response += query_answer
+            chat_agent.add_chat('user', 'external response: ' + query_answer)
             display_external = textwrap.fill(external_response, width=80)
             st.text(display_external)
             # load into KG
