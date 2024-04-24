@@ -1,7 +1,7 @@
 # memary: Open-Source longterm memory for autonomous agents 
 
 ## Why use memary? 
-LLMs are currently constraint to finite context windows. memary overcomes this limitation by allowing your agents to store a large corpus of information in knowledge graphs, infer user knowledge through our memory modules, and only pass relevant information into the context window prior to inference for meaningful responses. 
+Agents use LLMs that are currently constraint to finite context windows. memary overcomes this limitation by allowing your agents to store a large corpus of information in knowledge graphs, infer user knowledge through our memory modules, and only retrieve relevant information for meaningful responses. 
 
 ## Features
 - **Routing Agent:** Leverage a ReAct agent to route a query for execution amongst many tools. 
