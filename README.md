@@ -113,6 +113,7 @@ Currently memary is setup so that the routing agent can only process one query a
   - Individual Invocation: ```sub_qs = query_analyzer_with_examples.invoke( {"question": "What is 2 + 2? Why is it not 3?"} )```
   - Batch Invocation:
   ```questions = [ "Where can I buy a macbook pro with M3 chip? What is the difference to the M2 chip? How much more expensive is  the M3?", "How can I buy tickets to the upcoming NBA game? What is the price of lower bowl seats versus nosebleeds? What is the view like at either seat?", "Between a macbook and a windows machine, which is better for systems engineering? Which chips are most ideal? What is the price difference between the two?",] ```
+
   ``` responses = [] for question in questions: responses.append(query_analyzer_with_examples.invoke({"question": question})) ```
 - Purpose in larger system
   - In a parallel system, the agent will be able to parse multiple queries at once. The query decomposer (QD) will pass all subqueries (or original query if no subqueries exist) to the agent at once.
