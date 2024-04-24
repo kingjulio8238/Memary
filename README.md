@@ -56,27 +56,27 @@ While we didn't place strong emphasis on equipping the agent with many tools, we
   - Integrate multiprocessing so that the agent can process multiple sub queries simultaneously. We have open sourced the query decomposition and reranking code to help with this! 
 
 ### Knowledge Graph
-![a text](diagrams/kg.png)
-- What are knowledge graphs?
-  - Knowledge graphs are databases that store information in the form of entities, which can be anything from objects to more abstract concepts, and their relationships with one another.
-- Knowledge graphs vs other knowledge stores
-  - KGs provide more depth of the highly necessary context that the retrieved information must have
-  - Graph structure of the knowledge store allows information to be centered around certain entities and their relationships with other entities, thus ensuring that the context of the information is relevant
-  -  more adept handling of complexity in queries as varying relationships between different entities in the query can provide insight into joining multiple topics
+![KG diagram](https://github.com/kingjulio8238/memary/assets/120517860/fc009e5b-e3ea-4b9d-b54a-ae8404550bb4)
+- What are knowledge graphs (KG)?
+  - KGs are databases that store information in the form of entities, which can be anything from objects to more abstract concepts, and their relationships with one another.
+- KGs vs other knowledge stores
+  - KGs provide more depth of highly necessary context that can be easily retrieved. 
+  - Graph structure of the knowledge store allows information to be centered around certain entities and their relationships with other entities, thus ensuring that the context of the information is relevant. 
+  -  KGs are more adept to handling complex queries as varying relationships between different entities in the query can provide insight into how to join multiple sub graphs together. 
 -  Knowledge graphs &harr; LLMs
-   -  memary uses a Neo4j graph database to store knoweldge
-   -  LLamaindex was used for adding nodes into the graph store based on documents
-   -  Perplexity (mistral-7b-instruct model) was used for external queries
+   -  memary uses a Neo4j graph database to store knoweldge. 
+   -  Llamaindex was used for adding nodes into the graph store based on documents. 
+   -  Perplexity (mistral-7b-instruct model) was used for external queries. 
 -  What can one do with the KG?
-   -  Inject the final response from the routing agent into existing KGs
-   -  memary uses a [recursive retrieval](https://arxiv.org/pdf/2401.18059.pdf) approach to search the KG which involves determining what the key entities are in the query, building a subgraph of those entities with a maximum depth of 2 away, and finally using that subgraph to build up context
-   -  When faced with multiple key entities in a query, memary uses [multi-hop](https://neo4j.com/developer-blog/knowledge-graphs-llms-multi-hop-question-answering/) reasoning to join multiple subgraphs into a larger subgraph to search through
-   -  These techniqeus reduce latency when compared to searching the entire knowledge graph at once
+   -  Inject the final agent responses into existing KGs. 
+   -  memary uses a [recursive retrieval](https://arxiv.org/pdf/2401.18059.pdf) approach to search the KG which involves determining what the key entities are in the query, building a subgraph of those entities with a maximum depth of 2 away, and finally using that subgraph to build up context. 
+   -  When faced with multiple key entities in a query, memary uses [multi-hop](https://neo4j.com/developer-blog/knowledge-graphs-llms-multi-hop-question-answering/) reasoning to join multiple subgraphs into a larger subgraph to search through. 
+   -  These techniques reduce latency when compared to searching the entire knowledge graph at once. 
 -  Purpose in larger system
-   -  Continuously update the memory module with each node insertion
+   -  Continuously update the memory module with each node insertion. 
 -  Future contributions
-   -  Expand graph’s capabilities to support multiple modalities
-   -  Graph optimizations to reduce latency of search times
+   -  Expand graph’s capabilities to support multiple modalities.
+   -  Graph optimizations to reduce latency of search times. 
 
 ### Memory Module
 ![a text](diagrams/memory.png)
