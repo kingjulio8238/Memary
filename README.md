@@ -39,7 +39,7 @@ To run the Streamlit app:
 
 ## Detailed Component Breakdown
 ### Routing Agent
-![a text](diagrams/routing_agent.png)
+![agent diagram](https://github.com/kingjulio8238/memary/assets/120517860/e5be38db-8c7a-4df2-8b1d-b578fa9c827f)
 - Uses the [ReAct agent](https://react-lm.github.io/) to plan and execute a query given the tools provided. This type of agent has the ability to reason over which of the tools to use next to further the response, feed inputs into the selected tool and repeat the process with the output until it determines that the answer is satisfactory. 
 - Current tool suite:
 While we didn't place strong emphasis on equipping the agent with many tools, we hope to see memary help agents in the community equipped with a vast array of tools covering multi-modalities. 
