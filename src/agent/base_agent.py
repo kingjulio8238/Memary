@@ -59,6 +59,10 @@ class Agent(object):
         database = "neo4j"
 
         # initialize APIs
+        # OpenAI API
+        self.model = "gpt-3.5-turbo"
+        self.openai_api_key = os.environ["OPENAI_API_KEY"]
+        self.model_endpoint = 'https://api.openai.com/v1'
         self.openai_mm_llm = OpenAIMultiModal(
             model="gpt-4-vision-preview",
             api_key=os.getenv("OPENAI_KEY"),
@@ -104,7 +108,7 @@ class Agent(object):
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
 
-        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json)
+        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json, self.model)
 
     def __str__(self):
         return f"Agent {self.name}"
