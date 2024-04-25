@@ -1,0 +1,6 @@
+Thought: I need to use a tool to help me answer the question.
+Action: vision
+Action Input: {"query": "What animal is shown?", "img_url": "https://media.sketchfab.com/models/76258c89cda44663897fae9330ec7b4d/thumbnails/001b7fb0b4e74c2fae0ace3d23fc8925/6275e4eabe30401684b285d40ba8f282.jpeg"}
+user: Observation: The animal shown is a horse.
+assistant: Thought: I can answer without using any more tools.
+Answer: The animal shown is a horse.

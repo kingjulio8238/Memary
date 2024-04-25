@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import geocoder
 import googlemaps
@@ -20,6 +21,8 @@ from src.agent.data_types import Message
 from src.agent.llm_api.tools import openai_chat_completions_request
 from src.memory import EntityKnowledgeStore, MemoryStream
 from src.synonym_expand.synonym import custom_synonym_expand_fn
+
+from ansistrip import ansi_strip
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
@@ -47,6 +50,7 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        debug=True,
     ):
         load_dotenv()
         # getting necessary API keys
@@ -102,7 +106,8 @@ class Agent(object):
         search_tool = FunctionTool.from_defaults(fn=self.search)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
-
+        
+        self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
             [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
         )
@@ -295,7 +300,24 @@ class Agent(object):
 
     def get_routing_agent_response(self, query, return_entity=False):
         """Get response from the ReAct."""
-        response = str(self.query(query))
+        response = ""
+        if self.debug:
+            # writes ReAct agent steps to separate file and modifies format to be readable in .txt file
+            with open('data/routing_response.txt', 'w') as f:
+                orig_stdout = sys.stdout
+                sys.stdout = f
+                response = str(self.query(query))
+                sys.stdout.flush()
+                sys.stdout = orig_stdout
+            text = ""
+            with open('data/routing_response.txt', 'r') as f:
+                text = f.read()
+
+            plain = ansi_strip(text)
+            with open('data/routing_response.txt', 'w') as f:
+                f.write(plain)
+        else:
+            response = str(self.query(query))
 
         if return_entity:
             # the query above already adds final response to KG so entities will be present in the KG

@@ -20,3 +20,4 @@ llama-index-llms-perplexity==0.1.3
 pandas
 geocoder
 googlemaps
+ansistrip
