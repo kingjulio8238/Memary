@@ -88,6 +88,6 @@ class Message:
 
     def save_contexts_to_json(self):
         """Saves the contexts to the json file.
-        We don't save the system and user personas (first two contexts)
+        We don't save the system and user personas (first two messages)
         """
-        save_json(self.past_chat_json, [context.to_dict() for context in self.contexts[2:]])
+        save_json(self.past_chat_json, [message.to_dict() for message in self.llm_message['messages'][2:]])
