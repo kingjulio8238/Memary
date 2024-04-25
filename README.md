@@ -1,6 +1,6 @@
 # memary: Open-Source Longterm Memory for Autonomous Agents 
 
-todo: add video of demo? 
+todo: add video of demo
 
 ## Why use memary? 
 Agents use LLMs that are currently constraint to finite context windows. memary overcomes this limitation by allowing your agents to store a large corpus of information in knowledge graphs, infer user knowledge through our memory modules, and only retrieve relevant information for meaningful responses. 
