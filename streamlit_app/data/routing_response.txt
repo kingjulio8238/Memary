@@ -1,0 +1,7 @@
+Thought: I need to use a tool to help me answer the question.
+Action: search
+Action Input: {'query': 'UT Austin'}
+Observation: 
+UT Austin is a major research university located in Texas, USA.
+Thought: I can answer without using any more tools.
+Answer: UT Austin is a major research university located in Texas, USA.

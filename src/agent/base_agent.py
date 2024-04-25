@@ -1,10 +1,17 @@
-import os
 import logging
+import os
+import sys
+
 import geocoder
 import googlemaps
+from ansistrip import ansi_strip
 from dotenv import load_dotenv
-from llama_index.core import (KnowledgeGraphIndex, Settings,
-                              SimpleDirectoryReader, StorageContext)
+from llama_index.core import (
+    KnowledgeGraphIndex,
+    Settings,
+    SimpleDirectoryReader,
+    StorageContext,
+)
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
 from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
@@ -28,10 +35,11 @@ CONTEXT_LENGTH = 4096
 EVICTION_RATE = 0.7
 NONEVICTION_LENGTH = 5
 
+
 def generate_string(entities):
-    cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
-    cypher_query += 'WHERE n.id IN ' + str(entities) + '\n'
-    cypher_query += 'RETURN p'
+    cypher_query = "MATCH p = (n) - [*1 .. 2] - ()\n"
+    cypher_query += "WHERE n.id IN " + str(entities) + "\n"
+    cypher_query += "RETURN p"
 
     return cypher_query
 
@@ -47,6 +55,7 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        debug=True,
     ):
         load_dotenv()
         # getting necessary API keys
@@ -64,7 +73,7 @@ class Agent(object):
         # OpenAI API
         self.model = "gpt-3.5-turbo"
         self.openai_api_key = os.environ["OPENAI_API_KEY"]
-        self.model_endpoint = 'https://api.openai.com/v1'
+        self.model_endpoint = "https://api.openai.com/v1"
         self.openai_mm_llm = OpenAIMultiModal(
             model="gpt-4-vision-preview",
             api_key=os.getenv("OPENAI_KEY"),
@@ -103,6 +112,7 @@ class Agent(object):
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
 
+        self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
             [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
         )
@@ -110,7 +120,9 @@ class Agent(object):
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
 
-        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json, self.model)
+        self.message = Message(
+            system_persona_txt, user_persona_txt, past_chat_json, self.model
+        )
 
     def __str__(self):
         return f"Agent {self.name}"
@@ -215,16 +227,14 @@ class Agent(object):
                 + str(
                     [
                         entity.to_dict()
-                        for entity in llm_message_chatgpt.pop(
-                            "knowledge_entity_store"
-                        )
+                        for entity in llm_message_chatgpt.pop("knowledge_entity_store")
                     ]
                 ),
             }
         )
-        llm_message_chatgpt["messages"].extend([
-            context.to_dict() for context in self.message.llm_message["messages"]
-        ])
+        llm_message_chatgpt["messages"].extend(
+            [context.to_dict() for context in self.message.llm_message["messages"]]
+        )
         return llm_message_chatgpt
 
     def _summarize_contexts(self, total_tokens: int):
@@ -243,17 +253,17 @@ class Agent(object):
             messages = messages[2:]
             del self.message.llm_message["messages"][2:]
 
-        message_contents = [
-            message.to_dict()['content'] for message in messages
-        ]
+        message_contents = [message.to_dict()["content"] for message in messages]
 
         llm_message_chatgpt = {
             "model": self.model,
-            "messages": [{
-                "role": "user",
-                "content": "Summarize these previous conversations into 50 words:"
-                + str(message_contents)
-            }]
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Summarize these previous conversations into 50 words:"
+                    + str(message_contents),
+                }
+            ],
         }
         response, _ = self._get_gpt_response(llm_message_chatgpt)
         content = "Summarized past conversation:" + response
@@ -285,7 +295,7 @@ class Agent(object):
         """
         llm_message_chatgpt = self._change_llm_message_chatgpt()
         response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
-        if total_tokens > CONTEXT_LENGTH*EVICTION_RATE:
+        if total_tokens > CONTEXT_LENGTH * EVICTION_RATE:
             logging.info("Evicting and summarizing contexts")
             self._summarize_contexts(total_tokens)
 
@@ -295,7 +305,24 @@ class Agent(object):
 
     def get_routing_agent_response(self, query, return_entity=False):
         """Get response from the ReAct."""
-        response = str(self.query(query))
+        response = ""
+        if self.debug:
+            # writes ReAct agent steps to separate file and modifies format to be readable in .txt file
+            with open("data/routing_response.txt", "w") as f:
+                orig_stdout = sys.stdout
+                sys.stdout = f
+                response = str(self.query(query))
+                sys.stdout.flush()
+                sys.stdout = orig_stdout
+            text = ""
+            with open("data/routing_response.txt", "r") as f:
+                text = f.read()
+
+            plain = ansi_strip(text)
+            with open("data/routing_response.txt", "w") as f:
+                f.write(plain)
+        else:
+            response = str(self.query(query))
 
         if return_entity:
             # the query above already adds final response to KG so entities will be present in the KG
