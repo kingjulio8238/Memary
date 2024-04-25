@@ -33,8 +33,8 @@ class ChatAgent(Agent):
                 self.memory_stream.get_memory())
             self.entity_knowledge_store.save_memory()
 
-            self._replace_memory_from_llm_message()
-            self._replace_eks_to_from_message()
+        self._replace_memory_from_llm_message()
+        self._replace_eks_to_from_message()
 
     def get_chat(self):
         return self.contexts
