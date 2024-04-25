@@ -26,7 +26,7 @@ class EntityKnowledgeStore(BaseMemory):
     def load_memory_from_file(self):
         try:
             with open(self.file_name, 'r') as file:
-                self.memory = [
+                self.knowledge_memory = [
                     KnowledgeMemoryItem.from_dict(item)
                     for item in json.load(file)
                 ]
