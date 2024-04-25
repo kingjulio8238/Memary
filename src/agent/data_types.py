@@ -24,6 +24,7 @@ class Context:
 class Message:
     """Message class to store the contexts, memory stream and knowledge entity store."""
 
+    def __init__(self, system_persona_txt, user_persona_txt, past_chat_json, model):
         self.past_chat_json = past_chat_json
 
         self.contexts = []
@@ -33,7 +34,7 @@ class Message:
         self.contexts.extend(self.load_contexts_from_json())
 
         self.llm_message = {
-            "model": "gpt-3.5-turbo",
+            "model": model,
             "messages": self.contexts,
             "memory_stream": [],
             "knowledge_entity_store": []
