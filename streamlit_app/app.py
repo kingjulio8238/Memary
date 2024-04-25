@@ -117,12 +117,10 @@ with tab2:
         external_response = ""
         rag_response = "There was no information in knowledge_graph to answer your question."
         chat_agent.add_chat('user', query, [])
-        if chat_agent.check_KG(query):
-            rag_response, entities = chat_agent.get_rag_response(query, return_entity=True)
-            chat_agent.add_chat('user', 'rag: ' + str(rag_response), entities)
-            cypher_query = generate_string(
-                list(list(rag_response.metadata.values())[0]["kg_rel_map"].keys())
-            )
+        cypher_query = chat_agent.check_KG(query)
+        if cypher_query:
+            rag_response, entities = chat_agent.get_routing_agent_response(query, return_entity=True)
+            chat_agent.add_chat('user', 'rag: ' + rag_response, entities)
         else:
             # get response
             external_response = "No response found in knowledge graph, querying web instead with "
