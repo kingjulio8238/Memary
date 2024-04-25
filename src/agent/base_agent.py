@@ -224,6 +224,23 @@ class Agent(object):
         )
         return llm_message_chatgpt
 
+
+    def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
+        """Get response from the GPT model.
+
+        Args:
+            llm_message_chatgpt (str): query to get response for
+
+        Returns:
+            str: response from the GPT model
+        """
+        response = openai_chat_completions_request(
+            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
+        )
+        total_tokens = response["usage"]["total_tokens"]
+        response = str(response["choices"][0]["message"]["content"])
+        return response, total_tokens
+
     def get_response(self) -> str:
         """Get response from the RAG model.
 
