@@ -1,5 +1,5 @@
 import os
-
+import logging
 import geocoder
 import googlemaps
 from dotenv import load_dotenv
@@ -25,6 +25,8 @@ MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
 # ChatGPT token limits
 CONTEXT_LENGTH = 4096
+EVICTION_RATE = 0.7
+NONEVICTION_LENGTH = 5
 
 def generate_string(entities):
     cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
@@ -224,6 +226,28 @@ class Agent(object):
         )
         return llm_message_chatgpt
 
+    def _summarize_contexts(self, total_tokens: int):
+        """Summarize the contexts.
+
+        Args:
+            total_tokens (int): total tokens in the response
+        """
+        contexts = self.message.llm_message["messages"]
+        contexts = contexts[2:-NONEVICTION_LENGTH]
+        del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
+
+        llm_message_chatgpt = {
+            "model": self.model,
+            "messages": contexts,
+        }
+        response, _ = self._get_gpt_response(llm_message_chatgpt)
+        summarized_message = {
+            "role": "assistant",
+            "content": "Summarized past conversation:" + response,
+        }
+        self.message.llm_message["messages"].insert(2, summarized_message)
+        logging.info(f"Contexts summarized successfully. \n summary: {summarized_message}")
+        logging.info(f"Total tokens after eviction: {total_tokens*EVICTION_RATE}")
 
     def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
         """Get response from the GPT model.
@@ -248,15 +272,16 @@ class Agent(object):
             str: response from the RAG model
         """
         llm_message_chatgpt = self._change_llm_message_chatgpt()
-        response = openai_chat_completions_request(
-            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
-        )
-        response = str(response["choices"][0]["message"]["content"])
+        response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
+        if total_tokens > CONTEXT_LENGTH*EVICTION_RATE:
+            logging.info("Evicting and summarizing contexts")
+            self._summarize_contexts(total_tokens)
+
         return response
 
     def get_routing_agent_response(self, query, return_entity=False):
         """Get response from the ReAct."""
-        response = self.query(query)
+        response = str(self.query(query))
 
         if return_entity:
             # the query above already adds final response to KG so entities will be present in the KG
