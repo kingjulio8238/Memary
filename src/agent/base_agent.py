@@ -233,6 +233,8 @@ class Agent(object):
             total_tokens (int): total tokens in the response
         """
         messages = self.message.llm_message["messages"]
+
+        # First two messages are system and user personas
         if len(messages) > 2 + NONEVICTION_LENGTH:
             messages = messages[2:-NONEVICTION_LENGTH]
             del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
