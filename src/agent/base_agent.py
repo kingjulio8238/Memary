@@ -255,12 +255,9 @@ class Agent(object):
             }]
         }
         response, _ = self._get_gpt_response(llm_message_chatgpt)
-        summarized_message = {
-            "role": "assistant",
-            "content": "Summarized past conversation:" + response,
-        }
-        self.message.llm_message["messages"].insert(2, summarized_message)
-        logging.info(f"Contexts summarized successfully. \n summary: {summarized_message}")
+        content = "Summarized past conversation:" + response
+        self._add_contexts_to_llm_message("assistant", content, index=2)
+        logging.info(f"Contexts summarized successfully. \n summary: {response}")
         logging.info(f"Total tokens after eviction: {total_tokens*EVICTION_RATE}")
 
     def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
