@@ -203,7 +203,7 @@ class Agent(object):
                 + str(
                     [
                         memory.to_dict()
-                        for memory in self.message.llm_message.pop("memory_stream")
+                        for memory in llm_message_chatgpt.pop("memory_stream")
                     ]
                 ),
             }
@@ -215,7 +215,7 @@ class Agent(object):
                 + str(
                     [
                         entity.to_dict()
-                        for entity in self.message.llm_message.pop(
+                        for entity in llm_message_chatgpt.pop(
                             "knowledge_entity_store"
                         )
                     ]
