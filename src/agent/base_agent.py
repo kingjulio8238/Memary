@@ -195,9 +195,7 @@ class Agent(object):
             dict: llm_message in chatgpt format
         """
         llm_message_chatgpt = self.message.llm_message.copy()
-        llm_message_chatgpt["messages"] = [
-            context.to_dict() for context in self.message.llm_message["messages"]
-        ]
+        llm_message_chatgpt["messages"] = []
         llm_message_chatgpt["messages"].append(
             {
                 "role": "user",
@@ -224,6 +222,9 @@ class Agent(object):
                 ),
             }
         )
+        llm_message_chatgpt["messages"].extend([
+            context.to_dict() for context in self.message.llm_message["messages"]
+        ])
         return llm_message_chatgpt
 
     def _summarize_contexts(self, total_tokens: int):
