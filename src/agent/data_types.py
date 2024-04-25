@@ -2,9 +2,6 @@ import json
 import logging
 from dataclasses import dataclass
 
-# ChatGPT token limits
-CONTEXT_LENGTH = 4096
-
 
 def save_json(filename, data):
     with open(filename, "w") as f:

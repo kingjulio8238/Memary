@@ -23,6 +23,8 @@ from src.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
+# ChatGPT token limits
+CONTEXT_LENGTH = 4096
 
 
 class Agent(object):
