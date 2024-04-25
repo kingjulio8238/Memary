@@ -5,18 +5,12 @@ from src.agent.base_agent import Agent
 from src.agent.data_types import Context
 
 
-def count_tokens(s: str, model: str = "gpt-4") -> int:
-    encoding = tiktoken.encoding_for_model(model)
-    return len(encoding.encode(s))
-
-
 class ChatAgent(Agent):
 
     def __init__(self, name, memory_stream_json, entity_knowledge_store_json,
                  system_persona_txt, user_persona_txt, past_chat_json):
         super().__init__(name, memory_stream_json, entity_knowledge_store_json,
                          system_persona_txt, user_persona_txt, past_chat_json)
-        self.total_tokens = count_tokens(str(self.message.llm_message))
 
     def add_chat(self,
                  role: str,
@@ -39,15 +33,19 @@ class ChatAgent(Agent):
                 self.memory_stream.get_memory())
             self.entity_knowledge_store.save_memory()
 
-            self._replace_memory_from_llm_message()
-            self._replace_eks_to_from_message()
+        self._replace_memory_from_llm_message()
+        self._replace_eks_to_from_message()
 
     def get_chat(self):
         return self.contexts
 
-    def _add_contexts_to_llm_message(self, role, content):
+    def _add_contexts_to_llm_message(self, role, content, index=None):
         """Add contexts to the llm_message."""
-        self.message.llm_message["messages"].append(Context(role, content))
+        if index:
+            self.message.llm_message["messages"].insert(index, Context(
+                role, content))
+        else:
+            self.message.llm_message["messages"].append(Context(role, content))
 
     def _replace_memory_from_llm_message(self):
         """Replace the memory_stream from the llm_message."""

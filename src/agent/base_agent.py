@@ -1,5 +1,5 @@
 import os
-
+import logging
 import geocoder
 import googlemaps
 from dotenv import load_dotenv
@@ -23,6 +23,17 @@ from src.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
+# ChatGPT token limits
+CONTEXT_LENGTH = 4096
+EVICTION_RATE = 0.7
+NONEVICTION_LENGTH = 5
+
+def generate_string(entities):
+    cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
+    cypher_query += 'WHERE n.id IN ' + str(entities) + '\n'
+    cypher_query += 'RETURN p'
+
+    return cypher_query
 
 
 class Agent(object):
@@ -50,6 +61,10 @@ class Agent(object):
         database = "neo4j"
 
         # initialize APIs
+        # OpenAI API
+        self.model = "gpt-3.5-turbo"
+        self.openai_api_key = os.environ["OPENAI_API_KEY"]
+        self.model_endpoint = 'https://api.openai.com/v1'
         self.openai_mm_llm = OpenAIMultiModal(
             model="gpt-4-vision-preview",
             api_key=os.getenv("OPENAI_KEY"),
@@ -95,7 +110,7 @@ class Agent(object):
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
 
-        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json)
+        self.message = Message(system_persona_txt, user_persona_txt, past_chat_json, self.model)
 
     def __str__(self):
         return f"Agent {self.name}"
@@ -169,7 +184,9 @@ class Agent(object):
 
         if response.metadata is None:
             return False
-        return True
+        return generate_string(
+            list(list(response.metadata.values())[0]["kg_rel_map"].keys())
+        )
 
     def _change_llm_message_chatgpt(self) -> dict:
         """Change the llm_message to chatgpt format.
@@ -177,10 +194,8 @@ class Agent(object):
         Returns:
             dict: llm_message in chatgpt format
         """
-        llm_message_chatgpt = self.message.llm_message
-        llm_message_chatgpt["messages"] = [
-            context.to_dict() for context in self.message.llm_message["messages"]
-        ]
+        llm_message_chatgpt = self.message.llm_message.copy()
+        llm_message_chatgpt["messages"] = []
         llm_message_chatgpt["messages"].append(
             {
                 "role": "user",
@@ -188,7 +203,7 @@ class Agent(object):
                 + str(
                     [
                         memory.to_dict()
-                        for memory in self.message.llm_message.pop("memory_stream")
+                        for memory in llm_message_chatgpt.pop("memory_stream")
                     ]
                 ),
             }
@@ -200,14 +215,67 @@ class Agent(object):
                 + str(
                     [
                         entity.to_dict()
-                        for entity in self.message.llm_message.pop(
+                        for entity in llm_message_chatgpt.pop(
                             "knowledge_entity_store"
                         )
                     ]
                 ),
             }
         )
+        llm_message_chatgpt["messages"].extend([
+            context.to_dict() for context in self.message.llm_message["messages"]
+        ])
         return llm_message_chatgpt
+
+    def _summarize_contexts(self, total_tokens: int):
+        """Summarize the contexts.
+
+        Args:
+            total_tokens (int): total tokens in the response
+        """
+        messages = self.message.llm_message["messages"]
+
+        # First two messages are system and user personas
+        if len(messages) > 2 + NONEVICTION_LENGTH:
+            messages = messages[2:-NONEVICTION_LENGTH]
+            del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
+        else:
+            messages = messages[2:]
+            del self.message.llm_message["messages"][2:]
+
+        message_contents = [
+            message.to_dict()['content'] for message in messages
+        ]
+
+        llm_message_chatgpt = {
+            "model": self.model,
+            "messages": [{
+                "role": "user",
+                "content": "Summarize these previous conversations into 50 words:"
+                + str(message_contents)
+            }]
+        }
+        response, _ = self._get_gpt_response(llm_message_chatgpt)
+        content = "Summarized past conversation:" + response
+        self._add_contexts_to_llm_message("assistant", content, index=2)
+        logging.info(f"Contexts summarized successfully. \n summary: {response}")
+        logging.info(f"Total tokens after eviction: {total_tokens*EVICTION_RATE}")
+
+    def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
+        """Get response from the GPT model.
+
+        Args:
+            llm_message_chatgpt (str): query to get response for
+
+        Returns:
+            str: response from the GPT model
+        """
+        response = openai_chat_completions_request(
+            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
+        )
+        total_tokens = response["usage"]["total_tokens"]
+        response = str(response["choices"][0]["message"]["content"])
+        return response, total_tokens
 
     def get_response(self) -> str:
         """Get response from the RAG model.
@@ -216,15 +284,18 @@ class Agent(object):
             str: response from the RAG model
         """
         llm_message_chatgpt = self._change_llm_message_chatgpt()
-        response = openai_chat_completions_request(
-            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
-        )
-        response = str(response["choices"][0]["message"]["content"])
+        response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
+        if total_tokens > CONTEXT_LENGTH*EVICTION_RATE:
+            logging.info("Evicting and summarizing contexts")
+            self._summarize_contexts(total_tokens)
+
+        self.message.save_contexts_to_json()
+
         return response
 
     def get_routing_agent_response(self, query, return_entity=False):
         """Get response from the ReAct."""
-        response = self.query(query)
+        response = str(self.query(query))
 
         if return_entity:
             # the query above already adds final response to KG so entities will be present in the KG

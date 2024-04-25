@@ -57,14 +57,6 @@ def create_graph(nodes, edges):
     return g
 
 
-def generate_string(entities):
-    cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
-    cypher_query += 'WHERE n.id IN ' + str(entities) + '\n'
-    cypher_query += 'RETURN p'
-
-    return cypher_query
-
-
 def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
@@ -115,7 +107,7 @@ with tab2:
     cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
     answer = ""
     external_response = ""
-    st.title("Recursive Retrieval")
+    st.title("meMary Chatbot")
     query = st.text_input("Ask a question")
     generate_clicked = st.button("Generate")
 
@@ -124,55 +116,55 @@ with tab2:
     if generate_clicked:
         external_response = ""
         rag_response = "There was no information in knowledge_graph to answer your question."
-        chat_agent.add_chat('user', query, [])
-        if chat_agent.check_KG(query):
-            rag_response, entities = chat_agent.get_rag_response(query, return_entity=True)
-            chat_agent.add_chat('user', 'rag: ' + str(rag_response), entities)
-            cypher_query = generate_string(
-                list(list(rag_response.metadata.values())[0]["kg_rel_map"].keys())
-            )
+        chat_agent.add_chat('user', query)
+        cypher_query = chat_agent.check_KG(query)
+        if cypher_query:
+            rag_response, entities = chat_agent.get_routing_agent_response(query, return_entity=True)
+            chat_agent.add_chat('user', 'rag: ' + rag_response, entities)
         else:
             # get response
             external_response = "No response found in knowledge graph, querying web instead with "
-            query_answer = chat_agent.external_query(query)
+            query_answer = chat_agent.get_routing_agent_response(query)
             external_response += query_answer
             chat_agent.add_chat('user', 'external response: ' + query_answer)
             display_external = textwrap.fill(external_response, width=80)
             st.text(display_external)
-            # load into KG
-            chat_agent.load_KG()
+
         answer = chat_agent.get_response()
         st.title("RAG Response")
         st.text(str(rag_response))
-        st.title("Perplexity Response")
-        st.text(str(external_response))
-        st.title("Memory Response")
-        st.text(str(answer))
+        if cypher_query:
+            nodes = set()
+            edges = []  # (node1, node2, [relationships])
+            fill_graph(nodes, edges, cypher_query)
 
-    nodes = set()
-    edges = []  # (node1, node2, [relationships])
-    fill_graph(nodes, edges, cypher_query)
+            st.code("# Current Cypher Used\n" + cypher_query)
+            st.write("")
+            st.markdown("Current Subgraph Used")
+            graph = create_graph(nodes, edges)
+            graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
+            components.html(graph_html, height=500, scrolling=True)
+        else:
+            st.text("No information found in the knowledge graph")
+        st.title("External Response")
+        wrapped_text = textwrap.fill(str(external_response), width=80)
+        st.text(wrapped_text)
 
-    wrapped_text = textwrap.fill(answer, width=80)
-    st.text(wrapped_text)
-    st.code("# Current Cypher Used\n" + cypher_query)
-    st.write("")
-    st.markdown("Current Subgraph Used")
-    graph = create_graph(nodes, edges)
-    graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
-    components.html(graph_html, height=500, scrolling=True)
+        st.title("Final Response")
+        wrapped_text = textwrap.fill(answer, width=80)
+        st.text(wrapped_text)
 
-    if len(chat_agent.memory_stream) > 0:
-        # Memory Stream
-        memory_items = chat_agent.memory_stream.get_memory()
-        memory_items_dicts = [item.to_dict() for item in memory_items]
-        df = pd.DataFrame(memory_items_dicts)
-        st.write("Memory Stream")
-        st.dataframe(df)
+        if len(chat_agent.memory_stream) > 0:
+            # Memory Stream
+            memory_items = chat_agent.memory_stream.get_memory()
+            memory_items_dicts = [item.to_dict() for item in memory_items]
+            df = pd.DataFrame(memory_items_dicts)
+            st.write("Memory Stream")
+            st.dataframe(df)
 
-        # Entity Knowledge Store
-        knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
-        knowledge_memory_items_dicts = [item.to_dict() for item in knowledge_memory_items]
-        df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
-        st.text("Entity Knowledge Store")
-        st.dataframe(df_knowledge)
+            # Entity Knowledge Store
+            knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
+            knowledge_memory_items_dicts = [item.to_dict() for item in knowledge_memory_items]
+            df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
+            st.text("Entity Knowledge Store")
+            st.dataframe(df_knowledge)
