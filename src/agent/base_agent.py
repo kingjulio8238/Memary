@@ -238,7 +238,7 @@ class Agent(object):
 
         llm_message_chatgpt = {
             "model": self.model,
-            "messages": contexts,
+            "messages": "Summarize these previous conversations into 50 words" + contexts,
         }
         response, _ = self._get_gpt_response(llm_message_chatgpt)
         summarized_message = {
