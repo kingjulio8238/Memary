@@ -14,7 +14,7 @@ Agents use LLMs that are currently constraint to finite context windows. memary 
 ## How it works 
 The current structure of memary is detailed in the diagram below.
 
-![a text](diagrams/system.jpeg)
+<img width="1410" alt="memary overview" src="https://github.com/kingjulio8238/memary/assets/120517860/a02b26e0-7dca-4b9b-bd0c-3842d5dbc502">
 
 The above process includes the routing agent, knoweldge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
 
