@@ -5,18 +5,12 @@ from src.agent.base_agent import Agent
 from src.agent.data_types import Context
 
 
-def count_tokens(s: str, model: str = "gpt-4") -> int:
-    encoding = tiktoken.encoding_for_model(model)
-    return len(encoding.encode(s))
-
-
 class ChatAgent(Agent):
 
     def __init__(self, name, memory_stream_json, entity_knowledge_store_json,
                  system_persona_txt, user_persona_txt, past_chat_json):
         super().__init__(name, memory_stream_json, entity_knowledge_store_json,
                          system_persona_txt, user_persona_txt, past_chat_json)
-        self.total_tokens = count_tokens(str(self.message.llm_message))
 
     def add_chat(self,
                  role: str,
