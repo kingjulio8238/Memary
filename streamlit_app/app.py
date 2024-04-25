@@ -107,7 +107,7 @@ with tab2:
     cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
     answer = ""
     external_response = ""
-    st.title("Recursive Retrieval")
+    st.title("meMary Chatbot")
     query = st.text_input("Ask a question")
     generate_clicked = st.button("Generate")
 
