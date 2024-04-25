@@ -25,7 +25,6 @@ class ChatAgent(Agent):
         """
         # Add a chat to the agent's memory.
         self._add_contexts_to_llm_message(role, content)
-        self.message.save_contexts_to_json()
 
         if entities:
             self.memory_stream.add_memory(entities)
