@@ -289,6 +289,8 @@ class Agent(object):
             logging.info("Evicting and summarizing contexts")
             self._summarize_contexts(total_tokens)
 
+        self.message.save_contexts_to_json()
+
         return response
 
     def get_routing_agent_response(self, query, return_entity=False):
