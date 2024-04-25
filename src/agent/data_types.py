@@ -24,12 +24,13 @@ class Context:
 class Message:
     """Message class to store the contexts, memory stream and knowledge entity store."""
 
-    def __init__(self, system_persona_txt, user_persona_txt, past_chat_json):
+        self.past_chat_json = past_chat_json
+
         self.contexts = []
         self.system_persona = self.load_persona(system_persona_txt)
         self.user_persona = self.load_persona(user_persona_txt)
         self._init_persona_to_messages()
-        self.contexts.extend(self.load_contexts_from_json(past_chat_json))
+        self.contexts.extend(self.load_contexts_from_json())
 
         self.llm_message = {
             "model": "gpt-3.5-turbo",
@@ -71,15 +72,21 @@ class Message:
         except FileNotFoundError:
             logging.info(f"{persona_txt} file does not exist.")
 
-    def load_contexts_from_json(self, past_chat_json):
+    def load_contexts_from_json(self):
         """Loads the contexts from the past chat json file."""
         try:
-            with open(past_chat_json, "r") as file:
+            with open(self.past_chat_json, "r") as file:
                 data_dicts = json.load(file)
 
             return [Context(**data_dict) for data_dict in data_dicts]
         except:
             logging.info(
-                f"{past_chat_json} file does not exist. Starts from empty contexts."
+                f"{self.past_chat_json} file does not exist. Starts from empty contexts."
             )
             return []
+
+    def save_contexts_to_json(self):
+        """Saves the contexts to the json file.
+        We don't save the system and user personas (first two contexts)
+        """
+        save_json(self.past_chat_json, [context.to_dict() for context in self.contexts[2:]])
