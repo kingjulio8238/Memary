@@ -146,7 +146,7 @@ with tab2:
             components.html(graph_html, height=500, scrolling=True)
         else:
             st.text("No information found in the knowledge graph")
-        st.title("Perplexity Response")
+        st.title("External Response")
         wrapped_text = textwrap.fill(str(external_response), width=80)
         st.text(wrapped_text)
 
