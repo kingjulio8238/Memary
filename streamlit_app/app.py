@@ -124,13 +124,12 @@ with tab2:
         else:
             # get response
             external_response = "No response found in knowledge graph, querying web instead with "
-            query_answer = chat_agent.external_query(query)
+            query_answer = chat_agent.get_routing_agent_response(query)
             external_response += query_answer
             chat_agent.add_chat('user', 'external response: ' + query_answer)
             display_external = textwrap.fill(external_response, width=80)
             st.text(display_external)
-            # load into KG
-            chat_agent.load_KG()
+
         answer = chat_agent.get_response()
         st.title("RAG Response")
         st.text(str(rag_response))
