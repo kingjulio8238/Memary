@@ -116,7 +116,7 @@ with tab2:
     if generate_clicked:
         external_response = ""
         rag_response = "There was no information in knowledge_graph to answer your question."
-        chat_agent.add_chat('user', query, [])
+        chat_agent.add_chat('user', query)
         cypher_query = chat_agent.check_KG(query)
         if cypher_query:
             rag_response, entities = chat_agent.get_routing_agent_response(query, return_entity=True)
