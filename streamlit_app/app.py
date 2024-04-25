@@ -1,14 +1,14 @@
-import sys
-import random
-import textwrap
 import os
+import random
+import sys
+import textwrap
 
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
-import pandas as pd
-from pyvis.network import Network
 from neo4j import GraphDatabase
+from pyvis.network import Network
 
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
@@ -25,12 +25,15 @@ user_persona_txt = "data/user_persona.txt"
 past_chat_json = "data/past_chat.json"
 memory_stream_json = "data/memory_stream.json"
 entity_knowledge_store_json = "data/entity_knowledge_store.json"
-chat_agent = ChatAgent("Personal Agent",
-                  memory_stream_json,
-                  entity_knowledge_store_json,
-                  system_persona_txt,
-                  user_persona_txt,
-                  past_chat_json)
+chat_agent = ChatAgent(
+    "Personal Agent",
+    memory_stream_json,
+    entity_knowledge_store_json,
+    system_persona_txt,
+    user_persona_txt,
+    past_chat_json,
+)
+
 
 def create_graph(nodes, edges):
     g = Network(
@@ -60,7 +63,8 @@ def create_graph(nodes, edges):
 def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
-        uri=chat_agent.neo4j_url, auth=(chat_agent.neo4j_username, chat_agent.neo4j_password)
+        uri=chat_agent.neo4j_url,
+        auth=(chat_agent.neo4j_username, chat_agent.neo4j_password),
     ) as driver:
         with driver.session() as session:
             result = session.run(cypher_query)
@@ -93,23 +97,29 @@ if generate_clicked:
     if img_url:
         query += "Image URL: " + img_url
     external_response = ""
-    rag_response = "There was no information in knowledge_graph to answer your question."
-    chat_agent.add_chat('user', query)
+    rag_response = (
+        "There was no information in knowledge_graph to answer your question."
+    )
+    chat_agent.add_chat("user", query)
     cypher_query = chat_agent.check_KG(query)
     if cypher_query:
-        rag_response, entities = chat_agent.get_routing_agent_response(query, return_entity=True)
-        chat_agent.add_chat('user', 'rag: ' + rag_response, entities)
+        rag_response, entities = chat_agent.get_routing_agent_response(
+            query, return_entity=True
+        )
+        chat_agent.add_chat("user", "rag: " + rag_response, entities)
     else:
         # get response
-        external_response = "No response found in knowledge graph, querying web instead with "
+        external_response = (
+            "No response found in knowledge graph, querying web instead with "
+        )
         query_answer = chat_agent.get_routing_agent_response(query)
         external_response += query_answer
-        chat_agent.add_chat('user', 'external response: ' + query_answer)
+        chat_agent.add_chat("user", "external response: " + query_answer)
 
     answer = chat_agent.get_response()
     st.subheader("Routing Agent Response")
     routing_response = ""
-    with open('data/routing_response.txt', 'r') as f:
+    with open("data/routing_response.txt", "r") as f:
         routing_response = f.read()
     st.text(str(routing_response))
 
@@ -143,7 +153,9 @@ if generate_clicked:
 
         # Entity Knowledge Store
         knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
-        knowledge_memory_items_dicts = [item.to_dict() for item in knowledge_memory_items]
+        knowledge_memory_items_dicts = [
+            item.to_dict() for item in knowledge_memory_items
+        ]
         df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
         st.write("Entity Knowledge Store")
         st.dataframe(df_knowledge)
