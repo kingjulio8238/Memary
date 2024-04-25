@@ -26,6 +26,13 @@ ENTITY_EXCEPTIONS = ["Unknown relation"]
 # ChatGPT token limits
 CONTEXT_LENGTH = 4096
 
+def generate_string(entities):
+    cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
+    cypher_query += 'WHERE n.id IN ' + str(entities) + '\n'
+    cypher_query += 'RETURN p'
+
+    return cypher_query
+
 
 class Agent(object):
     """Agent manages the RAG model, the ReAct agent, and the memory stream."""
@@ -171,7 +178,9 @@ class Agent(object):
 
         if response.metadata is None:
             return False
-        return True
+        return generate_string(
+            list(list(response.metadata.values())[0]["kg_rel_map"].keys())
+        )
 
     def _change_llm_message_chatgpt(self) -> dict:
         """Change the llm_message to chatgpt format.

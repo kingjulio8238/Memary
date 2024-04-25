@@ -57,14 +57,6 @@ def create_graph(nodes, edges):
     return g
 
 
-def generate_string(entities):
-    cypher_query = 'MATCH p = (n) - [*1 .. 2] - ()\n'
-    cypher_query += 'WHERE n.id IN ' + str(entities) + '\n'
-    cypher_query += 'RETURN p'
-
-    return cypher_query
-
-
 def fill_graph(nodes, edges, cypher_query):
     entities = []
     with GraphDatabase.driver(
