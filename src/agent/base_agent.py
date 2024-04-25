@@ -233,8 +233,12 @@ class Agent(object):
             total_tokens (int): total tokens in the response
         """
         contexts = self.message.llm_message["messages"]
-        contexts = contexts[2:-NONEVICTION_LENGTH]
-        del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
+        if len(contexts) > 2 + NONEVICTION_LENGTH:
+            contexts = contexts[2:-NONEVICTION_LENGTH]
+            del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
+        else:
+            contexts = contexts[2:]
+            del self.message.llm_message["messages"][2:]
 
         llm_message_chatgpt = {
             "model": self.model,
