@@ -232,17 +232,25 @@ class Agent(object):
         Args:
             total_tokens (int): total tokens in the response
         """
-        contexts = self.message.llm_message["messages"]
-        if len(contexts) > 2 + NONEVICTION_LENGTH:
-            contexts = contexts[2:-NONEVICTION_LENGTH]
+        messages = self.message.llm_message["messages"]
+        if len(messages) > 2 + NONEVICTION_LENGTH:
+            messages = messages[2:-NONEVICTION_LENGTH]
             del self.message.llm_message["messages"][2:-NONEVICTION_LENGTH]
         else:
-            contexts = contexts[2:]
+            messages = messages[2:]
             del self.message.llm_message["messages"][2:]
+
+        message_contents = [
+            message.to_dict()['content'] for message in messages
+        ]
 
         llm_message_chatgpt = {
             "model": self.model,
-            "messages": "Summarize these previous conversations into 50 words" + contexts,
+            "messages": [{
+                "role": "user",
+                "content": "Summarize these previous conversations into 50 words:"
+                + str(message_contents)
+            }]
         }
         response, _ = self._get_gpt_response(llm_message_chatgpt)
         summarized_message = {
