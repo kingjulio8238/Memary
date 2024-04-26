@@ -203,8 +203,8 @@ class Agent(object):
         )
     
     def _select_top_entities(self):
-        knowledge_entity_store = self.message.llm_message['knowledge_entity_store']
-        entities = [entity.to_dict() for entity in knowledge_entity_store]
+        entity_knowledge_store = self.message.llm_message['entity_knowledge_store']
+        entities = [entity.to_dict() for entity in entity_knowledge_store]
         entity_counts = [entity['count'] for entity in entities]
         top_indexes = np.argsort(entity_counts)[:TOP_ENTITIES]
         return [entities[index] for index in top_indexes]
@@ -283,7 +283,7 @@ class Agent(object):
 
     def get_response(self) -> str:
         """Get response from the RAG model.
-     
+
         Returns:
             str: response from the RAG model
         """
