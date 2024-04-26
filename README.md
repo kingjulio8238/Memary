@@ -173,10 +173,6 @@ Currently memary is structured so that the routing agent can only process one qu
   - Once agent multiprocessing is integrated, reranking can be integrated into the `ChatAgent` class.
   - Future Benchmarking: Include the Cohere Rerank 3 model to the [reranking analysis](https://docs.google.com/document/d/1gHzvgktqnHcg7wbIuKHr6W5NMYk6UVlJkRQfSqzk9e4/edit). The data used for benchmarking can be found [here](https://docs.google.com/document/d/1knfJRsoEzjKziilmF_ZwSwMRBvYbF0yNlRdpDteDiW4/edit?usp=sharing). Add to it!
 
-## Parent Repository
-
-We developed this Memory RAG system in [KnowledgeGraphRAG](https://github.com/seyeong-han/KnowledgeGraphRAG) repository before. You can check out PRs and issues to understand how and what we built for this final **memmary**!!
-
 ## Contributing
 
 We welcome contributions from the community and hope to see memary advance as agents do!
