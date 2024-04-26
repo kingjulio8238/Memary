@@ -83,7 +83,7 @@ def fill_graph(nodes, edges, cypher_query):
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
-st.title("Memary Chatbot")
+st.title("memary Demo")
 query = st.text_input("Ask a question")
 
 img_url = st.text_input("URL of image, leave blank if no image to provide")
@@ -157,7 +157,7 @@ if generate_clicked:
         st.dataframe(df_knowledge)
 
         # top entities
-        top_entities = chat_agent._select_top_entities().reverse()
+        top_entities = chat_agent._select_top_entities()
         df_top = pd.DataFrame(top_entities)
         st.write("Top 20 Entities")
         st.dataframe(df_top)
