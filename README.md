@@ -101,7 +101,7 @@ GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 
 ### Memory Module
 
-![memory module diagram](https://github.com/kingjulio8238/memary/assets/120517860/3b2aad33-d221-4858-b051-a181ee9ec421)
+![Memory Module](https://github.com/kingjulio8238/memary/assets/120517860/5bf361a4-84e5-4a93-bc9b-aa9e42c3dac3)
 
 - What is the memory module?
 
@@ -121,6 +121,8 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
   - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs.
 - Future contributions
   - We currently extract the top N entities from the entitiy knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques such as passing only entities that are in the agent's response to the context window. We look forward to related community contributions.
+
+![Memory Compression](https://github.com/kingjulio8238/memary/assets/120517860/eb911941-9ec0-492f-a47d-5b4196508a1b)
 
 ## Future Integrations
 
