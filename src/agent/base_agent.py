@@ -201,7 +201,7 @@ class Agent(object):
         return generate_string(
             list(list(response.metadata.values())[0]["kg_rel_map"].keys())
         )
-    
+
     def _select_top_entities(self):
         entity_knowledge_store = self.message.llm_message['knowledge_entity_store']
         entities = [entity.to_dict() for entity in entity_knowledge_store]
