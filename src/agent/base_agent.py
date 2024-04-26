@@ -283,7 +283,7 @@ class Agent(object):
 
     def get_response(self) -> str:
         """Get response from the RAG model.
-
+     
         Returns:
             str: response from the RAG model
         """

@@ -1,7 +1,7 @@
 Thought: I need to use a tool to help me answer the question.
 Action: search
-Action Input: {'query': 'UT Austin'}
+Action Input: {'query': 'minecraft'}
 Observation: 
-UT Austin is a major research university located in Texas, USA.
+Minecraft is a video game developed by Mojang Studios and is widely recognized as one of the most popular and groundbreaking games in the sandbox genre. It allows players to explore and build virtual worlds made of blocks and is available on multiple platforms. It is known for its infinite possibilities and blocky graphics.
 Thought: I can answer without using any more tools.
-Answer: UT Austin is a major research university located in Texas, USA.
+Answer: Minecraft is a video game developed by Mojang Studios and is widely recognized as one of the most popular and groundbreaking games in the sandbox genre. It allows players to explore and build virtual worlds made of blocks and is available on multiple platforms. It is known for its infinite possibilities and blocky graphics.
