@@ -217,13 +217,13 @@ class Agent(object):
         """
         llm_message_chatgpt = self.message.llm_message.copy()
         llm_message_chatgpt["messages"] = []
-        top_eneities = self._select_top_entities()
-        logging.info(f"top_eneities: {top_eneities}")
+        top_entities = self._select_top_entities()
+        logging.info(f"top_eneities: {top_entities}")
         llm_message_chatgpt["messages"].append(
             {
                 "role": "user",
                 "content": "Knowledge Entity Store:"
-                + str(top_eneities),
+                + str(top_entities),
             }
         )
         llm_message_chatgpt["messages"].extend(
