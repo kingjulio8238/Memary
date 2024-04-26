@@ -96,7 +96,7 @@ st.write("")
 if generate_clicked:
     if img_url:
         query += "Image URL: " + img_url
-    external_response = ""
+    react_response = ""
     rag_response = (
         "There was no information in knowledge_graph to answer your question."
     )
@@ -109,12 +109,8 @@ if generate_clicked:
         chat_agent.add_chat("user", "rag: " + rag_response, entities)
     else:
         # get response
-        external_response = (
-            "No response found in knowledge graph, querying web instead with "
-        )
-        query_answer = chat_agent.get_routing_agent_response(query)
-        external_response += query_answer
-        chat_agent.add_chat("user", "external response: " + query_answer)
+        react_response = chat_agent.get_routing_agent_response(query)
+        chat_agent.add_chat("user", "ReAct agent: " + react_response)
 
     answer = chat_agent.get_response()
     st.subheader("Routing Agent Response")
