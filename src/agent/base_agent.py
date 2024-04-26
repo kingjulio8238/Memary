@@ -203,7 +203,7 @@ class Agent(object):
         )
     
     def _select_top_entities(self):
-        entity_knowledge_store = self.message.llm_message['entity_knowledge_store']
+        entity_knowledge_store = self.message.llm_message['knowledge_entity_store']
         entities = [entity.to_dict() for entity in entity_knowledge_store]
         entity_counts = [entity['count'] for entity in entities]
         top_indexes = np.argsort(entity_counts)[:TOP_ENTITIES]
@@ -229,6 +229,8 @@ class Agent(object):
         llm_message_chatgpt["messages"].extend(
             [context.to_dict() for context in self.message.llm_message["messages"]]
         )
+        llm_message_chatgpt.pop("knowledge_entity_store")
+        llm_message_chatgpt.pop("memory_stream")
         return llm_message_chatgpt
 
     def _summarize_contexts(self, total_tokens: int):
