@@ -1,6 +1,7 @@
 Thought: I need to use a tool to help me answer the question.
 Action: search
 Action Input: {'query': 'lebron james'}
-Observation: LeBron James is a professional basketball player who has won two Olympic gold medals, four MVP awards, and four NBA championships. He is considered one of the greatest basketball players of all time and has played for the Los Angeles Lakers, Cleveland Cavaliers, and Miami Heat.
+Observation: 
+LeBron James is a professional basketball player known for his success in the NBA, winning multiple championships and four MVP awards. He is considered one of the greatest basketball players of all time and is known for his activism and philanthropy. He has played for the Los Angeles Lakers, Cleveland Cavaliers, and Miami Heat, and has won two Olympic gold medals. He is a four-time NBA champion and has been named the NBA's most valuable player four times.
 Thought: I can answer without using any more tools.
-Answer: LeBron James is a professional basketball player who has won two Olympic gold medals, four MVP awards, and four NBA championships. He is considered one of the greatest basketball players of all time and has played for the Los Angeles Lakers, Cleveland Cavaliers, and Miami Heat.
+Answer: LeBron James is a professional basketball player known for his success in the NBA, winning multiple championships and four MVP awards. He is considered one of the greatest basketball players of all time and is known for his activism and philanthropy. He has played for the Los Angeles Lakers, Cleveland Cavaliers, and Miami Heat, and has won two Olympic gold medals. He is a four-time NBA champion and has been named the NBA's most valuable player four times.

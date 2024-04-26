@@ -155,3 +155,10 @@ if generate_clicked:
         df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
         st.write("Entity Knowledge Store")
         st.dataframe(df_knowledge)
+
+        # top entities
+        top_entities = chat_agent._select_top_entities().reverse()
+        df_top = pd.DataFrame(top_entities)
+        st.write("Top 20 Entities")
+        st.dataframe(df_top)
+
