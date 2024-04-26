@@ -1,0 +1,50 @@
+[
+    {
+        "role": "user",
+        "content": "what is fornite"
+    },
+    {
+        "role": "user",
+        "content": "rag: Fortnite is a popular game developed by Epic Games and is available on multiple platforms. It features a large world where players can explore, build structures, and battle against other players. The objective of the game is to be the last player or team standing, and it includes PC as one of the platforms."
+    },
+    {
+        "role": "user",
+        "content": "what is fornite"
+    },
+    {
+        "role": "user",
+        "content": "rag: Fortnite is a popular game developed by Epic Games that features a large world for players to explore, build structures, and battle against other players. The objective is to be the last player or team standing."
+    },
+    {
+        "role": "user",
+        "content": "what is nvidia"
+    },
+    {
+        "role": "user",
+        "content": "external response: Nvidia is an American technology company that specializes in producing graphics processing units (GPUs) for various markets, including gaming, professional, and AI applications. It also manufactures workstations, laptops, and system-on-chips for the automotive market. The company is headquartered in Santa Clara, California."
+    },
+    {
+        "role": "user",
+        "content": "tell me about the book outlive"
+    },
+    {
+        "role": "user",
+        "content": "external response: Sorry, I cannot answer your query."
+    },
+    {
+        "role": "user",
+        "content": "tell me about outlive"
+    },
+    {
+        "role": "user",
+        "content": "external response: Outlive means to live longer than someone or something else."
+    },
+    {
+        "role": "user",
+        "content": "what is fortnite?"
+    },
+    {
+        "role": "user",
+        "content": "rag: Fortnite is a popular game developed by Epic Games and is available on multiple platforms. It features a large world where players can explore, build structures, and battle against other players. The objective of the game is to be the last player or team standing, while also avoiding the storm. It can be played on PC, which is one of the platforms it is available on."
+    }
+]
