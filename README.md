@@ -95,7 +95,7 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
   - Personalize Responses: Use the key categorized entities and themes associated with the user to tailor agent responses more closely to the user's current interests and knowledge level/expertise.
   - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs.
 - Future contributions
-  - We currently extract the top N entities from the entitiy knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques. We look forward to related community contributions. 
+  - We currently extract the top N entities from the entitiy knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques such as passing only entities that are in the agent's response to the context window. We look forward to related community contributions. 
 
 ## Future Integrations
 Currently memary is structured so that the routing agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many sub queries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided and once multiprocessing has been added to the system these components can easily be integrated into the main `ChatAgent` class. The diagram below shows what how the newly integrated system would work.
