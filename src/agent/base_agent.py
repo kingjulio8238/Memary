@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import numpy as np
 
 import geocoder
 import googlemaps
@@ -34,6 +35,7 @@ ENTITY_EXCEPTIONS = ["Unknown relation"]
 CONTEXT_LENGTH = 4096
 EVICTION_RATE = 0.7
 NONEVICTION_LENGTH = 5
+TOP_ENTITIES = 20
 
 
 def generate_string(entities):
@@ -200,6 +202,13 @@ class Agent(object):
             list(list(response.metadata.values())[0]["kg_rel_map"].keys())
         )
 
+    def _select_top_entities(self):
+        entity_knowledge_store = self.message.llm_message['knowledge_entity_store']
+        entities = [entity.to_dict() for entity in entity_knowledge_store]
+        entity_counts = [entity['count'] for entity in entities]
+        top_indexes = np.argsort(entity_counts)[:TOP_ENTITIES]
+        return [entities[index] for index in top_indexes]
+
     def _change_llm_message_chatgpt(self) -> dict:
         """Change the llm_message to chatgpt format.
 
@@ -208,33 +217,20 @@ class Agent(object):
         """
         llm_message_chatgpt = self.message.llm_message.copy()
         llm_message_chatgpt["messages"] = []
-        llm_message_chatgpt["messages"].append(
-            {
-                "role": "user",
-                "content": "Memory Stream:"
-                + str(
-                    [
-                        memory.to_dict()
-                        for memory in llm_message_chatgpt.pop("memory_stream")
-                    ]
-                ),
-            }
-        )
+        top_entities = self._select_top_entities()
+        logging.info(f"top_eneities: {top_entities}")
         llm_message_chatgpt["messages"].append(
             {
                 "role": "user",
                 "content": "Knowledge Entity Store:"
-                + str(
-                    [
-                        entity.to_dict()
-                        for entity in llm_message_chatgpt.pop("knowledge_entity_store")
-                    ]
-                ),
+                + str(top_entities),
             }
         )
         llm_message_chatgpt["messages"].extend(
             [context.to_dict() for context in self.message.llm_message["messages"]]
         )
+        llm_message_chatgpt.pop("knowledge_entity_store")
+        llm_message_chatgpt.pop("memory_stream")
         return llm_message_chatgpt
 
     def _summarize_contexts(self, total_tokens: int):
