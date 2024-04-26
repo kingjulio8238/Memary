@@ -177,4 +177,4 @@ Currently memary is structured so that the routing agent can only process one qu
 
 We welcome contributions from the community and hope to see memary advance as agents do!
 
-Initial Contributors: Julian Saks, Kevin Li, [Seyeong Han](https://github.com/seyeong-han), Arnav Chopra, Aishwarya Balaji, Anshu Siripurapu (Hook 'em!)
+Initial Contributors: [Julian Saks](https://www.linkedin.com/in/juliansaks/), [Kevin Li](https://www.linkedin.com/in/kevin-li8/), [Seyeong Han](https://github.com/seyeong-han), [Arnav Chopra](https://www.linkedin.com/in/arnav-chopra/), [Aishwarya Balaji](https://www.linkedin.com/in/aishwarya--balaji/), [Anshu Siripurapu](https://www.linkedin.com/in/anshusiripurapu/) (Hook 'em!)
