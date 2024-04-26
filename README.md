@@ -2,7 +2,7 @@
 
 <img width="1410" alt="memary logo" src="diagrams/memary_logo.png">
 
-[memary version 1 demo](https://youtu.be/GnUU3_xK6bg)
+[memary demo](https://youtu.be/GnUU3_xK6bg)
 
 ## Why use memary?
 
