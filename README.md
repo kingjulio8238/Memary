@@ -14,7 +14,7 @@ Agents use LLMs that are currently constraint to finite context windows. memary 
 ## How it works 
 The current structure of memary is detailed in the diagram below.
 
-<img width="1410" alt="memary overview" src="https://github.com/kingjulio8238/memary/assets/120517860/a02b26e0-7dca-4b9b-bd0c-3842d5dbc502">
+<img width="1410" alt="memary overview" src="diagrams/system.png">
 
 The above process includes the routing agent, knoweldge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
 
@@ -56,7 +56,7 @@ While we didn't place strong emphasis on equipping the agent with many tools, we
   - Integrate multiprocessing so that the agent can process multiple sub queries simultaneously. We have open sourced the query decomposition and reranking code to help with this! 
 
 ### Knowledge Graph
-![KG diagram](https://github.com/kingjulio8238/memary/assets/120517860/fc009e5b-e3ea-4b9d-b54a-ae8404550bb4)
+![KG diagram](diagrams/kg.png)
 - What are knowledge graphs (KG)?
   - KGs are databases that store information in the form of entities, which can be anything from objects to more abstract concepts, and their relationships with one another.
 - KGs vs other knowledge stores
@@ -100,7 +100,7 @@ The memory module is made up of the Memory Stream and Entity Knowledge Store. Th
 ## Future Integrations
 Currently memary is structured so that the routing agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many sub queries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided and once multiprocessing has been added to the system these components can easily be integrated into the main `ChatAgent` class. The diagram below shows what how the newly integrated system would work.
 
-![Future Integrations](https://github.com/kingjulio8238/memary/assets/120517860/213f9547-6dcb-4adf-9715-b54e707072d3)
+![Future Integrations](diagrams/final.png)
 
 ### Query Decomposition
 ![QD Diagram](https://github.com/kingjulio8238/memary/assets/120517860/e8663b07-66c4-4c08-82d3-cef8eb9c2554)
