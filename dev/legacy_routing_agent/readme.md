@@ -1,3 +1,5 @@
+# *This is the old routing agent implementation.* Current implementation of the routing agent can be found in src/agent/base_agent.py
+
 Llama Index Tool Specification Example Usage
 This document provides an overview of how to utilize custom tool specifications with the Llama Index framework to handle specialized tasks like vision and location-based queries.
 
