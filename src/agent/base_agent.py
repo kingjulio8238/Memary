@@ -21,6 +21,7 @@ from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
 from llama_index.graph_stores.neo4j import Neo4jGraphStore
 from llama_index.llms.openai import OpenAI
+from llama_index.llms.ollama import Ollama
 from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
@@ -58,6 +59,7 @@ class Agent(object):
         user_persona_txt,
         past_chat_json,
         debug=True,
+        llm = None,
     ):
         load_dotenv()
         # getting necessary API keys
@@ -81,7 +83,7 @@ class Agent(object):
             api_key=os.getenv("OPENAI_KEY"),
             max_new_tokens=300,
         )
-        llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        llm = llm or OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -116,7 +118,8 @@ class Agent(object):
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
+            # [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
+            [search_tool, locate_tool,], llm=llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -168,7 +171,7 @@ class Agent(object):
         response = self.routing_agent.chat(query)
         self.routing_agent.reset()
         # write response to file for KG writeback
-        with open("data/external_response.txt", "w") as f:
+        with open("/brain/src/streamlit_app/data/external_response.txt", "w") as f:
             print(response, file=f)
         # write back to the KG
         self.write_back()
@@ -176,7 +179,7 @@ class Agent(object):
 
     def write_back(self):
         documents = SimpleDirectoryReader(
-            input_files=["data/external_response.txt"]
+            input_files=["/brain/src/data/external_response.txt"]
         ).load_data()
 
         KnowledgeGraphIndex.from_documents(
@@ -304,18 +307,18 @@ class Agent(object):
         response = ""
         if self.debug:
             # writes ReAct agent steps to separate file and modifies format to be readable in .txt file
-            with open("data/routing_response.txt", "w") as f:
+            with open("/brain/src/streamlit_app/data/routing_response.txt", "w") as f:
                 orig_stdout = sys.stdout
                 sys.stdout = f
                 response = str(self.query(query))
                 sys.stdout.flush()
                 sys.stdout = orig_stdout
             text = ""
-            with open("data/routing_response.txt", "r") as f:
+            with open("/brain/src/streamlit_app/data/routing_response.txt", "r") as f:
                 text = f.read()
 
             plain = ansi_strip(text)
-            with open("data/routing_response.txt", "w") as f:
+            with open("/brain/src/streamlit_app/data/routing_response.txt", "w") as f:
                 f.write(plain)
         else:
             response = str(self.query(query))

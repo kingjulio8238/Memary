@@ -1,7 +1,7 @@
 import tiktoken
 from typing import Optional, List
 
-from src.agent.base_agent import Agent
+from src.agent.base_agent import Agent, Ollama
 from src.agent.data_types import Context
 
 
@@ -59,3 +59,12 @@ class ChatAgent(Agent):
         self.message.llm_message[
             "knowledge_entity_store"] = self.entity_knowledge_store.get_memory(
             )
+
+
+class LLamaChatAgent(Agent):
+
+    def __init__(self, name, memory_stream_json, entity_knowledge_store_json,
+                 system_persona_txt, user_persona_txt, past_chat_json):
+        llm = Ollama('llama3-gradient')
+        super().__init__(name, memory_stream_json, entity_knowledge_store_json,
+                         system_persona_txt, user_persona_txt, past_chat_json, llm=llm)

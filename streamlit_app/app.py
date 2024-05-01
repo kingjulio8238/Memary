@@ -16,7 +16,7 @@ parent_dir = os.path.dirname(curr_dir)
 print(parent_dir)
 sys.path.append(parent_dir)
 
-from src.agent.chat_agent import ChatAgent
+from src.agent.chat_agent import ChatAgent, LLamaChatAgent
 
 load_dotenv()
 
@@ -25,7 +25,7 @@ user_persona_txt = "data/user_persona.txt"
 past_chat_json = "data/past_chat.json"
 memory_stream_json = "data/memory_stream.json"
 entity_knowledge_store_json = "data/entity_knowledge_store.json"
-chat_agent = ChatAgent(
+openai_agent = ChatAgent(
     "Personal Agent",
     memory_stream_json,
     entity_knowledge_store_json,
@@ -33,6 +33,19 @@ chat_agent = ChatAgent(
     user_persona_txt,
     past_chat_json,
 )
+
+llama_agent = ChatAgent(
+    "Personal Agent",
+    memory_stream_json,
+    entity_knowledge_store_json,
+    system_persona_txt,
+    user_persona_txt,
+    past_chat_json,
+)
+
+
+chat_agent = openai_agent
+# chat_agent = llama_agent
 
 
 def create_graph(nodes, edges):

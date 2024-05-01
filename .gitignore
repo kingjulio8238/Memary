@@ -1,4 +1,5 @@
 *.env
 .venv
 .DS_Store
+docker/dev-env-secrets.rc
 **/__pycache__/
