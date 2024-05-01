@@ -96,7 +96,7 @@ def fill_graph(nodes, edges, cypher_query):
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
-st.title("memary Demo")
+st.title("Memory LLM")
 query = st.text_input("Ask a question")
 
 img_url = st.text_input("URL of image, leave blank if no image to provide")
