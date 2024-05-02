@@ -127,6 +127,12 @@ The memory module comprises the Memory Stream and Entity Knowledge Store. The me
 
 ## Future Integrations
 
+As mentioned above, memary will benefit from the following integrations: 
+- Create an LLM Judge that scores the ReACT agent forming a feedback loop. See [Zooter](https://arxiv.org/abs/2311.08692) for insights. 
+- Expand the knowledge graph’s capabilities to support multiple modalities, i.e., images.
+- Optimize the graph to reduce latency of search times.
+- Instead of extracting the top N entities from the entity knowledge store deploy more advanced memory compression techniques such as extracting only the entities included in the agent’s response. 
+
 Currently memary is structured so that the ReAct agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many subqueries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided, and once multiprocessing has been added to the system, these components can easily be integrated into the main `ChatAgent` class. The diagram below shows how the newly integrated system would work.
 
 ![Future Integrations](diagrams/final.png)
