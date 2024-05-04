@@ -27,7 +27,7 @@ Raw source code for these components can also be found in their respective direc
 
 ## Installation
 
-1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it.
+1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependancy, llama-index and reccomended to run of python versions <= 3.11.9.
 
 2. Install Python dependencies:
    ```
@@ -47,6 +47,25 @@ NEO4J_URL="YOUR_NEO4J_URL"
 PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 ```
+
+Remove the quotations "" because python may read escape characters '\' and skip characters
+For example do this:
+OPENAI_API_KEY=SKxxxxxxxx
+and NOT:
+OPENAI_API_KEY="SKxxxxxxxx"
+
+
+a) How to get API keys:
+[OpenAI key:](https://openai.com/index/openai-api)
+Neo4j:
+https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta
+Click 'Start for free'
+Create a free instance
+Open autodownloaded txt file and use credentials
+[Perplexity key:](https://www.perplexity.ai/settings/api)
+Google Maps:
+Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+
 
 2. Run:
    ```
