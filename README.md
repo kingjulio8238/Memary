@@ -69,7 +69,9 @@ Create a free instance
 Open auto-downloaded txt file and use the credentials
 
 [Perplexity key:](https://www.perplexity.ai/settings/api)
+
 Google Maps:
+
 Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 
 
