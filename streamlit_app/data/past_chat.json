@@ -70,5 +70,37 @@
     {
         "role": "user",
         "content": "ReAct agent: Sam Altman enjoys engaging in public talks and writings on technology, entrepreneurship, and philosophy. He also shares his perspectives on current events, trends, and ideas through his blog and social media platforms."
+    },
+    {
+        "role": "user",
+        "content": "What euntreprenuers are in california"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: Some notable entrepreneurs in California include Elon Musk (Tesla, SpaceX), Larry Page and Sergey Brin (Google), and Reed Hastings (Netflix)."
+    },
+    {
+        "role": "user",
+        "content": "What startups are from cali"
+    },
+    {
+        "role": "user",
+        "content": "rag: Netflix, Google, Spacex, and Tesla are some notable startups from California."
+    },
+    {
+        "role": "user",
+        "content": "Where is the startup capital of the world?"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: The term \"startup capital of the world\" is subjective and can vary based on different factors such as investment volume, startup density, and business-friendly environment. Some commonly mentioned contenders include:\n\n1. Silicon Valley, USA: Known for its high concentration of tech startups and venture capital.\n2. London, UK: Europe's leading tech hub with a strong venture capital scene.\n3. Beijing, China: Home to the largest number of tech startups and venture capital investments in the world.\n4. Tel Aviv, Israel: A global leader in tech innovation and startup creation.\n\nUltimately, the \"startup capital of the world\" depends on the specific industry, stage of the startup, and individual preferences."
+    },
+    {
+        "role": "user",
+        "content": "Where is the startup capital of the world?"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: 1. Silicon Valley, California, USA\n2. London, UK\n3. Beijing and Shanghai, China\n4. Tel Aviv, Israel\n5. Berlin, Germany"
     }
 ]
