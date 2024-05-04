@@ -12,7 +12,8 @@ from pyvis.network import Network
 
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
-parent_dir = os.path.dirname(curr_dir) + '/memary'
+#parent_dir = os.path.dirname(curr_dir)
+parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found
 print(parent_dir)
 sys.path.append(parent_dir)
 

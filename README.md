@@ -72,6 +72,15 @@ Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of [Go
    streamlit run streamlit_app/app.py
    ```
 
+    Note: If 'src' not found error, change line 15 in /streamlit_app/app.py
+    ```
+    From:
+    parent_dir = os.path.dirname(curr_dir)
+
+    To:
+    parent_dir = os.path.dirname(curr_dir) + '/memary'
+    ```
+
 ## Detailed Component Breakdown
 
 ### Routing Agent
