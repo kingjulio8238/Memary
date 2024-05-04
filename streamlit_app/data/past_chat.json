@@ -46,5 +46,29 @@
     {
         "role": "user",
         "content": "ReAct agent: California is a state in the Pacific Region of the United States with a population of 39.5 million residents. It is the most populous state and the third-largest by area. The state capital is Sacramento. The Greater Los Angeles Area and the San Francisco Bay Area are the nation's second- and fifth-most populous urban regions, with 18.7 million and 9.7 million residents respectively."
+    },
+    {
+        "role": "user",
+        "content": "Who is Sam Altman"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: Sam Altman is a well-known entrepreneur, investor, and program director at Y Combinator, a startup accelerator. He co-founded Loopt, a location-based social network, and served as its CEO until its acquisition by Green Dot Corporation in 2012. Since then, he has been a partner at Y Combinator and has led its growth to become one of the most influential startup incubators in the world. Altman has also been involved with various other projects, including the Future Fund, which invests in long-term projects with the potential to significantly impact the world."
+    },
+    {
+        "role": "user",
+        "content": "What does sam altman do for fun?"
+    },
+    {
+        "role": "user",
+        "content": "rag: Sam Altman's interests include technology and entrepreneurship, artificial intelligence and machine learning, science and research, education, and effective altruism."
+    },
+    {
+        "role": "user",
+        "content": "What does sam altman do for fun?"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: Sam Altman enjoys engaging in public talks and writings on technology, entrepreneurship, and philosophy. He also shares his perspectives on current events, trends, and ideas through his blog and social media platforms."
     }
 ]

@@ -44,7 +44,7 @@ class ChatAgent(Agent):
         self.memory_stream.clear_memory()
         self.entity_knowledge_store.clear_memory()
         
-        print("removed from mem stream and entity knowdlege store ")
+       # print("removed from mem stream and entity knowdlege store ")
         "clears knowledge neo4j database"
 
         print("Deleting nodes from Neo4j...")
@@ -54,7 +54,7 @@ class ChatAgent(Agent):
             print(f"Error deleting nodes: {e}")
         print("Nodes deleted from Neo4j.")
 
-        print("in chat _ AGENT fil        ****e")
+        #print("in chat _ AGENT fil        ****e")
 
     def _add_contexts_to_llm_message(self, role, content, index=None):
         """Add contexts to the llm_message."""
