@@ -13,7 +13,7 @@ from pyvis.network import Network
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
 #parent_dir = os.path.dirname(curr_dir)
-parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found
+parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 print(parent_dir)
 sys.path.append(parent_dir)
 
@@ -85,6 +85,7 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary Demo")
+clear_memory = st.button("Clear Memory DB")
 query = st.text_input("Ask a question")
 
 img_url = st.text_input("URL of image, leave blank if no image to provide")
@@ -93,6 +94,12 @@ if img_url:
 
 generate_clicked = st.button("Generate")
 st.write("")
+
+
+if clear_memory:
+    print("cearning memroy from main app                                                             ################ ")
+    chat_agent.clearMemory()
+    st.write("Memory DB cleared")
 
 if generate_clicked:
     if img_url:

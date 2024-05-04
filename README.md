@@ -80,6 +80,8 @@ Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of [Go
     To:
     parent_dir = os.path.dirname(curr_dir) + '/memary'
     ```
+    
+    Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 
 ## Detailed Component Breakdown
 

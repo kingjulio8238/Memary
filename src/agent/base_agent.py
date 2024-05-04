@@ -90,14 +90,14 @@ class Agent(object):
         Settings.chunk_size = 512
 
         # initialize Neo4j graph resources
-        graph_store = Neo4jGraphStore(
+        self.graph_store = Neo4jGraphStore(
             username=self.neo4j_username,
             password=self.neo4j_password,
             url=self.neo4j_url,
             database=database,
         )
 
-        self.storage_context = StorageContext.from_defaults(graph_store=graph_store)
+        self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
             storage_context=self.storage_context,
             verbose=True,
@@ -138,6 +138,7 @@ class Agent(object):
         external_response = self.query_llm.chat(messages)
 
         return str(external_response)
+            
 
     def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""

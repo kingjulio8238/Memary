@@ -1,0 +1,50 @@
+[
+    {
+        "role": "user",
+        "content": "What is in NYC?"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: New York City is a major metropolitan area located in the U.S. state of New York. It is known for its iconic landmarks, diverse population, and cultural significance."
+    },
+    {
+        "role": "user",
+        "content": "Are there plenty of startups in NYC?"
+    },
+    {
+        "role": "user",
+        "content": "rag: Yes, there are plenty of startups in NYC."
+    },
+    {
+        "role": "user",
+        "content": "Are there plenty of startups in NYC?"
+    },
+    {
+        "role": "user",
+        "content": "rag: Yes, there are plenty of startups in NYC."
+    },
+    {
+        "role": "user",
+        "content": "What are the startups of california"
+    },
+    {
+        "role": "user",
+        "content": "rag: California is known for its thriving startup culture, with many successful companies such as Uber, Airbnb, and SpaceX originating in the state. It is also considered a hub for startups, with plenty of opportunities and resources available for entrepreneurs. Additionally, California is home to major cities like San Francisco and Los Angeles, which are known for their diverse and innovative business environments."
+    },
+    {
+        "role": "user",
+        "content": "what sports are in new york?"
+    },
+    {
+        "role": "user",
+        "content": "rag: The most popular sports in New York are basketball, baseball, football, and hockey."
+    },
+    {
+        "role": "user",
+        "content": "What is in california"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: California is a state in the Pacific Region of the United States with a population of 39.5 million residents. It is the most populous state and the third-largest by area. The state capital is Sacramento. The Greater Los Angeles Area and the San Francisco Bay Area are the nation's second- and fifth-most populous urban regions, with 18.7 million and 9.7 million residents respectively."
+    }
+]
