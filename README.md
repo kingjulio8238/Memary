@@ -49,11 +49,12 @@ GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 ```
 
 Remove the quotations "" because python may read escape characters '\' and skip characters
-For example do this:
+```
+DO:
 OPENAI_API_KEY=SKxxxxxxxx
-and NOT:
+NOT:
 OPENAI_API_KEY="SKxxxxxxxx"
-
+```
 
 a) How to get API keys:
 [OpenAI key:](https://openai.com/index/openai-api)
