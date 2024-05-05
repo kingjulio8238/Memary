@@ -380,13 +380,16 @@ class Agent(object):
         print("recieved update tools")
         tools = []
         for tool in updatedTools:
-            if tool == "search":
+            if tool == "Search":
                 tools.append(FunctionTool.from_defaults(fn=self.search))
-            elif tool == "locate":
+            elif tool == "Location":
                 tools.append(FunctionTool.from_defaults(fn=self.locate))
-            elif tool == "vision":
+            elif tool == "Vision":
                 tools.append(FunctionTool.from_defaults(fn=self.vision))
-                
+            elif tool == "Stocks":
+                tools.append(FunctionTool.from_defaults(fn=self.stock_price))
+            elif tool == "News":
+                tools.append(FunctionTool.from_defaults(fn=self.get_news))
         
         self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
  

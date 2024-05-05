@@ -97,8 +97,8 @@ if img_url:
 
 tools = st.multiselect( 
     "Select tools to include:",
-    ["Search", "Location", "Vision"], #all options available
-    ["Search", "Location", "Vision"],) #options that are selected by default
+    ["Search", "Location", "Vision", "Stocks", "News"], #all options available
+    ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
 
 
 generate_clicked = st.button("Generate")
@@ -118,9 +118,9 @@ if generate_clicked:
 
     #get tools
     print("tools enabled: ", tools)
-    # if(len(tools) == 0):
-    #     st.write("Please select at least one tool")
-    #     st.stop()
+    if(len(tools) == 0):
+        st.write("Please select at least one tool")
+        st.stop()
 
     print("start update tools")
     chat_agent.update_tools(tools)
