@@ -46,6 +46,7 @@ NEO4J_PW="YOUR_NEO4J_PW"
 NEO4J_URL="YOUR_NEO4J_URL"
 PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
+ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
 ```
 
 2. Remove the quotations "" because python may read escape characters '\' and skip characters
@@ -69,6 +70,10 @@ Perplexity key: https://www.perplexity.ai/settings/api
 
 Google Maps:
    Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console https://console.cloud.google.com/apis/credentials
+
+Alpha Vantage: (this key is for getting real time stock data)
+  https://www.alphavantage.co/support/#api-key
+  Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
 2. Run:

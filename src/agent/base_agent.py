@@ -118,7 +118,7 @@ class Agent(object):
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
         stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
-        news_tool = FunctionTool.from_defaults(fn=self.get_news)
+        # news_tool = FunctionTool.from_defaults(fn=self.get_news)
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
@@ -175,10 +175,10 @@ class Agent(object):
         request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + query + r'&apikey=' + self.vantage_key)
         return(request_api.json())
 
-    def get_news(self, query: str) -> str:
-        """Given a keyword, search for news articles related to the keyword"""
-        request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
-        return request_api.json()
+    # def get_news(self, query: str) -> str:
+    #     """Given a keyword, search for news articles related to the keyword"""
+    #     request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
+    #     return request_api.json()
 
 
     def query(self, query: str) -> str:
@@ -388,8 +388,8 @@ class Agent(object):
                 tools.append(FunctionTool.from_defaults(fn=self.vision))
             elif tool == "Stocks":
                 tools.append(FunctionTool.from_defaults(fn=self.stock_price))
-            elif tool == "News":
-                tools.append(FunctionTool.from_defaults(fn=self.get_news))
+            # elif tool == "News":
+            #     tools.append(FunctionTool.from_defaults(fn=self.get_news))
         
         self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
  
