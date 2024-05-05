@@ -99,7 +99,7 @@ st.write("")
 
 
 if clear_memory:
-    print("cearning memroy from main app                                                             ################ ")
+    #print("Front end recieved request to clear memory")
     chat_agent.clearMemory()
     st.write("Memory DB cleared")
 

@@ -48,24 +48,28 @@ PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 ```
 
-Remove the quotations "" because python may read escape characters '\' and skip characters
-For example do this:
+2. Remove the quotations "" because python may read escape characters '\' and skip characters
+```
+DO:
 OPENAI_API_KEY=SKxxxxxxxx
-and NOT:
+NOT:
 OPENAI_API_KEY="SKxxxxxxxx"
+```
 
+3. How to get API keys:
+```
+OpenAI key: https://openai.com/index/openai-api
 
-a) How to get API keys:
-[OpenAI key:](https://openai.com/index/openai-api)
-Neo4j:
-https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta
-Click 'Start for free'
-Create a free instance
-Open autodownloaded txt file and use credentials
-[Perplexity key:](https://www.perplexity.ai/settings/api)
+Neo4j: https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta
+   Click 'Start for free'
+   Create a free instance
+   Open auto-downloaded txt file and use the credentials
+
+Perplexity key: https://www.perplexity.ai/settings/api
+
 Google Maps:
-Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-
+   Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console https://console.cloud.google.com/apis/credentials
+```
 
 2. Run:
    ```
