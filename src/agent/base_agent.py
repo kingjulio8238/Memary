@@ -23,6 +23,7 @@ from llama_index.graph_stores.neo4j import Neo4jGraphStore
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+import requests
 
 from src.agent.data_types import Message
 from src.agent.llm_api.tools import openai_chat_completions_request
@@ -97,6 +98,8 @@ class Agent(object):
             database=database,
         )
 
+        self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+
         self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
             storage_context=self.storage_context,
@@ -113,10 +116,11 @@ class Agent(object):
         search_tool = FunctionTool.from_defaults(fn=self.search)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
+        stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool], llm=self.llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -166,7 +170,9 @@ class Agent(object):
     
     def stock_price(self, query: str) -> str:
         """Get the stock price of the company given the ticker"""
-        
+        request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + str + r'&apikey=demo')
+        return(request_api.json())
+
 
     def query(self, query: str) -> str:
         # get the response from react agent
