@@ -99,7 +99,7 @@ class Agent(object):
         )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-        self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
+        #self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
 
         self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
