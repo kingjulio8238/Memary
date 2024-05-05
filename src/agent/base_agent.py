@@ -81,12 +81,12 @@ class Agent(object):
             api_key=os.getenv("OPENAI_KEY"),
             max_new_tokens=300,
         )
-        llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
-        Settings.llm = llm
+        Settings.llm = self.llm
         Settings.chunk_size = 512
 
         # initialize Neo4j graph resources
@@ -101,7 +101,7 @@ class Agent(object):
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
             storage_context=self.storage_context,
             verbose=True,
-            llm=llm,
+            llm=self.llm,
             retriever_mode="keyword",
             synonym_expand_fn=custom_synonym_expand_fn,
         )
@@ -116,7 +116,7 @@ class Agent(object):
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
+            [search_tool, locate_tool, vision_tool], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -163,6 +163,10 @@ class Agent(object):
         img_docs = load_image_urls([img_url])
         response = self.openai_mm_llm.complete(prompt=query, image_documents=img_docs)
         return response
+    
+    def stock_price(self, query: str) -> str:
+        """Get the stock price of the company given the ticker"""
+        
 
     def query(self, query: str) -> str:
         # get the response from react agent
@@ -357,3 +361,19 @@ class Agent(object):
             if exceptions in entities:
                 entities.remove(exceptions)
         return entities
+    
+
+    def update_tools(self, updatedTools):
+        print("recieved update tools")
+        tools = []
+        for tool in updatedTools:
+            if tool == "search":
+                tools.append(FunctionTool.from_defaults(fn=self.search))
+            elif tool == "locate":
+                tools.append(FunctionTool.from_defaults(fn=self.locate))
+            elif tool == "vision":
+                tools.append(FunctionTool.from_defaults(fn=self.vision))
+                
+        
+        self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
+ 

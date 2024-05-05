@@ -1,0 +1,18 @@
+[
+    {
+        "role": "user",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: Paris"
+    },
+    {
+        "role": "user",
+        "content": "what is california"
+    },
+    {
+        "role": "user",
+        "content": "ReAct agent: California is a state located on the west coast of the United States. It is the most populous state, with over 39 million residents. Its capital city is Sacramento, and its largest city is Los Angeles. California is known for its diverse geography, including beaches, deserts, forests, and mountains. Its economy is the largest in the U.S., driven by industries such as technology, agriculture, and entertainment. California joined the Union on September 9, 1850."
+    }
+]
