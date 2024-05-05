@@ -99,6 +99,7 @@ class Agent(object):
         )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+        self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
 
         self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
@@ -117,10 +118,11 @@ class Agent(object):
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
         stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
+        news_tool = FunctionTool.from_defaults(fn=self.get_news)
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock], llm=self.llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock_tool, news_tool], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -170,8 +172,13 @@ class Agent(object):
     
     def stock_price(self, query: str) -> str:
         """Get the stock price of the company given the ticker"""
-        request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + str + r'&apikey=demo')
+        request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + query + r'&apikey=' + self.vantage_key)
         return(request_api.json())
+
+    def get_news(self, query: str) -> str:
+        """Given a keyword, search for news articles related to the keyword"""
+        request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
+        return request_api.json()
 
 
     def query(self, query: str) -> str:
