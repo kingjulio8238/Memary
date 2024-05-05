@@ -122,7 +122,7 @@ class Agent(object):
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock_tool, news_tool], llm=self.llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock_tool], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
