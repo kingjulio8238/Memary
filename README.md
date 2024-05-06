@@ -27,7 +27,7 @@ Raw source code for these components can also be found in their respective direc
 
 ## Installation
 
-1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it.
+1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependancy, llama-index and reccomended to run of python versions <= 3.11.9.
 
 2. Install Python dependencies:
    ```
@@ -46,12 +46,51 @@ NEO4J_PW="YOUR_NEO4J_PW"
 NEO4J_URL="YOUR_NEO4J_URL"
 PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
+ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
+```
+
+2. Remove the quotations "" because python may read escape characters '\' and skip characters
+```
+DO:
+OPENAI_API_KEY=SKxxxxxxxx
+NOT:
+OPENAI_API_KEY="SKxxxxxxxx"
+```
+
+3. How to get API keys:
+```
+OpenAI key: https://openai.com/index/openai-api
+
+Neo4j: https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta
+   Click 'Start for free'
+   Create a free instance
+   Open auto-downloaded txt file and use the credentials
+
+Perplexity key: https://www.perplexity.ai/settings/api
+
+Google Maps:
+   Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console https://console.cloud.google.com/apis/credentials
+
+Alpha Vantage: (this key is for getting real time stock data)
+  https://www.alphavantage.co/support/#api-key
+  Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
 2. Run:
    ```
    streamlit run streamlit_app/app.py
    ```
+
+    Note: If 'src' not found error, change line 15 in /streamlit_app/app.py
+    ```
+    From:
+    parent_dir = os.path.dirname(curr_dir)
+
+    To:
+    parent_dir = os.path.dirname(curr_dir) + '/memary'
+    ```
+    
+    Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 
 ## Detailed Component Breakdown
 

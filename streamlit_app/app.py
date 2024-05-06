@@ -12,7 +12,10 @@ from pyvis.network import Network
 
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
+
 parent_dir = os.path.dirname(curr_dir)
+#parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
+
 print(parent_dir)
 sys.path.append(parent_dir)
 
@@ -84,16 +87,50 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary Demo")
+clear_memory = st.button("Clear Memory DB")
 query = st.text_input("Ask a question")
 
-img_url = st.text_input("URL of image, leave blank if no image to provide")
-if img_url:
-    st.image(img_url, caption="Uploaded Image", use_column_width=True)
+
+
+tools = st.multiselect( 
+    "Select tools to include:",
+    # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
+    # ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
+
+
+    ["Search", "Location", "Vision", "Stocks"], #all options available
+    ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
+
+if 'Vision' in tools:
+    img_url = st.text_input("URL of image, leave blank if no image to provide")
+    if img_url:
+        st.image(img_url, caption="Uploaded Image", use_column_width=True)
+
 
 generate_clicked = st.button("Generate")
 st.write("")
 
+
+if clear_memory:
+    #print("Front end recieved request to clear memory")
+    chat_agent.clearMemory()
+    st.write("Memory DB cleared")
+
 if generate_clicked:
+
+    if(query == ""):
+        st.write("Please enter a question")
+        st.stop()
+
+    #get tools
+    print("tools enabled: ", tools)
+    if(len(tools) == 0):
+        st.write("Please select at least one tool")
+        st.stop()
+
+    print("start update tools")
+    chat_agent.update_tools(tools)
+
     if img_url:
         query += "Image URL: " + img_url
     react_response = ""

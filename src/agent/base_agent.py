@@ -23,6 +23,7 @@ from llama_index.graph_stores.neo4j import Neo4jGraphStore
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+import requests
 
 from src.agent.data_types import Message
 from src.agent.llm_api.tools import openai_chat_completions_request
@@ -81,27 +82,30 @@ class Agent(object):
             api_key=os.getenv("OPENAI_KEY"),
             max_new_tokens=300,
         )
-        llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
-        Settings.llm = llm
+        Settings.llm = self.llm
         Settings.chunk_size = 512
 
         # initialize Neo4j graph resources
-        graph_store = Neo4jGraphStore(
+        self.graph_store = Neo4jGraphStore(
             username=self.neo4j_username,
             password=self.neo4j_password,
             url=self.neo4j_url,
             database=database,
         )
 
-        self.storage_context = StorageContext.from_defaults(graph_store=graph_store)
+        self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+        #self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
+
+        self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
             storage_context=self.storage_context,
             verbose=True,
-            llm=llm,
+            llm=self.llm,
             retriever_mode="keyword",
             synonym_expand_fn=custom_synonym_expand_fn,
         )
@@ -113,10 +117,12 @@ class Agent(object):
         search_tool = FunctionTool.from_defaults(fn=self.search)
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
+        stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
+        # news_tool = FunctionTool.from_defaults(fn=self.get_news)
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool], llm=llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock_tool], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -138,6 +144,7 @@ class Agent(object):
         external_response = self.query_llm.chat(messages)
 
         return str(external_response)
+            
 
     def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
@@ -162,6 +169,17 @@ class Agent(object):
         img_docs = load_image_urls([img_url])
         response = self.openai_mm_llm.complete(prompt=query, image_documents=img_docs)
         return response
+    
+    def stock_price(self, query: str) -> str:
+        """Get the stock price of the company given the ticker"""
+        request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + query + r'&apikey=' + self.vantage_key)
+        return(request_api.json())
+
+    # def get_news(self, query: str) -> str:
+    #     """Given a keyword, search for news articles related to the keyword"""
+    #     request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
+    #     return request_api.json()
+
 
     def query(self, query: str) -> str:
         # get the response from react agent
@@ -356,3 +374,22 @@ class Agent(object):
             if exceptions in entities:
                 entities.remove(exceptions)
         return entities
+    
+
+    def update_tools(self, updatedTools):
+        print("recieved update tools")
+        tools = []
+        for tool in updatedTools:
+            if tool == "Search":
+                tools.append(FunctionTool.from_defaults(fn=self.search))
+            elif tool == "Location":
+                tools.append(FunctionTool.from_defaults(fn=self.locate))
+            elif tool == "Vision":
+                tools.append(FunctionTool.from_defaults(fn=self.vision))
+            elif tool == "Stocks":
+                tools.append(FunctionTool.from_defaults(fn=self.stock_price))
+            # elif tool == "News":
+            #     tools.append(FunctionTool.from_defaults(fn=self.get_news))
+        
+        self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
+ 

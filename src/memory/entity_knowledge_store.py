@@ -23,6 +23,7 @@ class EntityKnowledgeStore(BaseMemory):
     def return_memory(self):
         return self.knowledge_memory
 
+
     def load_memory_from_file(self):
         try:
             with open(self.file_name, 'r') as file:
@@ -48,6 +49,7 @@ class EntityKnowledgeStore(BaseMemory):
         knowledge_meory = self._convert_memory_to_knowledge_memory(
             memory_stream)
         self._update_knowledge_memory(knowledge_meory)
+
 
     def _update_knowledge_memory(self, knowledge_memory: list):
         """update self.knowledge memory with new knowledge memory items
@@ -85,3 +87,6 @@ class EntityKnowledgeStore(BaseMemory):
 
     def get_memory(self) -> list[KnowledgeMemoryItem]:
         return self.knowledge_memory
+
+    
+    

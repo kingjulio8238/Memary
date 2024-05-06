@@ -35,6 +35,7 @@ class MemoryStream(BaseMemory):
 
     def get_memory(self) -> list[MemoryItem]:
         return self.memory
+    
 
     def load_memory_from_file(self):
         try:

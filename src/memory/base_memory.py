@@ -76,3 +76,12 @@ class BaseMemory(ABC):
         else:
             logging.info("Invalid index. Memory item not removed.")
             return False
+
+    def clear_memory(self):
+        self.memory = []
+        if self.file_name:
+            with open(self.file_name, 'w') as file:
+                json.dump([], file, indent=4) 
+                logging.info(f"Memory cleared and saved to {self.file_name} successfully.")
+        else:
+            logging.info("No file name provided. Memory not cleared or saved.")
