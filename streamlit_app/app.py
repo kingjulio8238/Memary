@@ -90,9 +90,6 @@ st.title("memary Demo")
 clear_memory = st.button("Clear Memory DB")
 query = st.text_input("Ask a question")
 
-img_url = st.text_input("URL of image, leave blank if no image to provide")
-if img_url:
-    st.image(img_url, caption="Uploaded Image", use_column_width=True)
 
 
 tools = st.multiselect( 
@@ -103,6 +100,11 @@ tools = st.multiselect(
 
     ["Search", "Location", "Vision", "Stocks"], #all options available
     ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
+
+if 'Vision' in tools:
+    img_url = st.text_input("URL of image, leave blank if no image to provide")
+    if img_url:
+        st.image(img_url, caption="Uploaded Image", use_column_width=True)
 
 
 generate_clicked = st.button("Generate")
