@@ -139,7 +139,7 @@ if generate_clicked:
 
 
     #set engine
-    print("engine selected: ", gpt_engine)
+    print("engine selected: ", selected_model)
 
     #get tools
     print("tools enabled: ", tools)
