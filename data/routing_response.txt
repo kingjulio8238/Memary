@@ -1,5 +1,0 @@
-Thought: I need to use a tool to help me answer the question.
-Action: _get_gpt_response
-Action Input: {"llm_message_chatgpt": "What is 2 + 2?"}
-user: Thought: I can answer without using any more tools.
-Answer: 4

@@ -83,6 +83,8 @@ class Agent(object):
             max_new_tokens=300,
         )
         self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
+
+        
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
