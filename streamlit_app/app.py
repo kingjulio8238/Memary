@@ -9,6 +9,8 @@ import streamlit.components.v1 as components
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from pyvis.network import Network
+import ollama
+from openai import OpenAI
 
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
@@ -89,15 +91,22 @@ external_response = ""
 st.title("memary Demo")
 clear_memory = st.button("Clear Memory DB")
 
-gpt_engine = st.selectbox(
-    "What LLM engine would you like to use?",
-    ("GPT-4", "Llama3/LLaVa"))
+
+
+#THIS will fail if the user does not have ollama downloaded - need to fix/find workaround
+models_info = ollama.list()
+available_models = tuple(model["name"] for model in models_info["models"])
+models_with_GPT = ("GPT-4",)+ available_models
+
+selected_model = st.selectbox(
+    "Pick a model available locally on your system", models_with_GPT
+)
+if not available_models:
+    st.warning("You have not pulled any model from Ollama yet!", icon="⚠️")
+
 
 
 query = st.text_input("Ask a question")
-
-
-
 tools = st.multiselect( 
     "Select tools to include:",
     # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
@@ -127,6 +136,10 @@ if generate_clicked:
     if(query == ""):
         st.write("Please enter a question")
         st.stop()
+
+
+    #set engine
+    print("engine selected: ", gpt_engine)
 
     #get tools
     print("tools enabled: ", tools)

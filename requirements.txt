@@ -21,3 +21,4 @@ pandas
 geocoder
 googlemaps
 ansistrip
+ollama==0.1.9
