@@ -1,8 +1,8 @@
 import json
 import logging
 
-from src.memory import BaseMemory
-from src.memory.types import KnowledgeMemoryItem, MemoryItem
+from memary.memory import BaseMemory
+from memary.memory.types import KnowledgeMemoryItem, MemoryItem
 
 
 class EntityKnowledgeStore(BaseMemory):

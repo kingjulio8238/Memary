@@ -51,9 +51,10 @@ ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
 
 2. Remove the quotations "" because python may read escape characters '\' and skip characters
 ```
-DO:
+CORRECT:
 OPENAI_API_KEY=SKxxxxxxxx
-NOT:
+
+INCORRECT:
 OPENAI_API_KEY="SKxxxxxxxx"
 ```
 
@@ -76,21 +77,11 @@ Alpha Vantage: (this key is for getting real time stock data)
   Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
-2. Run:
-   ```
-   streamlit run streamlit_app/app.py
-   ```
-
-    Note: If 'src' not found error, change line 15 in /streamlit_app/app.py
-    ```
-    From:
-    parent_dir = os.path.dirname(curr_dir)
-
-    To:
-    parent_dir = os.path.dirname(curr_dir) + '/memary'
-    ```
-    
-    Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
+4. Run:
+```
+cd streamlit_app
+streamlit run app.py
+```
 
 ## Detailed Component Breakdown
 
