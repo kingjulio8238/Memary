@@ -1,8 +1,8 @@
 import tiktoken
 from typing import Optional, List
 
-from src.agent.base_agent import Agent
-from src.agent.data_types import Context
+from memary.agent.base_agent import Agent
+from memary.agent.data_types import Context
 
 
 class ChatAgent(Agent):

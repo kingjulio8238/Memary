@@ -25,10 +25,10 @@ from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 import requests
 
-from src.agent.data_types import Message
-from src.agent.llm_api.tools import openai_chat_completions_request
-from src.memory import EntityKnowledgeStore, MemoryStream
-from src.synonym_expand.synonym import custom_synonym_expand_fn
+from memary.agent.data_types import Message
+from memary.agent.llm_api.tools import openai_chat_completions_request
+from memary.memory import EntityKnowledgeStore, MemoryStream
+from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]

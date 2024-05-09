@@ -2,8 +2,8 @@ import json
 import logging
 from datetime import datetime
 
-from src.memory import BaseMemory
-from src.memory.types import MemoryItem
+from memary.memory import BaseMemory
+from memary.memory.types import MemoryItem
 
 logging.basicConfig(level=logging.INFO)
 

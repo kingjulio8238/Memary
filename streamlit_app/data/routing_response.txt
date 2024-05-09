@@ -1,0 +1,7 @@
+Thought: I need to use a tool to help me answer the question.
+Action: search
+Action Input: {'query': 'toy story'}
+Observation: 
+Toy Story is an American computer-animated film released by Disney and produced by Pixar animation studios. It features the voices of Tom Hanks and Tim Allen, as well as the late Don Rickles.
+Thought: I can answer without using any more tools.
+Answer: Toy Story is a 1995 American computer-animated buddy comedy film produced by Pixar Animation Studios and released by Walt Disney Pictures. The feature film directorial debut of John Lasseter, it was the first entirely computer-animated feature film, as well as the first feature film from Pixar.

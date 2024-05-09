@@ -21,3 +21,4 @@ pandas
 geocoder
 googlemaps
 ansistrip
+numpy

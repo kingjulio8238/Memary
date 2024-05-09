@@ -16,10 +16,9 @@ curr_dir = os.getcwd()
 parent_dir = os.path.dirname(curr_dir)
 #parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 
-print(parent_dir)
-sys.path.append(parent_dir)
+sys.path.append(parent_dir + '/src')
 
-from src.agent.chat_agent import ChatAgent
+from memary.agent.chat_agent import ChatAgent
 
 load_dotenv()
 
