@@ -96,13 +96,13 @@ clear_memory = st.button("Clear Memory DB")
 #THIS will fail if the user does not have ollama downloaded - need to fix/find workaround
 models_info = ollama.list()
 available_models = tuple(model["name"] for model in models_info["models"])
-models_with_GPT = ("GPT-4",)+ available_models
 
-selected_model = st.selectbox(
-    "Pick a model available locally on your system", models_with_GPT
-)
-if not available_models:
-    st.warning("You have not pulled any model from Ollama yet!", icon="⚠️")
+if "llama3:8b" in available_models:
+    selected_model = st.selectbox(
+        "Pick a LLM model", ["llama3:8b", "gpt-4"]
+    )
+else:
+    st.warning("You have not pulled llama3:8b from Ollama yet!", icon="⚠️")
 
 
 
@@ -116,6 +116,7 @@ tools = st.multiselect(
     ["Search", "Location", "Vision", "Stocks"], #all options available
     ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
 
+img_url = ""
 if 'Vision' in tools:
     img_url = st.text_input("URL of image, leave blank if no image to provide")
     if img_url:
@@ -140,12 +141,13 @@ if generate_clicked:
 
     #set engine
     print("engine selected: ", selected_model)
+    chat_agent.setLLM(selected_model)
 
     #get tools
     print("tools enabled: ", tools)
-    if(len(tools) == 0):
-        st.write("Please select at least one tool")
-        st.stop()
+    # if(len(tools) == 0):
+    #     st.write("Please select at least one tool")
+    #     st.stop()
 
     print("start update tools")
     chat_agent.update_tools(tools)

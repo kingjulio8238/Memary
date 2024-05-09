@@ -118,11 +118,12 @@ class Agent(object):
         locate_tool = FunctionTool.from_defaults(fn=self.locate)
         vision_tool = FunctionTool.from_defaults(fn=self.vision)
         stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
+        rawLLM_tool = FunctionTool.from_defaults(fn=self._get_gpt_response)
         # news_tool = FunctionTool.from_defaults(fn=self.get_news)
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock_tool], llm=self.llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock_tool, rawLLM_tool], llm=self.llm, verbose=True
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -378,7 +379,9 @@ class Agent(object):
 
     def update_tools(self, updatedTools):
         print("recieved update tools")
-        tools = []
+        rawLLM_tool = FunctionTool.from_defaults(fn=self._get_gpt_response)
+
+        tools = [rawLLM_tool]
         for tool in updatedTools:
             if tool == "Search":
                 tools.append(FunctionTool.from_defaults(fn=self.search))

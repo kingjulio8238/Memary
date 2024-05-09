@@ -55,6 +55,9 @@ class ChatAgent(Agent):
         print("Nodes deleted from Neo4j.")
 
 
+    def setLLM(self, llm):
+        print("Setting LLM...", llm)
+
 
     def _add_contexts_to_llm_message(self, role, content, index=None):
         """Add contexts to the llm_message."""
