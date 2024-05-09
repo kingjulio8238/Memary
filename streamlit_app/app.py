@@ -13,8 +13,8 @@ from pyvis.network import Network
 # src should sit in the same level as /streamlit_app
 curr_dir = os.getcwd()
 
-parent_dir = os.path.dirname(curr_dir)
-#parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
+#parent_dir = os.path.dirname(curr_dir)
+parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 
 print(parent_dir)
 sys.path.append(parent_dir)
@@ -88,6 +88,12 @@ answer = ""
 external_response = ""
 st.title("memary Demo")
 clear_memory = st.button("Clear Memory DB")
+
+gpt_engine = st.selectbox(
+    "What LLM engine would you like to use?",
+    ("GPT-4", "Llama3/LLaVa"))
+
+
 query = st.text_input("Ask a question")
 
 
