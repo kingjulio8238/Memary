@@ -50,6 +50,7 @@ ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
 ```
 
 2. Remove the quotations "" because python may read escape characters '\' and skip characters
+
 ```
 CORRECT:
 OPENAI_API_KEY=SKxxxxxxxx
@@ -59,6 +60,7 @@ OPENAI_API_KEY="SKxxxxxxxx"
 ```
 
 3. How to get API keys:
+
 ```
 OpenAI key: https://openai.com/index/openai-api
 
@@ -78,6 +80,7 @@ Alpha Vantage: (this key is for getting real time stock data)
 ```
 
 4. Run:
+
 ```
 cd streamlit_app
 streamlit run app.py
@@ -87,7 +90,7 @@ streamlit run app.py
 
 ### Routing Agent
 
-![agent diagram](https://github.com/kingjulio8238/memary/assets/120517860/e5be38db-8c7a-4df2-8b1d-b578fa9c827f)
+![agent diagram](diagrams/routing_agent.png)
 
 - Uses the [ReAct agent](https://react-lm.github.io/) to plan and execute a query given the tools provided. This type of agent can reason over which of the tools to use next to further the response, feed inputs into the selected tool, and repeat the process with the output until it determines that the answer is satisfactory.
 - Current tool suite:
@@ -131,7 +134,7 @@ streamlit run app.py
 
 ### Memory Module
 
-![Memory Module](https://github.com/kingjulio8238/memary/assets/120517860/5bf361a4-84e5-4a93-bc9b-aa9e42c3dac3)
+![Memory Module](diagrams/memory_module.png)
 
 - What is the memory module?
 
@@ -144,7 +147,7 @@ The memory module comprises the Memory Stream and Entity Knowledge Store. The me
    - Rank Entities by Relevance: Use both frequency and recency to rank entities. An entity frequently mentioned (high count) and referenced recently is likely of high importance, and the user is well aware of this concept.
    - Categorize Entities: Group entities into categories based on their nature or the context in which they're mentioned (e.g., technical terms, personal interests). This categorization aids in quickly accessing relevant information tailored to the user's inquiries.
    - Highlight Changes Over Time: Identify any significant changes in the entities' ranking or categorization over time. A shift in the most frequently mentioned entities could indicate a change in the user's interests or knowledge.
-   - Additional information on the memory modules can be found [here](https://github.com/seyeong-han/KnowledgeGraphRAG) 
+   - Additional information on the memory modules can be found [here](https://github.com/seyeong-han/KnowledgeGraphRAG)
 
 - Purpose in larger system
   - Compress/summarize the top N ranked entities in the entity knowledge store and pass to the LLM’s finite context window alongside the agent's response and chat history for inference.
@@ -153,16 +156,17 @@ The memory module comprises the Memory Stream and Entity Knowledge Store. The me
 - Future contributions
   - We currently extract the top N entities from the entitiy knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques such as passing only entities that are in the agent's response to the context window. We look forward to related community contributions.
 
-![Memory Compression](https://github.com/kingjulio8238/memary/assets/120517860/eb911941-9ec0-492f-a47d-5b4196508a1b)
+![Memory Compression](diagrams/memory_compression.png)
 
 ## Future Integrations
 
-As mentioned above, memary will benefit from the following integrations: 
-- Create an LLM Judge that scores the ReACT agent forming a feedback loop. See [Zooter](https://arxiv.org/abs/2311.08692) for insights. 
+As mentioned above, memary will benefit from the following integrations:
+
+- Create an LLM Judge that scores the ReACT agent forming a feedback loop. See [Zooter](https://arxiv.org/abs/2311.08692) for insights.
 - Expand the knowledge graph’s capabilities to support multiple modalities, i.e., images.
 - Optimize the graph to reduce latency of search times.
 - Instead of extracting the top N entities from the entity knowledge store deploy more advanced memory compression techniques such as extracting only the entities included in the agent’s response.
-- Create an intuitive UI to switch between models easily. We aim to setup memary so that users can use it for free without any costly API integrations. 
+- Create an intuitive UI to switch between models easily. We aim to setup memary so that users can use it for free without any costly API integrations.
 
 Currently memary is structured so that the ReAct agent can only process one query at a time. We hope to see **multiprocessing** integrated so that the agent can process many subqueries simultaneously. We expect this to improve the relevancy and accuracy of responses. The source code for both decomposing the query and reranking the many agent responses has been provided, and once multiprocessing has been added to the system, these components can easily be integrated into the main `ChatAgent` class. The diagram below shows how the newly integrated system would work.
 
@@ -170,7 +174,7 @@ Currently memary is structured so that the ReAct agent can only process one quer
 
 ### Query Decomposition
 
-![QD Diagram](https://github.com/kingjulio8238/memary/assets/120517860/e8663b07-66c4-4c08-82d3-cef8eb9c2554)
+![QD Diagram](diagrams/query_decomposition.png)
 
 - What is query decomposition?
   - A preprocessing technique that breaks down complex queries into simpler queries to expedite the LLM’s ability to answer the prompt. It is important to note that this process leaves simple queries unchanged.
@@ -195,7 +199,7 @@ Currently memary is structured so that the ReAct agent can only process one quer
 
 ### Reranking
 
-![Reranking Diagram](https://github.com/kingjulio8238/memary/assets/120517860/3f15b40f-c591-43ab-aa10-727b6997727d)
+![Reranking Diagram](diagrams/reranking_diagram.png)
 
 - What is reranking?
   - Reranking is the process of scoring nodes based on their relevancy.
@@ -217,5 +221,6 @@ We welcome contributions from the community and hope to see memary advance as ag
 
 Initial Contributors: [Julian Saks](https://www.linkedin.com/in/juliansaks/), [Kevin Li](https://www.linkedin.com/in/kevin-li8/), [Seyeong Han](https://github.com/seyeong-han), [Arnav Chopra](https://www.linkedin.com/in/arnav-chopra/), [Aishwarya Balaji](https://www.linkedin.com/in/aishwarya--balaji/), [Anshu Siripurapu](https://www.linkedin.com/in/anshusiripurapu/) (Hook 'em!)
 
-## License 
+## License
+
 memary is released under the MIT License.
