@@ -26,15 +26,21 @@ The above process includes the routing agent, knoweldge graph and memory module 
 Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
 ## Installation
+1. With pip:
+```
+pip install memary
+```
 
-1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependancy, llama-index and reccomended to run of python versions <= 3.11.9.
+2. Locally:
+   1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependancy, llama-index and reccomended to run of python versions <= 3.11.9.
 
-2. Install Python dependencies:
+   2. Install Python dependencies:
    ```
    pip install -r requirements.txt
    ```
 
 ## Demo
+Note: The Streamlit app currently assumes the local installation method.
 
 To run the Streamlit app:
 
