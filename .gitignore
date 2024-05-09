@@ -2,4 +2,5 @@
 .venv
 .DS_Store
 dist/
+README_hidden.md
 **/__pycache__/
