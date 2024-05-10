@@ -1,18 +1,15 @@
 import logging
 import os
 import sys
-import numpy as np
 
 import geocoder
 import googlemaps
+import numpy as np
+import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
-from llama_index.core import (
-    KnowledgeGraphIndex,
-    Settings,
-    SimpleDirectoryReader,
-    StorageContext,
-)
+from llama_index.core import (KnowledgeGraphIndex, Settings,
+                              SimpleDirectoryReader, StorageContext)
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
 from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
@@ -20,15 +17,16 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
 from llama_index.graph_stores.neo4j import Neo4jGraphStore
+from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
-import requests
 
 from memary.agent.data_types import Message
 from memary.agent.llm_api.tools import openai_chat_completions_request
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
+from memary.agent.data_types import Context
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
@@ -58,11 +56,17 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        llm_model_name,
+        vision_model_name,
         debug=True,
     ):
         load_dotenv()
         # getting necessary API keys
-        os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+        # os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+
+        self.load_llm_model(llm_model_name)
+        self.model = llm_model_name
+
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
         pplx_api_key = os.getenv("PERPLEXITY_API_KEY")
 
@@ -74,15 +78,15 @@ class Agent(object):
 
         # initialize APIs
         # OpenAI API
-        self.model = "gpt-3.5-turbo"
-        self.openai_api_key = os.environ["OPENAI_API_KEY"]
-        self.model_endpoint = "https://api.openai.com/v1"
+        # self.model = "gpt-3.5-turbo"
+        # self.openai_api_key = os.environ["OPENAI_API_KEY"]
+        # self.model_endpoint = "https://api.openai.com/v1"
         self.openai_mm_llm = OpenAIMultiModal(
             model="gpt-4-vision-preview",
             api_key=os.getenv("OPENAI_KEY"),
             max_new_tokens=300,
         )
-        self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        # self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -134,6 +138,16 @@ class Agent(object):
 
     def __str__(self):
         return f"Agent {self.name}"
+    
+    def load_llm_model(self, llm_model_name):
+        if llm_model_name == "gpt-3.5-turbo":
+            os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+            self.openai_api_key = os.environ["OPENAI_API_KEY"]
+            self.model_endpoint = "https://api.openai.com/v1"
+            self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        else: # default to llama3
+            self.llm = Ollama(model="llama3", request_timeout=60.0) 
+
 
     def external_query(self, query: str):
         messages_dict = [
@@ -227,6 +241,14 @@ class Agent(object):
         top_indexes = np.argsort(entity_counts)[:TOP_ENTITIES]
         return [entities[index] for index in top_indexes]
 
+    def _add_contexts_to_llm_message(self, role, content, index=None):
+        """Add contexts to the llm_message."""
+        if index:
+            self.message.llm_message["messages"].insert(index, Context(
+                role, content))
+        else:
+            self.message.llm_message["messages"].append(Context(role, content))
+
     def _change_llm_message_chatgpt(self) -> dict:
         """Change the llm_message to chatgpt format.
 
@@ -294,11 +316,17 @@ class Agent(object):
         Returns:
             str: response from the GPT model
         """
-        response = openai_chat_completions_request(
-            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
-        )
-        total_tokens = response["usage"]["total_tokens"]
-        response = str(response["choices"][0]["message"]["content"])
+        if self.model == "gpt-3.5-turbo":
+            response = openai_chat_completions_request(
+                self.model_endpoint, self.openai_api_key, llm_message_chatgpt
+            )
+            total_tokens = response["usage"]["total_tokens"]
+            response = str(response["choices"][0]["message"]["content"])
+        else: # default to llama3
+            messages_dict = llm_message_chatgpt["messages"]
+            messages = [ChatMessage(**msg) for msg in messages_dict]
+            response = self.llm.chat(messages=messages)
+            total_tokens = 0
         return response, total_tokens
 
     def get_response(self) -> str:

@@ -4,7 +4,6 @@ import urllib
 import logging
 import requests
 
-
 def smart_urljoin(base_url, relative_url):
     """urljoin is stupid and wants a trailing / at the end of the endpoint address, or it will chop the suffix off"""
     if not base_url.endswith("/"):
@@ -13,7 +12,7 @@ def smart_urljoin(base_url, relative_url):
 
 
 def openai_chat_completions_request(url, api_key, data):
-    """https://platform.openai.com/docs/guides/text-generation?lang=curl"""
+    """text-generation?lang=curl"""
 
     url = smart_urljoin(url, "chat/completions")
     headers = {
