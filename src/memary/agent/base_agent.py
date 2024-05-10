@@ -61,10 +61,7 @@ class Agent(object):
         debug=True,
     ):
         load_dotenv()
-        # getting necessary API keys
-        # os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
-
-        self.load_llm_model(llm_model_name)
+        self.name = name
         self.model = llm_model_name
 
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
@@ -77,16 +74,12 @@ class Agent(object):
         database = "neo4j"
 
         # initialize APIs
-        # OpenAI API
-        # self.model = "gpt-3.5-turbo"
-        # self.openai_api_key = os.environ["OPENAI_API_KEY"]
-        # self.model_endpoint = "https://api.openai.com/v1"
+        self.load_llm_model(llm_model_name)
         self.openai_mm_llm = OpenAIMultiModal(
             model="gpt-4-vision-preview",
             api_key=os.getenv("OPENAI_KEY"),
             max_new_tokens=300,
         )
-        # self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -249,29 +242,29 @@ class Agent(object):
         else:
             self.message.llm_message["messages"].append(Context(role, content))
 
-    def _change_llm_message_chatgpt(self) -> dict:
+    def _change_llm_message_chat(self) -> dict:
         """Change the llm_message to chatgpt format.
 
         Returns:
             dict: llm_message in chatgpt format
         """
-        llm_message_chatgpt = self.message.llm_message.copy()
-        llm_message_chatgpt["messages"] = []
+        llm_message_chat = self.message.llm_message.copy()
+        llm_message_chat["messages"] = []
         top_entities = self._select_top_entities()
         logging.info(f"top_eneities: {top_entities}")
-        llm_message_chatgpt["messages"].append(
+        llm_message_chat["messages"].append(
             {
                 "role": "user",
                 "content": "Knowledge Entity Store:"
                 + str(top_entities),
             }
         )
-        llm_message_chatgpt["messages"].extend(
+        llm_message_chat["messages"].extend(
             [context.to_dict() for context in self.message.llm_message["messages"]]
         )
-        llm_message_chatgpt.pop("knowledge_entity_store")
-        llm_message_chatgpt.pop("memory_stream")
-        return llm_message_chatgpt
+        llm_message_chat.pop("knowledge_entity_store")
+        llm_message_chat.pop("memory_stream")
+        return llm_message_chat
 
     def _summarize_contexts(self, total_tokens: int):
         """Summarize the contexts.
@@ -335,7 +328,7 @@ class Agent(object):
         Returns:
             str: response from the RAG model
         """
-        llm_message_chatgpt = self._change_llm_message_chatgpt()
+        llm_message_chatgpt = self._change_llm_message_chat()
         response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
         if total_tokens > CONTEXT_LENGTH * EVICTION_RATE:
             logging.info("Evicting and summarizing contexts")
