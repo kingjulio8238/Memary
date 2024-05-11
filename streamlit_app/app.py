@@ -86,115 +86,143 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary Demo")
-clear_memory = st.button("Clear Memory DB")
-query = st.text_input("Ask a question")
-
-
-
-tools = st.multiselect( 
-    "Select tools to include:",
-    # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
-    # ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
-
-
-    ["Search", "Location", "Vision", "Stocks"], #all options available
-    ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
-
-if 'Vision' in tools:
-    img_url = st.text_input("URL of image, leave blank if no image to provide")
-    if img_url:
-        st.image(img_url, caption="Uploaded Image", use_column_width=True)
-
-
-generate_clicked = st.button("Generate")
-st.write("")
-
-
-if clear_memory:
-    #print("Front end recieved request to clear memory")
-    chat_agent.clearMemory()
-    st.write("Memory DB cleared")
-
-if generate_clicked:
-
-    if(query == ""):
-        st.write("Please enter a question")
-        st.stop()
-
-    #get tools
-    print("tools enabled: ", tools)
-    if(len(tools) == 0):
-        st.write("Please select at least one tool")
-        st.stop()
-
-    print("start update tools")
-    chat_agent.update_tools(tools)
-
-    if img_url:
-        query += "Image URL: " + img_url
-    react_response = ""
-    rag_response = (
-        "There was no information in knowledge_graph to answer your question."
-    )
-    chat_agent.add_chat("user", query)
-    cypher_query = chat_agent.check_KG(query)
-    if cypher_query:
-        rag_response, entities = chat_agent.get_routing_agent_response(
-            query, return_entity=True
+model = st.selectbox(
+    "Select an LLM model to use.",
+    ("llama3", "gpt-3.5-turbo"),
+    index=None,
+    placeholder="Select LLM Model..."
+)
+if model:
+    if model == "llama3":
+        chat_agent = ChatAgent(
+            "Personal Agent",
+            memory_stream_json,
+            entity_knowledge_store_json,
+            system_persona_txt,
+            user_persona_txt,
+            past_chat_json,
         )
-        chat_agent.add_chat("user", "rag: " + rag_response, entities)
-    else:
-        # get response
-        react_response = chat_agent.get_routing_agent_response(query)
-        chat_agent.add_chat("user", "ReAct agent" + react_response)
+    elif model == "gpt-3.5-turbo":
+        chat_agent = ChatAgent(
+            "Personal Agent",
+            memory_stream_json,
+            entity_knowledge_store_json,
+            system_persona_txt,
+            user_persona_txt,
+            past_chat_json,
+            "gpt-3.5-turbo",
+        )
 
-    answer = chat_agent.get_response()
-    st.subheader("Routing Agent Response")
-    routing_response = ""
-    with open("data/routing_response.txt", "r") as f:
-        routing_response = f.read()
-    st.text(str(routing_response))
+    st.write(" ")
+    clear_memory = st.button("Clear Memory DB")
+    query = st.text_input("Ask a question")
 
-    if cypher_query:
-        nodes = set()
-        edges = []  # (node1, node2, [relationships])
-        fill_graph(nodes, edges, cypher_query)
 
-        st.subheader("Knoweldge Graph")
-        st.code("# Current Cypher Used\n" + cypher_query)
-        st.write("")
-        st.text("Subgraph:")
-        graph = create_graph(nodes, edges)
-        graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
-        components.html(graph_html, height=500, scrolling=True)
-    else:
-        st.subheader("Knowledge Graph")
-        st.text("No information found in the knowledge graph")
 
-    st.subheader("Final Response")
-    wrapped_text = textwrap.fill(answer, width=80)
-    st.text(wrapped_text)
+    tools = st.multiselect( 
+        "Select tools to include:",
+        # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
+        # ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
 
-    if len(chat_agent.memory_stream) > 0:
-        # Memory Stream
-        memory_items = chat_agent.memory_stream.get_memory()
-        memory_items_dicts = [item.to_dict() for item in memory_items]
-        df = pd.DataFrame(memory_items_dicts)
-        st.write("Memory Stream")
-        st.dataframe(df)
 
-        # Entity Knowledge Store
-        knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
-        knowledge_memory_items_dicts = [
-            item.to_dict() for item in knowledge_memory_items
-        ]
-        df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
-        st.write("Entity Knowledge Store")
-        st.dataframe(df_knowledge)
+        ["Search", "Location", "Vision", "Stocks"], #all options available
+        ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
 
-        # top entities
-        top_entities = chat_agent._select_top_entities()
-        df_top = pd.DataFrame(top_entities)
-        st.write("Top 20 Entities")
-        st.dataframe(df_top)
+    if 'Vision' in tools:
+        img_url = st.text_input("URL of image, leave blank if no image to provide")
+        if img_url:
+            st.image(img_url, caption="Uploaded Image", use_column_width=True)
+
+
+    generate_clicked = st.button("Generate")
+    st.write("")
+
+
+    if clear_memory:
+        #print("Front end recieved request to clear memory")
+        chat_agent.clearMemory()
+        st.write("Memory DB cleared")
+
+    if generate_clicked:
+
+        if(query == ""):
+            st.write("Please enter a question")
+            st.stop()
+
+        #get tools
+        print("tools enabled: ", tools)
+        if(len(tools) == 0):
+            st.write("Please select at least one tool")
+            st.stop()
+
+        print("start update tools")
+        chat_agent.update_tools(tools)
+
+        if img_url:
+            query += "Image URL: " + img_url
+        react_response = ""
+        rag_response = (
+            "There was no information in knowledge_graph to answer your question."
+        )
+        chat_agent.add_chat("user", query)
+        cypher_query = chat_agent.check_KG(query)
+        if cypher_query:
+            rag_response, entities = chat_agent.get_routing_agent_response(
+                query, return_entity=True
+            )
+            chat_agent.add_chat("user", "rag: " + rag_response, entities)
+        else:
+            # get response
+            react_response = chat_agent.get_routing_agent_response(query)
+            chat_agent.add_chat("user", "ReAct agent" + react_response)
+
+        answer = chat_agent.get_response()
+        st.subheader("Routing Agent Response")
+        routing_response = ""
+        with open("data/routing_response.txt", "r") as f:
+            routing_response = f.read()
+        st.text(str(routing_response))
+
+        if cypher_query:
+            nodes = set()
+            edges = []  # (node1, node2, [relationships])
+            fill_graph(nodes, edges, cypher_query)
+
+            st.subheader("Knoweldge Graph")
+            st.code("# Current Cypher Used\n" + cypher_query)
+            st.write("")
+            st.text("Subgraph:")
+            graph = create_graph(nodes, edges)
+            graph_html = graph.generate_html(f"graph_{random.randint(0, 1000)}.html")
+            components.html(graph_html, height=500, scrolling=True)
+        else:
+            st.subheader("Knowledge Graph")
+            st.text("No information found in the knowledge graph")
+
+        st.subheader("Final Response")
+        wrapped_text = textwrap.fill(answer, width=80)
+        st.text(wrapped_text)
+
+        if len(chat_agent.memory_stream) > 0:
+            # Memory Stream
+            memory_items = chat_agent.memory_stream.get_memory()
+            memory_items_dicts = [item.to_dict() for item in memory_items]
+            df = pd.DataFrame(memory_items_dicts)
+            st.write("Memory Stream")
+            st.dataframe(df)
+
+            # Entity Knowledge Store
+            knowledge_memory_items = chat_agent.entity_knowledge_store.get_memory()
+            knowledge_memory_items_dicts = [
+                item.to_dict() for item in knowledge_memory_items
+            ]
+            df_knowledge = pd.DataFrame(knowledge_memory_items_dicts)
+            st.write("Entity Knowledge Store")
+            st.dataframe(df_knowledge)
+
+            # top entities
+            top_entities = chat_agent._select_top_entities()
+            df_top = pd.DataFrame(top_entities)
+            st.write("Top 20 Entities")
+            st.dataframe(df_top)
 
