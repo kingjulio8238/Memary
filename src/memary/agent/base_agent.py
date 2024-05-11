@@ -318,7 +318,7 @@ class Agent(object):
         else: # default to llama3
             messages_dict = llm_message_chatgpt["messages"]
             messages = [ChatMessage(**msg) for msg in messages_dict]
-            response = self.llm.chat(messages=messages)
+            response = str(self.llm.chat(messages=messages))
             total_tokens = 0
         return response, total_tokens
 

@@ -146,7 +146,7 @@ if generate_clicked:
     else:
         # get response
         react_response = chat_agent.get_routing_agent_response(query)
-        chat_agent.add_chat("user", "ReAct agent: " + react_response)
+        chat_agent.add_chat("user", "ReAct agent" + react_response)
 
     answer = chat_agent.get_response()
     st.subheader("Routing Agent Response")
