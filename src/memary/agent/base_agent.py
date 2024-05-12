@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-
+from pathlib import Path
 import geocoder
 import googlemaps
 import numpy as np
@@ -21,6 +21,7 @@ from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
+from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 
 from memary.agent.data_types import Message
 from memary.agent.llm_api.tools import openai_chat_completions_request
@@ -56,8 +57,8 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
-        llm_model_name,
-        vision_model_name,
+        llm_model_name="llama3",
+        vision_model_name="llava",
         debug=True,
     ):
         load_dotenv()
@@ -75,11 +76,7 @@ class Agent(object):
 
         # initialize APIs
         self.load_llm_model(llm_model_name)
-        self.openai_mm_llm = OpenAIMultiModal(
-            model="gpt-4-vision-preview",
-            api_key=os.getenv("OPENAI_KEY"),
-            max_new_tokens=300,
-        )
+        self.load_vision_model(vision_model_name)
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -138,9 +135,24 @@ class Agent(object):
             self.openai_api_key = os.environ["OPENAI_API_KEY"]
             self.model_endpoint = "https://api.openai.com/v1"
             self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
-        else: # default to llama3
-            self.llm = Ollama(model="llama3", request_timeout=60.0) 
+        elif llm_model_name == "llama3":
+            self.llm = Ollama(model="llama3", request_timeout=60.0)
+        else:
+            raise("Please provide a proper llm_model_name.")
 
+    def load_vision_model(self, vision_model_name):
+        if vision_model_name == "gpt-4-vision-preview":
+            os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+            self.openai_api_key = os.environ["OPENAI_API_KEY"]
+            self.mm_model = OpenAIMultiModal(
+                model="gpt-4-vision-preview",
+                api_key=os.getenv("OPENAI_KEY"),
+                max_new_tokens=300,
+            )
+        elif vision_model_name == "llava":
+            self.mm_model = OllamaMultiModal(modle="llava")
+        else:
+            raise("Please provide a proper vision_model_name.")
 
     def external_query(self, query: str):
         messages_dict = [
@@ -173,8 +185,16 @@ class Agent(object):
 
     def vision(self, query: str, img_url: str) -> str:
         """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
-        img_docs = load_image_urls([img_url])
-        response = self.openai_mm_llm.complete(prompt=query, image_documents=img_docs)
+        query_image_path = Path('query_images')
+        if not query_image_path.exists():
+            Path.mkdir(query_image_path)
+        
+        data = requests.get(img_url).content
+        with open('query_image/query.jpg', 'wb') as f:
+            f.write(data)
+        image_documents = SimpleDirectoryReader(query_image_path).load_data()
+
+        response = self.mm_model.complete(prompt=query, image_documents=image_documents)
         return response
     
     def stock_price(self, query: str) -> str:

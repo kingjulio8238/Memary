@@ -4,7 +4,9 @@ from memary.agent.base_agent import Agent
 
 
 class ChatAgent(Agent):
-
+    """ChatAgent currently able to support Llama3 running on Ollama (default) and gpt-3.5-turbo for llm models,
+    and LLaVA running on Ollama (default) and gpt-4-vision-preview for the vision tool.
+    """
     def __init__(self, name, memory_stream_json, entity_knowledge_store_json,
                  system_persona_txt, user_persona_txt, past_chat_json, llm_model_name="llama3", vision_model_name="llava"):
         super().__init__(name, memory_stream_json, entity_knowledge_store_json,

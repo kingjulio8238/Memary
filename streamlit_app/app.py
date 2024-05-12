@@ -86,32 +86,22 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary Demo")
-model = st.selectbox(
+selected_llm_model = st.selectbox(
     "Select an LLM model to use.",
     ("llama3", "gpt-3.5-turbo"),
     index=None,
     placeholder="Select LLM Model..."
 )
-if model:
-    if model == "llama3":
-        chat_agent = ChatAgent(
-            "Personal Agent",
-            memory_stream_json,
-            entity_knowledge_store_json,
-            system_persona_txt,
-            user_persona_txt,
-            past_chat_json,
-        )
-    elif model == "gpt-3.5-turbo":
-        chat_agent = ChatAgent(
-            "Personal Agent",
-            memory_stream_json,
-            entity_knowledge_store_json,
-            system_persona_txt,
-            user_persona_txt,
-            past_chat_json,
-            "gpt-3.5-turbo",
-        )
+if selected_llm_model:
+    chat_agent = ChatAgent(
+        "Personal Agent",
+        memory_stream_json,
+        entity_knowledge_store_json,
+        system_persona_txt,
+        user_persona_txt,
+        past_chat_json,
+        selected_llm_model,
+    )
 
     st.write(" ")
     clear_memory = st.button("Clear Memory DB")
