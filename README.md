@@ -47,7 +47,7 @@ pip install memary
 memary will default to the locally run models unless explicitly specified.
 
 **To run the Streamlit app:**
-1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama)
+1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama).
 
 2. Ensure that a `.env` exists with any necessary API keys and Neo4j credentials.
 
