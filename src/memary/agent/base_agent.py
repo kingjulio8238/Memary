@@ -150,7 +150,7 @@ class Agent(object):
                 max_new_tokens=300,
             )
         elif vision_model_name == "llava":
-            self.mm_model = OllamaMultiModal(modle="llava")
+            self.mm_model = OllamaMultiModal(model="llava")
         else:
             raise("Please provide a proper vision_model_name.")
 
@@ -185,16 +185,19 @@ class Agent(object):
 
     def vision(self, query: str, img_url: str) -> str:
         """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
-        query_image_path = Path('query_images')
-        if not query_image_path.exists():
-            Path.mkdir(query_image_path)
+        query_image_dir_path = Path('query_images')
+        if not query_image_dir_path.exists():
+            Path.mkdir(query_image_dir_path)
         
         data = requests.get(img_url).content
-        with open('query_image/query.jpg', 'wb') as f:
+        query_image_path = os.path.join(query_image_dir_path, 'query.jpg')
+        with open(query_image_path, 'wb') as f:
             f.write(data)
-        image_documents = SimpleDirectoryReader(query_image_path).load_data()
+        image_documents = SimpleDirectoryReader(query_image_dir_path).load_data()
 
         response = self.mm_model.complete(prompt=query, image_documents=image_documents)
+
+        os.remove(query_image_path) # delete image after use
         return response
     
     def stock_price(self, query: str) -> str:

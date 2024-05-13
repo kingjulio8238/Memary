@@ -92,7 +92,14 @@ selected_llm_model = st.selectbox(
     index=None,
     placeholder="Select LLM Model..."
 )
-if selected_llm_model:
+selected_vision_model = st.selectbox(
+    "Select a vision model to use.",
+    ("llava", "gpt-4-vision-preview"),
+    index=None,
+    placeholder="Select Vision Model..."
+)
+
+if selected_llm_model and selected_vision_model:
     chat_agent = ChatAgent(
         "Personal Agent",
         memory_stream_json,
@@ -101,6 +108,7 @@ if selected_llm_model:
         user_persona_txt,
         past_chat_json,
         selected_llm_model,
+        selected_vision_model,
     )
 
     st.write(" ")
@@ -164,7 +172,7 @@ if selected_llm_model:
         else:
             # get response
             react_response = chat_agent.get_routing_agent_response(query)
-            chat_agent.add_chat("user", "ReAct agent" + react_response)
+            chat_agent.add_chat("user", "ReAct agent: " + react_response)
 
         answer = chat_agent.get_response()
         st.subheader("Routing Agent Response")
