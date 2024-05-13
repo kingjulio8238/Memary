@@ -40,11 +40,16 @@ pip install memary
    ```
 
 ## Demo
-Note: The Streamlit app currently assumes the local installation method.
+**Notes:** The Streamlit app currently assumes the local installation method. memary currently supports the use of:
+- `Llama 3 8B` running locally using Ollama **OR** `gpt-3.5-turbo`
+- `LLaVA` running locally using Ollama **OR** `gpt-4-vision-preview`
 
-To run the Streamlit app:
+memary will default to the locally run models unless explicitly specified.
 
-1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials.
+**To run the Streamlit app:**
+1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama)
+
+2. Ensure that a `.env` exists with any necessary API keys and Neo4j credentials.
 
 ```
 OPENAI_API_KEY="YOUR_API_KEY"
