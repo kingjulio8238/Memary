@@ -14,9 +14,9 @@ from pyvis.network import Network
 curr_dir = os.getcwd()
 
 parent_dir = os.path.dirname(curr_dir)
-#parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
+# parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
 
-sys.path.append(parent_dir + '/src')
+sys.path.append(parent_dir + "/src")
 
 from memary.agent.chat_agent import ChatAgent
 
@@ -90,13 +90,13 @@ selected_llm_model = st.selectbox(
     "Select an LLM model to use.",
     ("llama3", "gpt-3.5-turbo"),
     index=None,
-    placeholder="Select LLM Model..."
+    placeholder="Select LLM Model...",
 )
 selected_vision_model = st.selectbox(
     "Select a vision model to use.",
     ("llava", "gpt-4-vision-preview"),
     index=None,
-    placeholder="Select Vision Model..."
+    placeholder="Select Vision Model...",
 )
 
 if selected_llm_model and selected_vision_model:
@@ -115,41 +115,36 @@ if selected_llm_model and selected_vision_model:
     clear_memory = st.button("Clear Memory DB")
     query = st.text_input("Ask a question")
 
-
-
-    tools = st.multiselect( 
+    tools = st.multiselect(
         "Select tools to include:",
         # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
         # ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
+        ["Search", "Location", "Vision", "Stocks"],  # all options available
+        ["Search", "Location", "Vision", "Stocks"],
+    )  # options that are selected by default
 
-
-        ["Search", "Location", "Vision", "Stocks"], #all options available
-        ["Search", "Location", "Vision", "Stocks"],) #options that are selected by default
-
-    if 'Vision' in tools:
+    if "Vision" in tools:
         img_url = st.text_input("URL of image, leave blank if no image to provide")
         if img_url:
             st.image(img_url, caption="Uploaded Image", use_column_width=True)
 
-
     generate_clicked = st.button("Generate")
     st.write("")
 
-
     if clear_memory:
-        #print("Front end recieved request to clear memory")
+        # print("Front end recieved request to clear memory")
         chat_agent.clearMemory()
         st.write("Memory DB cleared")
 
     if generate_clicked:
 
-        if(query == ""):
+        if query == "":
             st.write("Please enter a question")
             st.stop()
 
-        #get tools
+        # get tools
         print("tools enabled: ", tools)
-        if(len(tools) == 0):
+        if len(tools) == 0:
             st.write("Please select at least one tool")
             st.stop()
 
@@ -168,11 +163,11 @@ if selected_llm_model and selected_vision_model:
             rag_response, entities = chat_agent.get_routing_agent_response(
                 query, return_entity=True
             )
-            chat_agent.add_chat("user", "rag: " + rag_response, entities)
+            chat_agent.add_chat("system", "ReAct agent: " + rag_response, entities)
         else:
             # get response
             react_response = chat_agent.get_routing_agent_response(query)
-            chat_agent.add_chat("user", "ReAct agent: " + react_response)
+            chat_agent.add_chat("system", "ReAct agent: " + react_response)
 
         answer = chat_agent.get_response()
         st.subheader("Routing Agent Response")
@@ -223,4 +218,3 @@ if selected_llm_model and selected_vision_model:
             df_top = pd.DataFrame(top_entities)
             st.write("Top 20 Entities")
             st.dataframe(df_top)
-
