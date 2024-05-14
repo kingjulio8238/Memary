@@ -17,7 +17,6 @@ from llama_index.core import (
 )
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
-from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
@@ -29,7 +28,10 @@ from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
-from memary.agent.llm_api.tools import openai_chat_completions_request
+from memary.agent.llm_api.tools import (
+    openai_chat_completions_request,
+    ollama_chat_completions_request,
+)
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
@@ -348,10 +350,13 @@ class Agent(object):
             total_tokens = response["usage"]["total_tokens"]
             response = str(response["choices"][0]["message"]["content"])
         else:  # default to llama3
-            messages_dict = llm_message_chatgpt["messages"]
-            messages = [ChatMessage(**msg) for msg in messages_dict]
-            response = str(self.llm.chat(messages=messages))
-            total_tokens = 0
+            response = ollama_chat_completions_request(
+                llm_message_chatgpt["messages"], self.model
+            )
+            total_tokens = response.get(
+                "prompt_eval_count", 0
+            )  # if 'prompt_eval_count' not present then query is cached
+            response = str(response["message"]["content"])
         return response, total_tokens
 
     def get_response(self) -> str:
