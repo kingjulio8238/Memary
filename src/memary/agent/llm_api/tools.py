@@ -56,7 +56,6 @@ def ollama_chat_completions_request(messages, model):
 
     url = "http://localhost:11434/api/chat"
     data = {"model": model, "messages": messages, "stream": False}
-    print(messages)
 
     logging.info(f"Sending request to {url}")
     try:
