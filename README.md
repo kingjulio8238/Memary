@@ -90,9 +90,9 @@ Alpha Vantage: (this key is for getting real time stock data)
   Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
-4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt`. Instructions have been provided - replace curly brackets with relevant information. 
+4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace curly brackets with relevant information. 
 
-5. . [Optional] Update system persona, if needed, which can be found in s`treamlit_app/data/system_persona.txt`. 
+5. . [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`. 
 6. Run:
 
 ```
