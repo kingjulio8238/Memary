@@ -29,8 +29,8 @@ from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
 from memary.agent.llm_api.tools import (
-    openai_chat_completions_request,
     ollama_chat_completions_request,
+    openai_chat_completions_request,
 )
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
@@ -145,10 +145,11 @@ class Agent(object):
             self.openai_api_key = os.environ["OPENAI_API_KEY"]
             self.model_endpoint = "https://api.openai.com/v1"
             self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
-        elif llm_model_name == "llama3":
-            self.llm = Ollama(model="llama3", request_timeout=60.0)
         else:
-            raise ("Please provide a proper llm_model_name.")
+            try:
+                self.llm = Ollama(model=llm_model_name, request_timeout=60.0)
+            except:
+                raise ("Please provide a proper llm_model_name.")
 
     def load_vision_model(self, vision_model_name):
         if vision_model_name == "gpt-4-vision-preview":
@@ -159,10 +160,11 @@ class Agent(object):
                 api_key=os.getenv("OPENAI_KEY"),
                 max_new_tokens=300,
             )
-        elif vision_model_name == "llava":
-            self.mm_model = OllamaMultiModal(model="llava")
         else:
-            raise ("Please provide a proper vision_model_name.")
+            try:
+                self.mm_model = OllamaMultiModal(model=vision_model_name)
+            except:
+                raise ("Please provide a proper vision_model_name.")
 
     def external_query(self, query: str):
         messages_dict = [
@@ -349,7 +351,7 @@ class Agent(object):
             )
             total_tokens = response["usage"]["total_tokens"]
             response = str(response["choices"][0]["message"]["content"])
-        else:  # default to llama3
+        else:  # default to Ollama model
             response = ollama_chat_completions_request(
                 llm_message_chatgpt["messages"], self.model
             )

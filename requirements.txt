@@ -23,3 +23,4 @@ geocoder
 googlemaps
 ansistrip
 numpy
+ollama

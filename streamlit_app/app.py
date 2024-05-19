@@ -3,6 +3,7 @@ import random
 import sys
 import textwrap
 
+import ollama
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
@@ -82,19 +83,35 @@ def fill_graph(nodes, edges, cypher_query):
                 entities.extend([n1_id, n2_id])
 
 
+def get_models(llm_models, vision_models):
+    ollama_info = ollama.list()
+    models = set()
+    for e in ollama_info["models"]:
+        models.add(e["model"])
+    if "llava:latest" in models:
+        vision_models.append("llava:latest")
+        models.remove("llava:latest")
+    llm_models.extend(list(models))
+
+
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary Demo")
+
+llm_models = ["gpt-3.5.turbo"]
+vision_models = ["gpt-4-vision-preview"]
+get_models(llm_models, vision_models)
+
 selected_llm_model = st.selectbox(
     "Select an LLM model to use.",
-    ("llama3", "gpt-3.5-turbo"),
+    (model for model in llm_models),
     index=None,
     placeholder="Select LLM Model...",
 )
 selected_vision_model = st.selectbox(
     "Select a vision model to use.",
-    ("llava", "gpt-4-vision-preview"),
+    (model for model in vision_models),
     index=None,
     placeholder="Select Vision Model...",
 )
