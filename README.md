@@ -1,8 +1,7 @@
-# memary: Open-Source Longterm Memory for Autonomous Agents
+# memary: Open-Source Longterm Memory for Autonomous Agents <img alt="memary logo" src="diagrams/memary_logo.png">
 
-<img width="1410" alt="memary logo" src="diagrams/memary_logo.png">
-
-[memary demo](https://youtu.be/GnUU3_xK6bg)
+[![Documentation](https://img.shields.io/badge/Documentation-memary-428BCA?style=flat&logo=open-book)](https://kingjulio8238.github.io/memarydocs/)
+[![Demo](https://img.shields.io/badge/Watch-Demo-red?logo=youtube)](https://youtu.be/GnUU3_xK6bg)
 
 ## Why use memary?
 
@@ -40,11 +39,16 @@ pip install memary
    ```
 
 ## Demo
-Note: The Streamlit app currently assumes the local installation method.
+**Notes:** memary currently assumes the local installation method and currently supports any models available through Ollama:
+- LLM running locally using Ollama **OR** `gpt-3.5-turbo`
+- Vision model running locally using Ollama **OR** `gpt-4-vision-preview`
 
-To run the Streamlit app:
+memary will default to the locally run models unless explicitly specified.
 
-1. Ensure that a `.env` exists with necessary API keys and Neo4j credentials.
+**To run the Streamlit app:**
+1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama).
+
+2. Ensure that a `.env` exists with any necessary API keys and Neo4j credentials.
 
 ```
 OPENAI_API_KEY="YOUR_API_KEY"
@@ -53,16 +57,6 @@ NEO4J_URL="YOUR_NEO4J_URL"
 PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
-```
-
-2. Remove the quotations "" because python may read escape characters '\' and skip characters
-
-```
-CORRECT:
-OPENAI_API_KEY=SKxxxxxxxx
-
-INCORRECT:
-OPENAI_API_KEY="SKxxxxxxxx"
 ```
 
 3. How to get API keys:
@@ -85,7 +79,10 @@ Alpha Vantage: (this key is for getting real time stock data)
   Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
-4. Run:
+4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
+
+5. . [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`. 
+6. Run:
 
 ```
 cd streamlit_app

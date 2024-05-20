@@ -1,10 +1,12 @@
 import logging
 import os
 import sys
-import numpy as np
+from pathlib import Path
 
 import geocoder
 import googlemaps
+import numpy as np
+import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
 from llama_index.core import (
@@ -15,24 +17,27 @@ from llama_index.core import (
 )
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
-from llama_index.core.multi_modal_llms.generic_utils import load_image_urls
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
 from llama_index.graph_stores.neo4j import Neo4jGraphStore
+from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
+from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
-import requests
 
-from memary.agent.data_types import Message
-from memary.agent.llm_api.tools import openai_chat_completions_request
+from memary.agent.data_types import Context, Message
+from memary.agent.llm_api.tools import (
+    ollama_chat_completions_request,
+    openai_chat_completions_request,
+)
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
-# ChatGPT token limits
+# LLM token limits
 CONTEXT_LENGTH = 4096
 EVICTION_RATE = 0.7
 NONEVICTION_LENGTH = 5
@@ -58,11 +63,14 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        llm_model_name="llama3",
+        vision_model_name="llava",
         debug=True,
     ):
         load_dotenv()
-        # getting necessary API keys
-        os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+        self.name = name
+        self.model = llm_model_name
+
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
         pplx_api_key = os.getenv("PERPLEXITY_API_KEY")
 
@@ -73,16 +81,8 @@ class Agent(object):
         database = "neo4j"
 
         # initialize APIs
-        # OpenAI API
-        self.model = "gpt-3.5-turbo"
-        self.openai_api_key = os.environ["OPENAI_API_KEY"]
-        self.model_endpoint = "https://api.openai.com/v1"
-        self.openai_mm_llm = OpenAIMultiModal(
-            model="gpt-4-vision-preview",
-            api_key=os.getenv("OPENAI_KEY"),
-            max_new_tokens=300,
-        )
-        self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        self.load_llm_model(llm_model_name)
+        self.load_vision_model(vision_model_name)
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -99,9 +99,11 @@ class Agent(object):
         )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-        #self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
+        # self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
 
-        self.storage_context = StorageContext.from_defaults(graph_store=self.graph_store)
+        self.storage_context = StorageContext.from_defaults(
+            graph_store=self.graph_store
+        )
         graph_rag_retriever = KnowledgeGraphRAGRetriever(
             storage_context=self.storage_context,
             verbose=True,
@@ -122,7 +124,9 @@ class Agent(object):
 
         self.debug = debug
         self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock_tool], llm=self.llm, verbose=True
+            [search_tool, locate_tool, vision_tool, stock_tool],
+            llm=self.llm,
+            verbose=True,
         )
 
         self.memory_stream = MemoryStream(memory_stream_json)
@@ -135,6 +139,33 @@ class Agent(object):
     def __str__(self):
         return f"Agent {self.name}"
 
+    def load_llm_model(self, llm_model_name):
+        if llm_model_name == "gpt-3.5-turbo":
+            os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+            self.openai_api_key = os.environ["OPENAI_API_KEY"]
+            self.model_endpoint = "https://api.openai.com/v1"
+            self.llm = OpenAI(model="gpt-3.5-turbo-instruct")
+        else:
+            try:
+                self.llm = Ollama(model=llm_model_name, request_timeout=60.0)
+            except:
+                raise ("Please provide a proper llm_model_name.")
+
+    def load_vision_model(self, vision_model_name):
+        if vision_model_name == "gpt-4-vision-preview":
+            os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+            self.openai_api_key = os.environ["OPENAI_API_KEY"]
+            self.mm_model = OpenAIMultiModal(
+                model="gpt-4-vision-preview",
+                api_key=os.getenv("OPENAI_KEY"),
+                max_new_tokens=300,
+            )
+        else:
+            try:
+                self.mm_model = OllamaMultiModal(model=vision_model_name)
+            except:
+                raise ("Please provide a proper vision_model_name.")
+
     def external_query(self, query: str):
         messages_dict = [
             {"role": "system", "content": "Be precise and concise."},
@@ -144,7 +175,6 @@ class Agent(object):
         external_response = self.query_llm.chat(messages)
 
         return str(external_response)
-            
 
     def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
@@ -166,20 +196,35 @@ class Agent(object):
 
     def vision(self, query: str, img_url: str) -> str:
         """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
-        img_docs = load_image_urls([img_url])
-        response = self.openai_mm_llm.complete(prompt=query, image_documents=img_docs)
+        query_image_dir_path = Path("query_images")
+        if not query_image_dir_path.exists():
+            Path.mkdir(query_image_dir_path)
+
+        data = requests.get(img_url).content
+        query_image_path = os.path.join(query_image_dir_path, "query.jpg")
+        with open(query_image_path, "wb") as f:
+            f.write(data)
+        image_documents = SimpleDirectoryReader(query_image_dir_path).load_data()
+
+        response = self.mm_model.complete(prompt=query, image_documents=image_documents)
+
+        os.remove(query_image_path)  # delete image after use
         return response
-    
+
     def stock_price(self, query: str) -> str:
         """Get the stock price of the company given the ticker"""
-        request_api = requests.get(r'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + query + r'&apikey=' + self.vantage_key)
-        return(request_api.json())
+        request_api = requests.get(
+            r"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="
+            + query
+            + r"&apikey="
+            + self.vantage_key
+        )
+        return request_api.json()
 
     # def get_news(self, query: str) -> str:
     #     """Given a keyword, search for news articles related to the keyword"""
     #     request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
     #     return request_api.json()
-
 
     def query(self, query: str) -> str:
         # get the response from react agent
@@ -221,35 +266,41 @@ class Agent(object):
         )
 
     def _select_top_entities(self):
-        entity_knowledge_store = self.message.llm_message['knowledge_entity_store']
+        entity_knowledge_store = self.message.llm_message["knowledge_entity_store"]
         entities = [entity.to_dict() for entity in entity_knowledge_store]
-        entity_counts = [entity['count'] for entity in entities]
+        entity_counts = [entity["count"] for entity in entities]
         top_indexes = np.argsort(entity_counts)[:TOP_ENTITIES]
         return [entities[index] for index in top_indexes]
 
-    def _change_llm_message_chatgpt(self) -> dict:
-        """Change the llm_message to chatgpt format.
+    def _add_contexts_to_llm_message(self, role, content, index=None):
+        """Add contexts to the llm_message."""
+        if index:
+            self.message.llm_message["messages"].insert(index, Context(role, content))
+        else:
+            self.message.llm_message["messages"].append(Context(role, content))
+
+    def _change_llm_message_chat(self) -> dict:
+        """Change the llm_message to chat format.
 
         Returns:
-            dict: llm_message in chatgpt format
+            dict: llm_message in chat format
         """
-        llm_message_chatgpt = self.message.llm_message.copy()
-        llm_message_chatgpt["messages"] = []
+        llm_message_chat = self.message.llm_message.copy()
+        llm_message_chat["messages"] = []
         top_entities = self._select_top_entities()
-        logging.info(f"top_eneities: {top_entities}")
-        llm_message_chatgpt["messages"].append(
+        logging.info(f"top_entities: {top_entities}")
+        llm_message_chat["messages"].append(
             {
                 "role": "user",
-                "content": "Knowledge Entity Store:"
-                + str(top_entities),
+                "content": "Knowledge Entity Store:" + str(top_entities),
             }
         )
-        llm_message_chatgpt["messages"].extend(
+        llm_message_chat["messages"].extend(
             [context.to_dict() for context in self.message.llm_message["messages"]]
         )
-        llm_message_chatgpt.pop("knowledge_entity_store")
-        llm_message_chatgpt.pop("memory_stream")
-        return llm_message_chatgpt
+        llm_message_chat.pop("knowledge_entity_store")
+        llm_message_chat.pop("memory_stream")
+        return llm_message_chat
 
     def _summarize_contexts(self, total_tokens: int):
         """Summarize the contexts.
@@ -269,7 +320,7 @@ class Agent(object):
 
         message_contents = [message.to_dict()["content"] for message in messages]
 
-        llm_message_chatgpt = {
+        llm_message_chat = {
             "model": self.model,
             "messages": [
                 {
@@ -279,26 +330,35 @@ class Agent(object):
                 }
             ],
         }
-        response, _ = self._get_gpt_response(llm_message_chatgpt)
+        response, _ = self._get_chat_response(llm_message_chat)
         content = "Summarized past conversation:" + response
         self._add_contexts_to_llm_message("assistant", content, index=2)
         logging.info(f"Contexts summarized successfully. \n summary: {response}")
         logging.info(f"Total tokens after eviction: {total_tokens*EVICTION_RATE}")
 
-    def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
-        """Get response from the GPT model.
+    def _get_chat_response(self, llm_message_chat: str) -> str:
+        """Get response from the LLM chat model.
 
         Args:
-            llm_message_chatgpt (str): query to get response for
+            llm_message_chat (str): query to get response for
 
         Returns:
-            str: response from the GPT model
+            str: response from the LLM chat model
         """
-        response = openai_chat_completions_request(
-            self.model_endpoint, self.openai_api_key, llm_message_chatgpt
-        )
-        total_tokens = response["usage"]["total_tokens"]
-        response = str(response["choices"][0]["message"]["content"])
+        if self.model == "gpt-3.5-turbo":
+            response = openai_chat_completions_request(
+                self.model_endpoint, self.openai_api_key, llm_message_chat
+            )
+            total_tokens = response["usage"]["total_tokens"]
+            response = str(response["choices"][0]["message"]["content"])
+        else:  # default to Ollama model
+            response = ollama_chat_completions_request(
+                llm_message_chat["messages"], self.model
+            )
+            total_tokens = response.get(
+                "prompt_eval_count", 0
+            )  # if 'prompt_eval_count' not present then query is cached
+            response = str(response["message"]["content"])
         return response, total_tokens
 
     def get_response(self) -> str:
@@ -307,8 +367,8 @@ class Agent(object):
         Returns:
             str: response from the RAG model
         """
-        llm_message_chatgpt = self._change_llm_message_chatgpt()
-        response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
+        llm_message_chat = self._change_llm_message_chat()
+        response, total_tokens = self._get_chat_response(llm_message_chat)
         if total_tokens > CONTEXT_LENGTH * EVICTION_RATE:
             logging.info("Evicting and summarizing contexts")
             self._summarize_contexts(total_tokens)
@@ -374,7 +434,6 @@ class Agent(object):
             if exceptions in entities:
                 entities.remove(exceptions)
         return entities
-    
 
     def update_tools(self, updatedTools):
         print("recieved update tools")
@@ -390,6 +449,5 @@ class Agent(object):
                 tools.append(FunctionTool.from_defaults(fn=self.stock_price))
             # elif tool == "News":
             #     tools.append(FunctionTool.from_defaults(fn=self.get_news))
-        
+
         self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
- 
