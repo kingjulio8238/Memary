@@ -65,6 +65,7 @@ class Agent(object):
         past_chat_json,
         llm_model_name="llama3",
         vision_model_name="llava",
+        include_from_defaults=["search", "locate", "vision", "stock"],
         debug=True,
     ):
         load_dotenv()
@@ -99,7 +100,6 @@ class Agent(object):
         )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-        # self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
 
         self.storage_context = StorageContext.from_defaults(
             graph_store=self.graph_store
@@ -116,18 +116,9 @@ class Agent(object):
             graph_rag_retriever,
         )
 
-        search_tool = FunctionTool.from_defaults(fn=self.search)
-        locate_tool = FunctionTool.from_defaults(fn=self.locate)
-        vision_tool = FunctionTool.from_defaults(fn=self.vision)
-        stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
-        # news_tool = FunctionTool.from_defaults(fn=self.get_news)
-
         self.debug = debug
-        self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock_tool],
-            llm=self.llm,
-            verbose=True,
-        )
+        self.tools = []
+        self.init_default_tools(default_tools=include_from_defaults)
 
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
@@ -434,6 +425,38 @@ class Agent(object):
             if exceptions in entities:
                 entities.remove(exceptions)
         return entities
+
+    def init_default_tools(self, default_tools):
+        """initializes ReAct Agent from the default list of tools memary provides
+        List of strings passed in during initialization denoting which default tools to include.
+        Args:
+            default_tools (list(string))
+        """
+
+        for tool in default_tools:
+            if tool == "Search":
+                self.tools.append(FunctionTool.from_defaults(fn=self.search))
+            elif tool == "Location":
+                self.tools.append(FunctionTool.from_defaults(fn=self.locate))
+            elif tool == "Vision":
+                self.tools.append(FunctionTool.from_defaults(fn=self.vision))
+            elif tool == "Stocks":
+                self.tools.append(FunctionTool.from_defaults(fn=self.stock_price))
+        self.routing_agent = ReActAgent.from_tools(
+            self.tools, llm=self.llm, verbose=True
+        )
+
+    def add_tool(self, tools):
+        """adds list of functions with each one representing a tool to existing list of tools
+        Args:
+            tools (list(function))
+        """
+
+        for tool_fn in tools:
+            self.tools.append(FunctionTool.from_defaults(fn=tool_fn))
+        self.routing_agent = ReActAgent.from_tools(
+            self.tools, llm=self.llm, verbose=True
+        )
 
     def update_tools(self, updatedTools):
         print("recieved update tools")
