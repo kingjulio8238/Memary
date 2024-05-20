@@ -37,7 +37,7 @@ from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
-# ChatGPT token limits
+# LLM token limits
 CONTEXT_LENGTH = 4096
 EVICTION_RATE = 0.7
 NONEVICTION_LENGTH = 5
@@ -280,10 +280,10 @@ class Agent(object):
             self.message.llm_message["messages"].append(Context(role, content))
 
     def _change_llm_message_chat(self) -> dict:
-        """Change the llm_message to chatgpt format.
+        """Change the llm_message to chat format.
 
         Returns:
-            dict: llm_message in chatgpt format
+            dict: llm_message in chat format
         """
         llm_message_chat = self.message.llm_message.copy()
         llm_message_chat["messages"] = []
@@ -320,7 +320,7 @@ class Agent(object):
 
         message_contents = [message.to_dict()["content"] for message in messages]
 
-        llm_message_chatgpt = {
+        llm_message_chat = {
             "model": self.model,
             "messages": [
                 {
@@ -330,30 +330,30 @@ class Agent(object):
                 }
             ],
         }
-        response, _ = self._get_gpt_response(llm_message_chatgpt)
+        response, _ = self._get_chat_response(llm_message_chat)
         content = "Summarized past conversation:" + response
         self._add_contexts_to_llm_message("assistant", content, index=2)
         logging.info(f"Contexts summarized successfully. \n summary: {response}")
         logging.info(f"Total tokens after eviction: {total_tokens*EVICTION_RATE}")
 
-    def _get_gpt_response(self, llm_message_chatgpt: str) -> str:
-        """Get response from the GPT model.
+    def _get_chat_response(self, llm_message_chat: str) -> str:
+        """Get response from the LLM chat model.
 
         Args:
-            llm_message_chatgpt (str): query to get response for
+            llm_message_chat (str): query to get response for
 
         Returns:
-            str: response from the GPT model
+            str: response from the LLM chat model
         """
         if self.model == "gpt-3.5-turbo":
             response = openai_chat_completions_request(
-                self.model_endpoint, self.openai_api_key, llm_message_chatgpt
+                self.model_endpoint, self.openai_api_key, llm_message_chat
             )
             total_tokens = response["usage"]["total_tokens"]
             response = str(response["choices"][0]["message"]["content"])
         else:  # default to Ollama model
             response = ollama_chat_completions_request(
-                llm_message_chatgpt["messages"], self.model
+                llm_message_chat["messages"], self.model
             )
             total_tokens = response.get(
                 "prompt_eval_count", 0
@@ -367,8 +367,8 @@ class Agent(object):
         Returns:
             str: response from the RAG model
         """
-        llm_message_chatgpt = self._change_llm_message_chat()
-        response, total_tokens = self._get_gpt_response(llm_message_chatgpt)
+        llm_message_chat = self._change_llm_message_chat()
+        response, total_tokens = self._get_chat_response(llm_message_chat)
         if total_tokens > CONTEXT_LENGTH * EVICTION_RATE:
             logging.info("Evicting and summarizing contexts")
             self._summarize_contexts(total_tokens)

@@ -84,15 +84,17 @@ def fill_graph(nodes, edges, cypher_query):
 
 
 def get_models(llm_models, vision_models):
-    ollama_info = ollama.list()
     models = set()
-    for e in ollama_info["models"]:
-        models.add(e["model"])
-    if "llava:latest" in models:
-        vision_models.append("llava:latest")
-        models.remove("llava:latest")
-    llm_models.extend(list(models))
-
+    try:
+        ollama_info = ollama.list()
+        for e in ollama_info["models"]:
+            models.add(e["model"])
+        if "llava:latest" in models:
+            vision_models.append("llava:latest")
+            models.remove("llava:latest")
+        llm_models.extend(list(models))
+    except:
+        print("No Ollama instance detected.")
 
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
