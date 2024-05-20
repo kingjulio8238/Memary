@@ -99,7 +99,7 @@ def get_models(llm_models, vision_models):
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
-st.title("memary Demo")
+st.title("memary")
 
 llm_models = ["gpt-3.5.turbo"]
 vision_models = ["gpt-4-vision-preview"]

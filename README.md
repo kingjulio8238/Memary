@@ -40,9 +40,9 @@ pip install memary
    ```
 
 ## Demo
-**Notes:** The Streamlit app currently assumes the local installation method. memary currently supports the use of:
-- `Llama 3 8B` running locally using Ollama **OR** `gpt-3.5-turbo`
-- `LLaVA` running locally using Ollama **OR** `gpt-4-vision-preview`
+**Notes:** memary currently assumes the local installation method and currently supports any models available through Ollama:
+- LLM running locally using Ollama **OR** `gpt-3.5-turbo`
+- Vision model running locally using Ollama **OR** `gpt-4-vision-preview`
 
 memary will default to the locally run models unless explicitly specified.
 
@@ -58,16 +58,6 @@ NEO4J_URL="YOUR_NEO4J_URL"
 PERPLEXITY_API_KEY="YOUR_API_KEY"
 GOOGLEMAPS_API_KEY="YOUR_API_KEY"
 ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
-```
-
-2. Remove the quotations "" because python may read escape characters '\' and skip characters
-
-```
-CORRECT:
-OPENAI_API_KEY=SKxxxxxxxx
-
-INCORRECT:
-OPENAI_API_KEY="SKxxxxxxxx"
 ```
 
 3. How to get API keys:
@@ -90,7 +80,7 @@ Alpha Vantage: (this key is for getting real time stock data)
   Reccomend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
-4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace curly brackets with relevant information. 
+4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
 
 5. . [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`. 
 6. Run:
