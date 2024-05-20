@@ -1,7 +1,7 @@
 # memary: Open-Source Longterm Memory for Autonomous Agents <img alt="memary logo" src="diagrams/memary_logo.png">
 
-[![Documentation](https://img.shields.io/badge/DOCUMENTATION-memary-428BCA?style=flat&logo=open-book)](https://kingjulio8238.github.io/memarydocs/)
-[![Demo](https://img.shields.io/badge/Watch-YouTube-red?logo=youtube)](https://youtu.be/GnUU3_xK6bg)
+[![Documentation](https://img.shields.io/badge/Documentation-memary-428BCA?style=flat&logo=open-book)](https://kingjulio8238.github.io/memarydocs/)
+[![Demo](https://img.shields.io/badge/Watch-Demo-red?logo=youtube)](https://youtu.be/GnUU3_xK6bg)
 
 ## Why use memary?
 
