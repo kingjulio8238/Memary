@@ -474,19 +474,19 @@ class Agent(object):
             raise ("Unknown tool_name provided for removal.")
 
     def update_tools(self, updated_tools):
-        """Resets ReAct Agnet tools to only include
+        """Resets ReAct Agent tools to only include subset of default tools.
         Args:
-            updated_tools (list())
+            updated_tools (list(str)): list of default tools to include
         """
-        tools = []
-        for tool in updated_tools:
-            if tool == "Search":
-                tools.append(FunctionTool.from_defaults(fn=self.search))
-            elif tool == "Location":
-                tools.append(FunctionTool.from_defaults(fn=self.locate))
-            elif tool == "Vision":
-                tools.append(FunctionTool.from_defaults(fn=self.vision))
-            elif tool == "Stocks":
-                tools.append(FunctionTool.from_defaults(fn=self.stocks))
 
-        self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
+        self.tools.clear()
+        for tool in updated_tools:
+            if tool == "search":
+                self.tools["search"] = self.search
+            elif tool == "locate":
+                self.tools["locate"] = self.locate
+            elif tool == "vision":
+                self.tools["vision"] = self.vision
+            elif tool == "stocks":
+                self.tools["stocks"] = self.stocks
+        self._init_ReAct_agent()
