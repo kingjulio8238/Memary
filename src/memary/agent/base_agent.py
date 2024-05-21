@@ -117,9 +117,8 @@ class Agent(object):
         )
 
         self.debug = debug
-        self.tool_names = {}
-        self.tool_fns = []
-        self.init_default_tools(default_tools=include_from_defaults)
+        self.tools = {}
+        self._init_default_tools(default_tools=include_from_defaults)
 
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
@@ -427,8 +426,15 @@ class Agent(object):
                 entities.remove(exceptions)
         return entities
 
-    def init_default_tools(self, default_tools):
-        """initializes ReAct Agent from the default list of tools memary provides
+    def _init_ReAct_agent(self):
+        """Initializes ReAct Agent with list of tools in self.tools."""
+        tool_fns = []
+        for func in self.tools.values():
+            tool_fns.append(func)
+        self.routing_agent = ReActAgent.from_tools(tool_fns, llm=self.llm, verbose=True)
+
+    def _init_default_tools(self, default_tools):
+        """Onitializes ReAct Agent from the default list of tools memary provides.
         List of strings passed in during initialization denoting which default tools to include.
         Args:
             default_tools (list(str)): list of tool names in string form
@@ -436,54 +442,44 @@ class Agent(object):
 
         for tool in default_tools:
             if tool == "search":
-                self.tool_names['search'] = self.search
-                self.tool_fns.append(FunctionTool.from_defaults(fn=self.search))
+                self.tools["search"] = self.search
             elif tool == "locate":
-                self.tool_names['locate'] = self.locate
-                self.tool_fns.append(FunctionTool.from_defaults(fn=self.locate))
+                self.tools["locate"] = self.locate
             elif tool == "vision":
-                self.tool_names['vision'] = self.vision
-                self.tool_fns.append(FunctionTool.from_defaults(fn=self.vision))
+                self.tools["vision"] = self.vision
             elif tool == "stocks":
-                self.tool_names['stocks'] = self.stocks
-                self.tool_fns.append(FunctionTool.from_defaults(fn=self.stocks))
-        self.routing_agent = ReActAgent.from_tools(
-            self.tool_fns, llm=self.llm, verbose=True
-        )
+                self.tools["stocks"] = self.stocks
+        self._init_ReAct_agent()
 
-    def add_tool(self, tools):
-        """adds specified tools to be used by the ReAct Agent
+    def add_tool(self, tool_additions):
+        """Adds specified tools to be used by the ReAct Agent.
         Args:
             tools (dict(str, func)): dictionary of tools with names as keys and associated functions as values
         """
 
-        for tool_name in tools:
-            if tool_name not in self.tool_names:
-                self.tool_names[tool_name] = tools[tool_name]
-            self.tool_fns.append(FunctionTool.from_defaults(fn=tools[tool_name]))
+        for tool_name in tool_additions:
+            self.tools[tool_name] = tool_additions[tool_name]
+        self._init_ReAct_agent()
 
-        self.routing_agent = ReActAgent.from_tools(
-            self.tool_fns, llm=self.llm, verbose=True
-        )
-    
     def remove_tool(self, tool_name):
-        """removes specified tool from list of available tools for use by the ReAct Agent
+        """Removes specified tool from list of available tools for use by the ReAct Agent.
         Args:
             tool_name (str): name of tool to be removed in string form
         """
 
-        if tool_name in self.tool_names:
-            del self.tool_names[tool_name]
+        if tool_name in self.tools:
+            del self.tools[tool_name]
+            self._init_ReAct_agent()
         else:
             raise ("Unknown tool_name provided for removal.")
 
     def update_tools(self, updated_tools):
-        """includes only the updated tools in the ReAct Agent
+        """Resets ReAct Agnet tools to only include
         Args:
             updated_tools (list())
         """
         tools = []
-        for tool in updatedTools:
+        for tool in updated_tools:
             if tool == "Search":
                 tools.append(FunctionTool.from_defaults(fn=self.search))
             elif tool == "Location":
@@ -491,8 +487,6 @@ class Agent(object):
             elif tool == "Vision":
                 tools.append(FunctionTool.from_defaults(fn=self.vision))
             elif tool == "Stocks":
-                tools.append(FunctionTool.from_defaults(fn=self.stock_price))
-            # elif tool == "News":
-            #     tools.append(FunctionTool.from_defaults(fn=self.get_news))
+                tools.append(FunctionTool.from_defaults(fn=self.stocks))
 
         self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)

@@ -101,7 +101,7 @@ answer = ""
 external_response = ""
 st.title("memary")
 
-llm_models = ["gpt-3.5.turbo"]
+llm_models = ["gpt-3.5-turbo"]
 vision_models = ["gpt-4-vision-preview"]
 get_models(llm_models, vision_models)
 
@@ -136,13 +136,11 @@ if selected_llm_model and selected_vision_model:
 
     tools = st.multiselect(
         "Select tools to include:",
-        # ["Search", "Location", "Vision", "Stocks", "News"], #all options available
-        # ["Search", "Location", "Vision", "Stocks", "News"],) #options that are selected by default
-        ["Search", "Location", "Vision", "Stocks"],  # all options available
-        ["Search", "Location", "Vision", "Stocks"],
+        ["search", "locate", "vision", "stocks"],  # all options available
+        ["search", "locate", "vision", "stocks"],
     )  # options that are selected by default
 
-    if "Vision" in tools:
+    if "vision" in tools:
         img_url = st.text_input("URL of image, leave blank if no image to provide")
         if img_url:
             st.image(img_url, caption="Uploaded Image", use_column_width=True)
@@ -167,7 +165,6 @@ if selected_llm_model and selected_vision_model:
             st.write("Please select at least one tool")
             st.stop()
 
-        print("start update tools")
         chat_agent.update_tools(tools)
 
         if img_url:
