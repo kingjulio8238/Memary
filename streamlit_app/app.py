@@ -101,7 +101,7 @@ answer = ""
 external_response = ""
 st.title("memary")
 
-llm_models = ["gpt-3.5.turbo"]
+llm_models = ["gpt-3.5-turbo"]
 vision_models = ["gpt-4-vision-preview"]
 get_models(llm_models, vision_models)
 
