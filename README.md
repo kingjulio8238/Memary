@@ -89,6 +89,40 @@ cd streamlit_app
 streamlit run app.py
 ```
 
+## Usage
+```python
+from memary.agent.chat_agent import ChatAgent
+
+system_persona_txt = "data/system_persona.txt"
+user_persona_txt = "data/user_persona.txt"
+past_chat_json = "data/past_chat.json"
+memory_stream_json = "data/memory_stream.json"
+entity_knowledge_store_json = "data/entity_knowledge_store.json"
+chat_agent = ChatAgent(
+    "Personal Agent",
+    memory_stream_json,
+    entity_knowledge_store_json,
+    system_persona_txt,
+    user_persona_txt,
+    past_chat_json,
+)
+```
+Pass in subset of `['search', 'vision', 'locate', 'stocks']` as `include_from_defaults` for different set of default tools upon initialization.
+### Adding Custom Tools
+```python
+def multiply(a: int, b: int) -> int:
+    """Multiply two integers and returns the result integer"""
+    return a * b
+
+chat_agent.add_tool({"multiply": multiply})
+```
+More information about creating custom tools for the LlamaIndex ReAct Agent  can be found [here](https://docs.llamaindex.ai/en/stable/examples/agent/react_agent/).
+
+### Removing Tools
+```python
+chat_agent.remove_tool("multiply")
+```
+
 ## Detailed Component Breakdown
 
 ### Routing Agent

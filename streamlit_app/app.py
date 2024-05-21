@@ -140,6 +140,7 @@ if selected_llm_model and selected_vision_model:
         ["search", "locate", "vision", "stocks"],
     )  # options that are selected by default
 
+    img_url = ""
     if "vision" in tools:
         img_url = st.text_input("URL of image, leave blank if no image to provide")
         if img_url:
