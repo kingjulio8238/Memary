@@ -136,9 +136,9 @@ if selected_llm_model and selected_vision_model:
 
     tools = st.multiselect(
         "Select tools to include:",
-        ["search", "locate", "vision", "stocks"],  # all options available
-        ["search", "locate", "vision", "stocks"],
-    )  # options that are selected by default
+        ["search", "locate", "vision", "stocks"], # all options available
+        ["search", "locate", "vision", "stocks"], # options that are selected by default
+    )  
 
     img_url = ""
     if "vision" in tools:

@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from memary.agent.base_agent import Agent
+import logging
 
 
 class ChatAgent(Agent):
@@ -56,18 +57,18 @@ class ChatAgent(Agent):
         return self.contexts
 
     def clearMemory(self):
+        """Clears Neo4j database and memory stream/entity knowledge store."""
+
+        logging.info("Deleting memory stream and entity knowledge store...")
         self.memory_stream.clear_memory()
         self.entity_knowledge_store.clear_memory()
 
-        # print("removed from mem stream and entity knowdlege store ")
-        "clears knowledge neo4j database"
-
-        print("Deleting nodes from Neo4j...")
+        logging.info("Deleting nodes from Neo4j...")
         try:
             self.graph_store.query("MATCH (n) DETACH DELETE n")
         except Exception as e:
-            print(f"Error deleting nodes: {e}")
-        print("Nodes deleted from Neo4j.")
+            logging.error(f"Error deleting nodes: {e}")
+        logging.info("Nodes deleted from Neo4j.")
 
     def _replace_memory_from_llm_message(self):
         """Replace the memory_stream from the llm_message."""
