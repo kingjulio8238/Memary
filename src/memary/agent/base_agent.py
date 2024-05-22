@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Callable, Dict, List
 
 import geocoder
 import googlemaps
@@ -446,7 +446,7 @@ class Agent(object):
                 self.tools["stocks"] = self.stocks
         self._init_ReAct_agent()
 
-    def add_tool(self, tool_additions: Dict[str, function]):
+    def add_tool(self, tool_additions: Dict[str, Callable[..., Any]]):
         """Adds specified tools to be used by the ReAct Agent.
         Args:
             tools (dict(str, func)): dictionary of tools with names as keys and associated functions as values
