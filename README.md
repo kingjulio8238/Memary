@@ -40,8 +40,8 @@ pip install memary
 
 ## Demo
 **Notes:** memary currently assumes the local installation method and currently supports any models available through Ollama:
-- LLM running locally using Ollama **OR** `gpt-3.5-turbo`
-- Vision model running locally using Ollama **OR** `gpt-4-vision-preview`
+- LLM running locally using Ollama (Llama 3 8B/40B as suggested defaults) **OR** `gpt-3.5-turbo`
+- Vision model running locally using Ollama (LLaVA as suggested default) **OR** `gpt-4-vision-preview`
 
 memary will default to the locally run models unless explicitly specified.
 
