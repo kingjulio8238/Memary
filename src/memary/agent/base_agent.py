@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 from pathlib import Path
+from typing import Any, Callable, Dict, List
 
 import geocoder
 import googlemaps
@@ -9,12 +10,8 @@ import numpy as np
 import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
-from llama_index.core import (
-    KnowledgeGraphIndex,
-    Settings,
-    SimpleDirectoryReader,
-    StorageContext,
-)
+from llama_index.core import (KnowledgeGraphIndex, Settings,
+                              SimpleDirectoryReader, StorageContext)
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
 from llama_index.core.query_engine import RetrieverQueryEngine
@@ -28,10 +25,8 @@ from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
-from memary.agent.llm_api.tools import (
-    ollama_chat_completions_request,
-    openai_chat_completions_request,
-)
+from memary.agent.llm_api.tools import (ollama_chat_completions_request,
+                                        openai_chat_completions_request)
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
@@ -65,6 +60,7 @@ class Agent(object):
         past_chat_json,
         llm_model_name="llama3",
         vision_model_name="llava",
+        include_from_defaults=["search", "locate", "vision", "stocks"],
         debug=True,
     ):
         load_dotenv()
@@ -99,7 +95,6 @@ class Agent(object):
         )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-        # self.news_data_key = os.getenv("NEWS_DATA_API_KEY")
 
         self.storage_context = StorageContext.from_defaults(
             graph_store=self.graph_store
@@ -116,18 +111,9 @@ class Agent(object):
             graph_rag_retriever,
         )
 
-        search_tool = FunctionTool.from_defaults(fn=self.search)
-        locate_tool = FunctionTool.from_defaults(fn=self.locate)
-        vision_tool = FunctionTool.from_defaults(fn=self.vision)
-        stock_tool = FunctionTool.from_defaults(fn=self.stock_price)
-        # news_tool = FunctionTool.from_defaults(fn=self.get_news)
-
         self.debug = debug
-        self.routing_agent = ReActAgent.from_tools(
-            [search_tool, locate_tool, vision_tool, stock_tool],
-            llm=self.llm,
-            verbose=True,
-        )
+        self.tools = {}
+        self._init_default_tools(default_tools=include_from_defaults)
 
         self.memory_stream = MemoryStream(memory_stream_json)
         self.entity_knowledge_store = EntityKnowledgeStore(entity_knowledge_store_json)
@@ -211,7 +197,7 @@ class Agent(object):
         os.remove(query_image_path)  # delete image after use
         return response
 
-    def stock_price(self, query: str) -> str:
+    def stocks(self, query: str) -> str:
         """Get the stock price of the company given the ticker"""
         request_api = requests.get(
             r"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="
@@ -435,19 +421,67 @@ class Agent(object):
                 entities.remove(exceptions)
         return entities
 
-    def update_tools(self, updatedTools):
-        print("recieved update tools")
-        tools = []
-        for tool in updatedTools:
-            if tool == "Search":
-                tools.append(FunctionTool.from_defaults(fn=self.search))
-            elif tool == "Location":
-                tools.append(FunctionTool.from_defaults(fn=self.locate))
-            elif tool == "Vision":
-                tools.append(FunctionTool.from_defaults(fn=self.vision))
-            elif tool == "Stocks":
-                tools.append(FunctionTool.from_defaults(fn=self.stock_price))
-            # elif tool == "News":
-            #     tools.append(FunctionTool.from_defaults(fn=self.get_news))
+    def _init_ReAct_agent(self):
+        """Initializes ReAct Agent with list of tools in self.tools."""
+        tool_fns = []
+        for func in self.tools.values():
+            tool_fns.append(FunctionTool.from_defaults(fn=func))
+        self.routing_agent = ReActAgent.from_tools(tool_fns, llm=self.llm, verbose=True)
 
-        self.routing_agent = ReActAgent.from_tools(tools, llm=self.llm, verbose=True)
+    def _init_default_tools(self, default_tools: List[str]):
+        """Initializes ReAct Agent from the default list of tools memary provides.
+        List of strings passed in during initialization denoting which default tools to include.
+        Args:
+            default_tools (list(str)): list of tool names in string form
+        """
+
+        for tool in default_tools:
+            if tool == "search":
+                self.tools["search"] = self.search
+            elif tool == "locate":
+                self.tools["locate"] = self.locate
+            elif tool == "vision":
+                self.tools["vision"] = self.vision
+            elif tool == "stocks":
+                self.tools["stocks"] = self.stocks
+        self._init_ReAct_agent()
+
+    def add_tool(self, tool_additions: Dict[str, Callable[..., Any]]):
+        """Adds specified tools to be used by the ReAct Agent.
+        Args:
+            tools (dict(str, func)): dictionary of tools with names as keys and associated functions as values
+        """
+
+        for tool_name in tool_additions:
+            self.tools[tool_name] = tool_additions[tool_name]
+        self._init_ReAct_agent()
+
+    def remove_tool(self, tool_name: str):
+        """Removes specified tool from list of available tools for use by the ReAct Agent.
+        Args:
+            tool_name (str): name of tool to be removed in string form
+        """
+
+        if tool_name in self.tools:
+            del self.tools[tool_name]
+            self._init_ReAct_agent()
+        else:
+            raise ("Unknown tool_name provided for removal.")
+
+    def update_tools(self, updated_tools: List[str]):
+        """Resets ReAct Agent tools to only include subset of default tools.
+        Args:
+            updated_tools (list(str)): list of default tools to include
+        """
+
+        self.tools.clear()
+        for tool in updated_tools:
+            if tool == "search":
+                self.tools["search"] = self.search
+            elif tool == "locate":
+                self.tools["locate"] = self.locate
+            elif tool == "vision":
+                self.tools["vision"] = self.vision
+            elif tool == "stocks":
+                self.tools["stocks"] = self.stocks
+        self._init_ReAct_agent()
