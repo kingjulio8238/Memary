@@ -24,6 +24,14 @@ The above process includes the routing agent, knoweldge graph and memory module 
 
 Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
+## Example use case projects
+
+1. Packing Agent
+
+Packing-Agent is an agent that remembers where you packed your items so that you can later chat with the agent to ask where certain items are placed. It utilized memary long term memory and knowledge graph to achieve this functionality.
+
+[Github Link:](https://github.com/shreybirmiwal/packing-memary)
+
 ## Installation
 1. With pip:
 ```
