@@ -77,7 +77,9 @@ class Agent(object):
         self.neo4j_username = os.getenv("NEO4J_USER")
         self.neo4j_password = os.getenv("NEO4J_PW")
         self.neo4j_url = os.getenv("NEO4J_URL")
-        database = "neo4j"
+        # Adding the database also as env variable
+        database = os.getenv("NEO4J_DB")
+        # database = "neo4j"
 
         # initialize APIs
         self.load_llm_model(llm_model_name)
