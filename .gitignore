@@ -4,3 +4,4 @@
 dist/
 README_hidden.md
 **/__pycache__/
+.idea

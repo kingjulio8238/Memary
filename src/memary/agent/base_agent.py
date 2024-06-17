@@ -71,10 +71,15 @@ class Agent(object):
         pplx_api_key = os.getenv("PERPLEXITY_API_KEY")
 
         # Neo4j credentials
-        self.neo4j_username = "neo4j"
+        # self.neo4j_username = "neo4j"
+        # Rajib - Neo4J user was hardcoded.
+        # Moved it to .env
+        self.neo4j_username = os.getenv("NEO4J_USER")
         self.neo4j_password = os.getenv("NEO4J_PW")
         self.neo4j_url = os.getenv("NEO4J_URL")
-        database = "neo4j"
+        # Adding the database also as env variable
+        database = os.getenv("NEO4J_DB")
+        # database = "neo4j"
 
         # initialize APIs
         self.load_llm_model(llm_model_name)

@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
@@ -76,6 +77,29 @@ class BaseMemory(ABC):
         else:
             logging.info("Invalid index. Memory item not removed.")
             return False
+
+    def calculate_retention_score(self, strength:int,days_elapsed_since_last_used:int):
+        """
+        strength: This parameter denotes the strength of the memory.The strenght of the memory
+        is equivalent to the number of times the memory item has been accessed. In case of entity,
+        this will be the number of times(count), the entity has been used
+        days_elapsed_since_last_used: This is the duration in days that has elapsed from today till the
+        memory was last accessed.
+        """
+        score = math.exp(-days_elapsed_since_last_used / strength)
+
+        return score
+
+    def forget_memory(self,threshold_retention_score):
+        """
+        This function calcualtes the retention score for each memory item
+        and then keeps the one whose score is more than threshold
+        """
+        today = datetime.today()
+        self.memory = [item for item in self.return_memory if
+                             self.calculate_retention_score(item.count, (today - item.date).days) >= threshold_retention_score]
+
+        logging.info("Old memory has been forgotten.")
 
     def clear_memory(self):
         self.memory = []
