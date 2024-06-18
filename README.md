@@ -427,7 +427,7 @@ def _summarize_contexts(self, total_tokens: int):
 memary's **chat interface** offers a portal to access agent memories, integrating capabilitiies such as **searching**, **removing** and **viewing** agent memories **over specified periods** and more all under one umbrella available in your dashboard. 
 
 ### Analyze Agent Progress 🧠
-Track how agents develop their memory. We will provide access to relevant metrics to represent the growth of agent memories over time which will be available in your dashboard. 
+**Track how your agents develop their memory.** We will provide access to relevant metrics to represent the growth of agent memories over time which will be available in your dashboard. 
 
 ### Track Memories ⏮️
 memary **breaks down agent memory for each response generated**. A list of agent responses with their respective memories will be avilable in your dashbord. Human input (good/bad response) can help your systems improve. 
