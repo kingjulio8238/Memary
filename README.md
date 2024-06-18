@@ -20,7 +20,7 @@ Agents promote human-type reasoning and is a great advancement towards building 
 | Features                                           |  Benefits                                                   |
 |---------------------------------------------------|----------------------------------------------------------------|
 | 🗣️ Chat to Agent Memory                        | Access certain memories             |
-| 🧠 Analyze Agent Progress | Track how agents develop their memory over time        |
+| 🧠 Analyze Agent Progress | Track how agents develop their memories over time        |
 | ⏮️ Rewind Executions                                 | Review agent memories to understand specific responses |
 | 🧑‍🧑‍🧒‍🧒 Audience Preferences                      | Understand audiences' best and most recent preferences                    |
 | ✍🏻 memaryParse                            | Inject proprietary data into agent memory & combine parsers for advanced data ingestion      |
