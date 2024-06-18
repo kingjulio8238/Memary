@@ -1,4 +1,6 @@
-# memary: Emulating Human Memory for Agentic Systems  <img alt="memary logo" src="diagrams/memary_logo.png">
+<p align="center">
+  <img alt="memary_logo" src="https://github.com/kingjulio8238/memary/blob/update-descriptions/diagrams/memary-logo-new.png?raw=true">
+</p>
 
 [![Documentation](https://img.shields.io/badge/Documentation-memary-428BCA?style=flat&logo=open-book)](https://kingjulio8238.github.io/memarydocs/)
 [![Demo](https://img.shields.io/badge/Watch-Demo-red?logo=youtube)](https://youtu.be/GnUU3_xK6bg)
@@ -430,7 +432,7 @@ def _summarize_contexts(self, total_tokens: int):
 ## Future Features 🔜 
 
 ### Speak to Your Agents Memory 
-memary's **chat interface** offers a portal to access agent memories, integrating capabilitiies such as **searching** (e.g., "What do we know about Emily?"), **removing** memories (e.g., "Remove Emily as a customer"), viewing agent memory **over specified periods** ("What did agent X learn today?") and more all under one umbrella. All this is available in your dashboard. 
+memary's **chat interface** offers a portal to access agent memories, integrating capabilitiies such as **searching**, **removing** and **viewing** agent memories **over specified periods** and more all under one umbrella available in your dashboard. 
 
 ### Track Memories 
 memary **breaks down agent memory for each response generated**. A list of agent responses with their respective memories will be avilable in your dashbord. Human input (good/bad response) can help your systems improve. 
