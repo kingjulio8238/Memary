@@ -10,9 +10,9 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
-## Manage Your AI Agent Memories
+## Manage Your Agent Memories
 
-Agents promote human-type reasoning and is an advancement towards building AGI and understanding ourselves. Memory is a key component of how humans approach tasks and should be weighted the same when building agentic systems. memary emulates human memory to advance these agentic systems. 
+Agents promote human-type reasoning and is a great advancement towards building AGI and understanding ourselves as humans. Memory is a key component of how humans approach tasks and should be weighted the same when building agentic systems. **memary** emulates human memory to advance these agentic systems. 
 
 ## Memory Dashboard 🧠
 (coming soon)
@@ -20,11 +20,11 @@ Agents promote human-type reasoning and is an advancement towards building AGI a
 | Features                                           |  Benefits                                                   |
 |---------------------------------------------------|----------------------------------------------------------------|
 | 🗣️ Chat to Agent Memory                        | Access certain memories             |
-| 🧠 Analyze Agent Learnings | Track how agents develop their memory over time        |
+| 🧠 Analyze Agent Progress | Track how agents develop their memory over time        |
 | ⏮️ Rewind Executions                                 | Review agent memories to understand specific responses |
 | 🧑‍🧑‍🧒‍🧒 Audience Preferences                      | Understand audiences' best and most recent preferences                    |
-| ✍🏻 memaryParse                            | Inject proprietary data into agent memory     |
-| 🔗 Parent Parsers                          | Combine parsers for advanced data ingestion                      |
+| ✍🏻 memaryParse                            | Inject proprietary data into agent memory & combine parsers for advanced data ingestion      |
+| 🗂️ memaryRetrieval                          | Access memories & combine retrievers for advanced memory retrieval                       |
 | 🧪 Configure Agent Memory                   | Search and combine memory databases            |
 | 🛝 Playgrounds                    | Specify models and tools used as well as benchmark different memory techniques       |
 | 🔍 Stay Up To Date                       | Receive notifications when agent memories have been added, updated or removed          |
@@ -56,21 +56,7 @@ At the time of writing, memary assumes installation of local models and we curre
 
 memary will default to the locally run models unless explicitly specified. Additionally, memary allows developers to **easily switch between downloaded models**. 
 
-The current structure of memary is detailed in the diagram below.
-
-<img width="1410" alt="memary overview" src="diagrams/system.png">
-
-At the time of writing, the above system design includes the routing agent, knoweldge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
-
-Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
-
 ### Run memary
-**Note:** memary currently assumes the local installation method and currently supports any models available through Ollama:
-- LLM running locally using Ollama (Llama 3 8B/40B as suggested defaults) **OR** `gpt-3.5-turbo`
-- Vision model running locally using Ollama (LLaVA as suggested default) **OR** `gpt-4-vision-preview`
-
-memary will default to the locally run models unless explicitly specified.
-
 **Steps**
 1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama).
 
@@ -159,8 +145,14 @@ More information about creating custom tools for the LlamaIndex ReAct Agent  can
 ```python
 chat_agent.remove_tool("multiply")
 ```
-
 ## Core Concepts 🧪
+The current structure of memary is detailed in the diagram below.
+
+<img width="1410" alt="memary overview" src="diagrams/system.png">
+
+At the time of writing, the above system design includes the routing agent, knoweldge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
+
+Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
 ### Principles 
 memary integrates itself onto your existing agents with as little developer implementation as possible. We achieve this sticking to a few principles. 
@@ -431,28 +423,31 @@ def _summarize_contexts(self, total_tokens: int):
 
 ## Future Features 🔜 
 
-### Speak to Your Agents Memory 
+### Speak to Your Agents Memory 🗣️
 memary's **chat interface** offers a portal to access agent memories, integrating capabilitiies such as **searching**, **removing** and **viewing** agent memories **over specified periods** and more all under one umbrella available in your dashboard. 
 
-### Track Memories 
+### Analyze Agent Progress 🧠
+Track how agents develop their memory. We will provide access to relevant metrics to represent the growth of agent memories over time which will be available in your dashboard. 
+
+### Track Memories ⏮️
 memary **breaks down agent memory for each response generated**. A list of agent responses with their respective memories will be avilable in your dashbord. Human input (good/bad response) can help your systems improve. 
 
-### Audience Preferences 
+### Audience Preferences 🧑‍🧑‍🧒‍🧒
 Through our proprietary memory modules, we are able to infer audience preferences for certain time periods. Audiences' **best and most recent** preferences are continously updated and will be available in your dashboard.  
 
-### Customizable Memory  
+### memaryParse ✍🏻
+Parse and clean your proprietry data before inserting into your agent memory. memary **supports various file types** including table and image extraction. Combine different parsers to form a **parent parser** with advanced capabilities. Also access templates for predefined database schemas and set of node relationships or **define your own!** This is all available in your dashboard. 
+
+### memaryRetrieval 🗂️
+Use different techniques to retrieve agent memory. Also combine various retrievers to form a **parent retriever** with advanced capabilities. All avilable in your dashboard. 
+
+### Customizable Memory 🧪
 memary deploys knowledge graphs to **track agent actions**. View, search and configure memory for your purposes. Join different memories together for improved retrieval and toggle between your favorite graph providers. All available in your dashboard.  
 
-### Playgrounds 
+### Playgrounds 🛝
 - **Tool** Playground: Simply define python functions and add it as one of your agent tools. View all available tools and remove any if necessary. Do this all in your dashboard!
 - **Model** Playground: Select specific models for tasks across memary to lower system LLM costs. All models deployed on HF will be avilable in your dashboard.  
 - **Benchmarking** Playground: Easily run different memary configurations against each other to evaluate which memory options are more suitable for a specific task. 
-
-### memaryParse 
-Parse and clean your proprietry data before inserting into your agent memory. memary **supports various file types** including table and image extraction. Combine different parsers to form a **parent parser** with advanced capabilities. Also access templates for predefined database schemas and set of node relationships or **define your own!** This is all available in your dashboard. 
-
-### memaryRetrieval 
-Use different techniques to retrieve agent memory. Also combine various retrievers to form a **parent retriever** with advanced capabilities. All avilable in your dashboard. 
 
 ## License 
 
