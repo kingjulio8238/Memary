@@ -1,7 +1,7 @@
-from typing import Optional, List
+import logging
+from typing import List, Optional
 
 from memary.agent.base_agent import Agent
-import logging
 
 
 class ChatAgent(Agent):

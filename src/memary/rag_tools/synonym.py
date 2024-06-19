@@ -1,10 +1,13 @@
-from langchain_openai import OpenAI
+import os
+from typing import List
+
+from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from typing import List
-import os
+from langchain_openai import OpenAI
+
 from memary.rag_tools.output import Output
-from dotenv import load_dotenv
+
 
 def custom_synonym_expand_fn(keywords: str) -> List[str]:
     load_dotenv()
@@ -40,6 +43,7 @@ def custom_synonym_expand_fn(keywords: str) -> List[str]:
             l.append(synonym.capitalize())
 
     return l
+
 
 # testing
 # print(custom_synonym_expand_fn("[Nvidia]"))

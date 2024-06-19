@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import OpenAI
-
 from output import Output
 
 

@@ -23,13 +23,11 @@ class EntityKnowledgeStore(BaseMemory):
     def return_memory(self):
         return self.knowledge_memory
 
-
     def load_memory_from_file(self):
         try:
-            with open(self.file_name, 'r') as file:
+            with open(self.file_name, "r") as file:
                 self.knowledge_memory = [
-                    KnowledgeMemoryItem.from_dict(item)
-                    for item in json.load(file)
+                    KnowledgeMemoryItem.from_dict(item) for item in json.load(file)
                 ]
             logging.info(
                 f"Entity Knowledge Memory loaded from {self.file_name} successfully."
@@ -46,10 +44,8 @@ class EntityKnowledgeStore(BaseMemory):
         Args:
             memory_stream (list): list of MemoryItem
         """
-        knowledge_meory = self._convert_memory_to_knowledge_memory(
-            memory_stream)
+        knowledge_meory = self._convert_memory_to_knowledge_memory(memory_stream)
         self._update_knowledge_memory(knowledge_meory)
-
 
     def _update_knowledge_memory(self, knowledge_memory: list):
         """update self.knowledge memory with new knowledge memory items
@@ -67,7 +63,8 @@ class EntityKnowledgeStore(BaseMemory):
                 self.knowledge_memory.append(item)
 
     def _convert_memory_to_knowledge_memory(
-            self, memory_stream: list) -> list[KnowledgeMemoryItem]:
+        self, memory_stream: list
+    ) -> list[KnowledgeMemoryItem]:
         """Converts memory to knowledge memory
 
         Returns:
@@ -81,12 +78,9 @@ class EntityKnowledgeStore(BaseMemory):
                 item.date for item in memory_stream if item.entity == entity
             ]
             knowledge_memory.append(
-                KnowledgeMemoryItem(entity, len(memory_dates),
-                                    max(memory_dates)))
+                KnowledgeMemoryItem(entity, len(memory_dates), max(memory_dates))
+            )
         return knowledge_memory
 
     def get_memory(self) -> list[KnowledgeMemoryItem]:
         return self.knowledge_memory
-
-    
-    

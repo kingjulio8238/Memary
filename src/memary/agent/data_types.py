@@ -11,6 +11,7 @@ def save_json(filename, data):
 @dataclass
 class Context:
     """Context class to store the role and content of the message."""
+
     role: str  # system or user
     content: str
 
@@ -18,7 +19,7 @@ class Context:
         return f"{self.role}: {self.content} |"
 
     def to_dict(self):
-        return {'role': self.role, 'content': self.content}
+        return {"role": self.role, "content": self.content}
 
 
 class Message:
@@ -37,7 +38,7 @@ class Message:
             "model": model,
             "messages": self.contexts,
             "memory_stream": [],
-            "knowledge_entity_store": []
+            "knowledge_entity_store": [],
         }
 
         # self.prompt_tokens = count_tokens(self.contexts)
@@ -90,4 +91,7 @@ class Message:
         """Saves the contexts to the json file.
         We don't save the system and user personas (first two messages)
         """
-        save_json(self.past_chat_json, [message.to_dict() for message in self.llm_message['messages'][2:]])
+        save_json(
+            self.past_chat_json,
+            [message.to_dict() for message in self.llm_message["messages"][2:]],
+        )

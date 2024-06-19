@@ -1,7 +1,8 @@
 # From MemGPT llm_api_tools.py:
 
-import urllib
 import logging
+import urllib
+
 import requests
 
 

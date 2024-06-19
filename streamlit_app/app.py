@@ -96,6 +96,7 @@ def get_models(llm_models, vision_models):
     except:
         print("No Ollama instance detected.")
 
+
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
@@ -136,9 +137,14 @@ if selected_llm_model and selected_vision_model:
 
     tools = st.multiselect(
         "Select tools to include:",
-        ["search", "locate", "vision", "stocks"], # all options available
-        ["search", "locate", "vision", "stocks"], # options that are selected by default
-    )  
+        ["search", "locate", "vision", "stocks"],  # all options available
+        [
+            "search",
+            "locate",
+            "vision",
+            "stocks",
+        ],  # options that are selected by default
+    )
 
     img_url = ""
     if "vision" in tools:

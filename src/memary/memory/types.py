@@ -1,4 +1,4 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 
 
@@ -11,12 +11,11 @@ class MemoryItem:
         return f"{self.entity}, {self.date.isoformat()}"
 
     def to_dict(self):
-        return {'entity': self.entity, 'date': str(self.date.isoformat())}
+        return {"entity": self.entity, "date": str(self.date.isoformat())}
 
     @classmethod
     def from_dict(cls, data):
-        return cls(entity=data['entity'],
-                   date=datetime.fromisoformat(data['date']))
+        return cls(entity=data["entity"], date=datetime.fromisoformat(data["date"]))
 
 
 @dataclass
@@ -30,13 +29,15 @@ class KnowledgeMemoryItem:
 
     def to_dict(self):
         return {
-            'entity': self.entity,
-            'count': self.count,
-            'date': str(self.date.isoformat())
+            "entity": self.entity,
+            "count": self.count,
+            "date": str(self.date.isoformat()),
         }
 
     @classmethod
     def from_dict(cls, data):
-        return cls(entity=data['entity'],
-                   count=data['count'],
-                   date=datetime.fromisoformat(data['date']))
+        return cls(
+            entity=data["entity"],
+            count=data["count"],
+            date=datetime.fromisoformat(data["date"]),
+        )

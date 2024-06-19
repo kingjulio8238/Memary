@@ -2,12 +2,11 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
+from entity_extraction.output import Output
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import OpenAI
-
-from entity_extraction.output import Output
 
 
 def custom_entity_extract_fn(query: str) -> List[str]:
@@ -26,9 +25,7 @@ def custom_entity_extract_fn(query: str) -> List[str]:
     prompt = PromptTemplate(
         template=template,
         input_variables=["query"],
-        partial_variables={
-            "format_instructions": parser.get_format_instructions()
-        },
+        partial_variables={"format_instructions": parser.get_format_instructions()},
     )
 
     chain = prompt | llm | parser

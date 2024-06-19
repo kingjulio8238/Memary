@@ -27,22 +27,20 @@ class MemoryStream(BaseMemory):
         return self.memory
 
     def add_memory(self, entities):
-        self.memory.extend([
-            MemoryItem(str(entity),
-                       datetime.now().replace(microsecond=0))
-            for entity in entities
-        ])
+        self.memory.extend(
+            [
+                MemoryItem(str(entity), datetime.now().replace(microsecond=0))
+                for entity in entities
+            ]
+        )
 
     def get_memory(self) -> list[MemoryItem]:
         return self.memory
-    
 
     def load_memory_from_file(self):
         try:
-            with open(self.file_name, 'r') as file:
-                self.memory = [
-                    MemoryItem.from_dict(item) for item in json.load(file)
-                ]
+            with open(self.file_name, "r") as file:
+                self.memory = [MemoryItem.from_dict(item) for item in json.load(file)]
             logging.info(f"Memory loaded from {self.file_name} successfully.")
         except FileNotFoundError:
             logging.info("File not found. Starting with an empty memory.")
