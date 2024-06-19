@@ -10,14 +10,20 @@ import numpy as np
 import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
-from llama_index.core import (KnowledgeGraphIndex, Settings,
-                              SimpleDirectoryReader, StorageContext)
+from llama_index.core import PropertyGraphIndex, Settings, SimpleDirectoryReader
 from llama_index.core.agent import ReActAgent
+from llama_index.core.indices.property_graph import (
+    ImplicitPathExtractor,
+    LLMSynonymRetriever,
+    PGRetriever,
+    SimpleLLMPathExtractor,
+    VectorContextRetriever,
+)
 from llama_index.core.llms import ChatMessage
 from llama_index.core.query_engine import RetrieverQueryEngine
-from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
-from llama_index.graph_stores.neo4j import Neo4jGraphStore
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.graph_stores.neo4j import Neo4jPropertyGraphStore
 from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
@@ -25,10 +31,12 @@ from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
-from memary.agent.llm_api.tools import (ollama_chat_completions_request,
-                                        openai_chat_completions_request)
+from memary.agent.llm_api.tools import (
+    ollama_chat_completions_request,
+    openai_chat_completions_request,
+)
 from memary.memory import EntityKnowledgeStore, MemoryStream
-from memary.synonym_expand.synonym import custom_synonym_expand_fn
+from memary.rag_tools.parse import parse_fn
 
 MAX_ENTITIES_FROM_KG = 5
 ENTITY_EXCEPTIONS = ["Unknown relation"]
@@ -79,36 +87,54 @@ class Agent(object):
         # initialize APIs
         self.load_llm_model(llm_model_name)
         self.load_vision_model(vision_model_name)
+        self.embed_model = OpenAIEmbedding(model_name="text-embedding-3-small")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
+        self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
         Settings.llm = self.llm
         Settings.chunk_size = 512
 
-        # initialize Neo4j graph resources
-        self.graph_store = Neo4jGraphStore(
+        # initialize graph resources
+        self._graph_store = Neo4jPropertyGraphStore(
             username=self.neo4j_username,
             password=self.neo4j_password,
             url=self.neo4j_url,
-            database=database,
         )
-
-        self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-
-        self.storage_context = StorageContext.from_defaults(
-            graph_store=self.graph_store
-        )
-        graph_rag_retriever = KnowledgeGraphRAGRetriever(
-            storage_context=self.storage_context,
-            verbose=True,
+        # extractors
+        simple_llm_path_extractor = SimpleLLMPathExtractor(
             llm=self.llm,
-            retriever_mode="keyword",
-            synonym_expand_fn=custom_synonym_expand_fn,
+            max_paths_per_chunk=10,
+            num_workers=4,
+        )
+        implicit_path_extractor = ImplicitPathExtractor()
+        self._kg_extractors = [simple_llm_path_extractor, implicit_path_extractor]
+        self._index = PropertyGraphIndex.from_existing(
+            property_graph_index=self._graph_store,
+            llm=self.llm,
+            embed_model=self.embed_model,
         )
 
-        self.query_engine = RetrieverQueryEngine.from_args(
-            graph_rag_retriever,
+        # retrievers
+        vector_context_retriever = VectorContextRetriever(
+            graph_store=self._graph_store,
+            embed_model=self.embed_mode,
+            similarity_top_k=2,
+            path_depth=1,
+        )
+        llm_synonym_retriever = LLMSynonymRetriever(
+            graph_store=self._graph_store,
+            llm=self.llm,
+            output_parsing_fn=parse_fn,
+            max_keywords=10,
+            path_depth=1,
+        )
+        self._retriever = PGRetriever(
+            sub_retrievers=[vector_context_retriever, llm_synonym_retriever]
+        )
+        self._query_engine = RetrieverQueryEngine.from_args(
+            self._retriever,
         )
 
         self.debug = debug
@@ -164,7 +190,7 @@ class Agent(object):
 
     def search(self, query: str) -> str:
         """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
-        response = self.query_engine.query(query)
+        response = self._query_engine.query(query)
 
         if response.metadata is None:
             return self.external_query(query)
@@ -228,11 +254,7 @@ class Agent(object):
             input_files=["data/external_response.txt"]
         ).load_data()
 
-        KnowledgeGraphIndex.from_documents(
-            documents,
-            storage_context=self.storage_context,
-            max_triplets_per_chunk=8,
-        )
+        self._index.insert(documents)
 
     def check_KG(self, query: str) -> bool:
         """Check if the query is in the knowledge graph.
@@ -243,7 +265,7 @@ class Agent(object):
         Returns:
             bool: True if the query is in the knowledge graph, False otherwise
         """
-        response = self.query_engine.query(query)
+        response = self._query_engine.query(query)
 
         if response.metadata is None:
             return False
@@ -386,7 +408,7 @@ class Agent(object):
 
         if return_entity:
             # the query above already adds final response to KG so entities will be present in the KG
-            return response, self.get_entity(self.query_engine.retrieve(query))
+            return response, self.get_entity(self._query_engine.retrieve(query))
         return response
 
     def get_entity(self, retrieve) -> list[str]:
