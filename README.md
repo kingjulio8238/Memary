@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="memary_logo" src="https://github.com/kingjulio8238/memary/blob/update-descriptions/diagrams/memary-logo-new.png?raw=true">
+  <img alt="memary_logo" src="https://github.com/kingjulio8238/memary/blob/update-descriptions/diagrams/memary-logo-latest.png?raw=true">
 </p>
 
 [![Documentation](https://img.shields.io/badge/Documentation-memary-428BCA?style=flat&logo=open-book)](https://kingjulio8238.github.io/memarydocs/)
