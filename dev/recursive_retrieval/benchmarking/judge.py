@@ -15,7 +15,7 @@ def custom_response_evaluator(query: str, response: str) -> Dict[str, int]:
     parser = JsonOutputParser(pydantic_object=Output)
 
     template = """
-    You are an expert response judger. Score the provided respose a score from 0 to 1000 with 0 being the worst and 1000 being the best.
+    You are an expert response judger. Score the provided response a score from 0 to 1000 with 0 being the worst and 1000 being the best.
     Give separate scores for conciseness, informativeness and accuracy.
     For conciceness, focus on how succinct the response is and how clearly the information is conveyed using minimal words.
     For informativeness, focus on how comprehensive and relevant the contents of the response is to the given query.
@@ -27,9 +27,9 @@ def custom_response_evaluator(query: str, response: str) -> Dict[str, int]:
     The Harry Potter books have been massively popular, spawning a highly successful film series that ran from 2001 to 2011, as well as a play, video games, theme park attractions, and a vast amount of fan fiction.
     The series is considered a landmark of 20th and 21st century children's literature.
     In summary, Harry Potter is a beloved fantasy series that has had a tremendous cultural impact through its books, films, and expanded universe.
-    
+
     The judge should give a score of 300 for conciseness, 600 to informativeness, 900 for accuracy.
-    
+
     Format: {format_instructions}
 
     Query: {query}

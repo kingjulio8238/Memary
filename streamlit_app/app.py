@@ -1,6 +1,4 @@
-import os
 import random
-import sys
 import textwrap
 
 import ollama
@@ -11,14 +9,7 @@ from dotenv import load_dotenv
 from neo4j import GraphDatabase
 from pyvis.network import Network
 
-# src should sit in the same level as /streamlit_app
-curr_dir = os.getcwd()
-
-parent_dir = os.path.dirname(curr_dir)
-# parent_dir = os.path.dirname(curr_dir) + '/memary' #Use this if error: src not found. Also move the '/streamlit_app/data' folder to the 'memary' folder, outside the 'src' folder.
-
-sys.path.append(parent_dir + "/src")
-
+# Test the streamlit app after installing memary
 from memary.agent.chat_agent import ChatAgent
 
 load_dotenv()
@@ -93,8 +84,9 @@ def get_models(llm_models, vision_models):
             vision_models.append("llava:latest")
             models.remove("llava:latest")
         llm_models.extend(list(models))
-    except:
+    except Exception:
         print("No Ollama instance detected.")
+
 
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
@@ -136,9 +128,14 @@ if selected_llm_model and selected_vision_model:
 
     tools = st.multiselect(
         "Select tools to include:",
-        ["search", "locate", "vision", "stocks"], # all options available
-        ["search", "locate", "vision", "stocks"], # options that are selected by default
-    )  
+        ["search", "locate", "vision", "stocks"],  # all options available
+        [
+            "search",
+            "locate",
+            "vision",
+            "stocks",
+        ],  # options that are selected by default
+    )
 
     img_url = ""
     if "vision" in tools:
@@ -150,12 +147,11 @@ if selected_llm_model and selected_vision_model:
     st.write("")
 
     if clear_memory:
-        # print("Front end recieved request to clear memory")
+        # print("Front end received request to clear memory")
         chat_agent.clearMemory()
         st.write("Memory DB cleared")
 
     if generate_clicked:
-
         if query == "":
             st.write("Please enter a question")
             st.stop()

@@ -15,14 +15,14 @@ def custom_synonym_expand_fn(keywords: str) -> List[str]:
     parser = JsonOutputParser(pydantic_object=Output)
 
     template = """
-    You are an expert synonym exapnding system. Find synonyms or words commonly used in place to reference the same word for every word in the list:
+    You are an expert synonym expanding system. Find synonyms or words commonly used in place to reference the same word for every word in the list:
 
     Some examples are:
     - a synonym for Palantir may be Palantir technologies or Palantir technologies inc.
     - a synonym for Austin may be Austin texas
-    - a synonym for Taylor swift may be Taylor 
+    - a synonym for Taylor swift may be Taylor
     - a synonym for Winter park may be Winter park resort
-    
+
     Format: {format_instructions}
 
     Text: {keywords}
@@ -37,12 +37,12 @@ def custom_synonym_expand_fn(keywords: str) -> List[str]:
     chain = prompt | llm | parser
     result = chain.invoke({"keywords": keywords})
 
-    l = []
+    synonym_list = []
     for category in result:
         for synonym in result[category]:
-            l.append(synonym.capitalize())
+            synonym_list.append(synonym.capitalize())
 
-    return l
+    return synonym_list
 
 
 # testing

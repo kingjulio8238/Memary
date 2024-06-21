@@ -10,8 +10,12 @@ import numpy as np
 import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
-from llama_index.core import (KnowledgeGraphIndex, Settings,
-                              SimpleDirectoryReader, StorageContext)
+from llama_index.core import (
+    KnowledgeGraphIndex,
+    Settings,
+    SimpleDirectoryReader,
+    StorageContext,
+)
 from llama_index.core.agent import ReActAgent
 from llama_index.core.llms import ChatMessage
 from llama_index.core.query_engine import RetrieverQueryEngine
@@ -25,8 +29,10 @@ from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
-from memary.agent.llm_api.tools import (ollama_chat_completions_request,
-                                        openai_chat_completions_request)
+from memary.agent.llm_api.tools import (
+    ollama_chat_completions_request,
+    openai_chat_completions_request,
+)
 from memary.memory import EntityKnowledgeStore, MemoryStream
 from memary.synonym_expand.synonym import custom_synonym_expand_fn
 
@@ -47,7 +53,7 @@ def generate_string(entities):
     return cypher_query
 
 
-class Agent(object):
+class Agent:
     """Agent manages the RAG model, the ReAct agent, and the memory stream."""
 
     def __init__(
@@ -62,7 +68,7 @@ class Agent(object):
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
         debug=True,
-    ):
+    ) -> None:
         load_dotenv()
         self.name = name
         self.model = llm_model_name
@@ -107,9 +113,7 @@ class Agent(object):
             synonym_expand_fn=custom_synonym_expand_fn,
         )
 
-        self.query_engine = RetrieverQueryEngine.from_args(
-            graph_rag_retriever,
-        )
+        self.query_engine = RetrieverQueryEngine.from_args(graph_rag_retriever)
 
         self.debug = debug
         self.tools = {}
@@ -122,7 +126,7 @@ class Agent(object):
             system_persona_txt, user_persona_txt, past_chat_json, self.model
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Agent {self.name}"
 
     def load_llm_model(self, llm_model_name):
@@ -134,8 +138,8 @@ class Agent(object):
         else:
             try:
                 self.llm = Ollama(model=llm_model_name, request_timeout=60.0)
-            except:
-                raise ("Please provide a proper llm_model_name.")
+            except Exception:
+                raise ValueError("Please provide a proper llm_model_name.")
 
     def load_vision_model(self, vision_model_name):
         if vision_model_name == "gpt-4-vision-preview":
@@ -149,8 +153,8 @@ class Agent(object):
         else:
             try:
                 self.mm_model = OllamaMultiModal(model=vision_model_name)
-            except:
-                raise ("Please provide a proper vision_model_name.")
+            except Exception:
+                raise ValueError("Please provide a proper vision_model_name.")
 
     def external_query(self, query: str):
         messages_dict = [
@@ -163,7 +167,7 @@ class Agent(object):
         return str(external_response)
 
     def search(self, query: str) -> str:
-        """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph"""
+        """Search the knowledge graph or perform search on the web if information is not present in the knowledge graph."""
         response = self.query_engine.query(query)
 
         if response.metadata is None:
@@ -172,16 +176,16 @@ class Agent(object):
             return response
 
     def locate(self, query: str) -> str:
-        """Finds the current geographical location"""
+        """Finds the current geographical location."""
         location = geocoder.ip("me")
-        lattitude, longitude = location.latlng[0], location.latlng[1]
+        latitude, longitude = location.latlng[0], location.latlng[1]
 
-        reverse_geocode_result = self.gmaps.reverse_geocode((lattitude, longitude))
+        reverse_geocode_result = self.gmaps.reverse_geocode((latitude, longitude))
         formatted_address = reverse_geocode_result[0]["formatted_address"]
         return "Your address is" + formatted_address
 
     def vision(self, query: str, img_url: str) -> str:
-        """Uses computer vision to process the image specified by the image url and answers the question based on the CV results"""
+        """Uses computer vision to process the image specified by the image url and answers the question based on the CV results."""
         query_image_dir_path = Path("query_images")
         if not query_image_dir_path.exists():
             Path.mkdir(query_image_dir_path)
@@ -198,7 +202,7 @@ class Agent(object):
         return response
 
     def stocks(self, query: str) -> str:
-        """Get the stock price of the company given the ticker"""
+        """Get the stock price of the company given the ticker."""
         request_api = requests.get(
             r"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol="
             + query
@@ -248,7 +252,7 @@ class Agent(object):
         if response.metadata is None:
             return False
         return generate_string(
-            list(list(response.metadata.values())[0]["kg_rel_map"].keys())
+            list(next(iter(response.metadata.values()))["kg_rel_map"].keys())
         )
 
     def _select_top_entities(self):
@@ -390,7 +394,7 @@ class Agent(object):
         return response
 
     def get_entity(self, retrieve) -> list[str]:
-        """retrieve is a list of QueryBundle objects.
+        """Retrieve is a list of QueryBundle objects.
         A retrieved QueryBundle object has a "node" attribute,
         which has a "metadata" attribute.
 
@@ -405,7 +409,6 @@ class Agent(object):
         return:
             list[str]: list of string entities
         """
-
         entities = []
         kg_rel_map = retrieve[0].node.metadata["kg_rel_map"]
         for key, items in kg_rel_map.items():
@@ -431,10 +434,10 @@ class Agent(object):
     def _init_default_tools(self, default_tools: List[str]):
         """Initializes ReAct Agent from the default list of tools memary provides.
         List of strings passed in during initialization denoting which default tools to include.
+
         Args:
             default_tools (list(str)): list of tool names in string form
         """
-
         for tool in default_tools:
             if tool == "search":
                 self.tools["search"] = self.search
@@ -448,20 +451,20 @@ class Agent(object):
 
     def add_tool(self, tool_additions: Dict[str, Callable[..., Any]]):
         """Adds specified tools to be used by the ReAct Agent.
+
         Args:
             tools (dict(str, func)): dictionary of tools with names as keys and associated functions as values
         """
-
         for tool_name in tool_additions:
             self.tools[tool_name] = tool_additions[tool_name]
         self._init_ReAct_agent()
 
     def remove_tool(self, tool_name: str):
         """Removes specified tool from list of available tools for use by the ReAct Agent.
+
         Args:
             tool_name (str): name of tool to be removed in string form
         """
-
         if tool_name in self.tools:
             del self.tools[tool_name]
             self._init_ReAct_agent()
@@ -470,10 +473,10 @@ class Agent(object):
 
     def update_tools(self, updated_tools: List[str]):
         """Resets ReAct Agent tools to only include subset of default tools.
+
         Args:
             updated_tools (list(str)): list of default tools to include
         """
-
         self.tools.clear()
         for tool in updated_tools:
             if tool == "search":

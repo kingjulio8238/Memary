@@ -1,4 +1,4 @@
-# *This is the old routing agent implementation.* Current implementation of the routing agent can be found in src/agent/base_agent.py
+# _This is the old routing agent implementation._ Current implementation of the routing agent can be found in src/agent/base_agent.py
 
 Llama Index Tool Specification Example Usage
 This document provides an overview of how to utilize custom tool specifications with the Llama Index framework to handle specialized tasks like vision and location-based queries.
@@ -18,8 +18,11 @@ The following classes are defined but commented out for clarity. You should unco
 
 python
 Copy code
+
 # from main import handle_location_question, handle_vision_question, app
+
 # from llama_index.agent.openai import OpenAIAgent
+
 These lines would typically import custom functions and classes necessary for handling specific types of questions within an application framework like Flask.
 
 Tool Specifications
@@ -30,7 +33,7 @@ Copy code
 from llama_index.core.tools.tool_spec.base import BaseToolSpec
 
 class CVToolSpec(BaseToolSpec):
-    spec_functions = ['handle_vision_question']
+spec_functions = ['handle_vision_question']
 
     def __init__(self):  # , form):
         # self.form = form
@@ -40,7 +43,7 @@ class CVToolSpec(BaseToolSpec):
         return handle_vision_question(request)
 
 class LocationToolSpec(BaseToolSpec):
-    spec_functions = ['handle_location_question']
+spec_functions = ['handle_location_question']
 
     def __init__(self):  # , form):
         # self.form = form
@@ -48,6 +51,7 @@ class LocationToolSpec(BaseToolSpec):
 
     def handle_location_question(request):
         return handle_location_question(request)
+
 The CVToolSpec and LocationToolSpec classes inherit from BaseToolSpec and specify functions that handle vision and location questions, respectively.
 
 Integration with Llama Index
@@ -71,19 +75,16 @@ The agent can now handle complex queries that require integration of different f
 
 python
 Copy code
+
 # This is a hypothetical example and would need a real request object to work:
+
 # response = agent.handle(request)
+
 # print(response)
+
 Replace agent.handle(request) with an appropriate method call to handle real requests. Ensure the request object is constructed properly according to the needs of the handle_vision_question and handle_location_question functions.
 
 Extending Functionality
 The framework allows for easy extension by adding new tool specifications or modifying existing ones to handle different types of data or queries.
 
 Remember to handle API keys and sensitive data securely, especially when dealing with location data or integrating third-party services like Google Maps.
-
-
-
-
-
-
-

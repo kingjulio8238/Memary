@@ -25,27 +25,34 @@ The above process includes the routing agent, knoweldge graph and memory module 
 Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
 ## Installation
+
 1. With pip:
+
 ```
 pip install memary
 ```
 
 2. Locally:
-   1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependancy, llama-index and reccomended to run of python versions <= 3.11.9.
+
+   1. Create your [virtual environment](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#create-and-use-virtual-environments) and activate it. Note that Python versions 3.12 or greater are not supported by a key dependency, llama-index and recommended to run of python versions <= 3.11.9.
 
    2. Install Python dependencies:
+
    ```
    pip install -r requirements.txt
    ```
 
 ## Demo
+
 **Notes:** memary currently assumes the local installation method and currently supports any models available through Ollama:
+
 - LLM running locally using Ollama (Llama 3 8B/40B as suggested defaults) **OR** `gpt-3.5-turbo`
 - Vision model running locally using Ollama (LLaVA as suggested default) **OR** `gpt-4-vision-preview`
 
 memary will default to the locally run models unless explicitly specified.
 
 **To run the Streamlit app:**
+
 1. [Optional] If running models locally using Ollama, follow this the instructions in this [repo](https://github.com/ollama/ollama).
 
 2. Ensure that a `.env` exists with any necessary API keys and Neo4j credentials.
@@ -76,13 +83,13 @@ Google Maps:
 
 Alpha Vantage: (this key is for getting real time stock data)
   https://www.alphavantage.co/support/#api-key
-  Reccomend use https://10minutemail.com/ to generate a temporary email to use
+  Recommend use https://10minutemail.com/ to generate a temporary email to use
 ```
 
-4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
+4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information.
 
-5. . [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`. 
-6. Run:
+5.  . [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`.
+6.  Run:
 
 ```
 cd streamlit_app
@@ -90,6 +97,7 @@ streamlit run app.py
 ```
 
 ## Usage
+
 ```python
 from memary.agent.chat_agent import ChatAgent
 
@@ -107,18 +115,24 @@ chat_agent = ChatAgent(
     past_chat_json,
 )
 ```
+
 Pass in subset of `['search', 'vision', 'locate', 'stocks']` as `include_from_defaults` for different set of default tools upon initialization.
+
 ### Adding Custom Tools
+
 ```python
 def multiply(a: int, b: int) -> int:
     """Multiply two integers and returns the result integer"""
     return a * b
 
+
 chat_agent.add_tool({"multiply": multiply})
 ```
-More information about creating custom tools for the LlamaIndex ReAct Agent  can be found [here](https://docs.llamaindex.ai/en/stable/examples/agent/react_agent/).
+
+More information about creating custom tools for the LlamaIndex ReAct Agent can be found [here](https://docs.llamaindex.ai/en/stable/examples/agent/react_agent/).
 
 ### Removing Tools
+
 ```python
 chat_agent.remove_tool("multiply")
 ```
@@ -191,7 +205,7 @@ The memory module comprises the Memory Stream and Entity Knowledge Store. The me
   - Personalize Responses: Use the key categorized entities and themes associated with the user to tailor agent responses more closely to the user's current interests and knowledge level/expertise.
   - Anticipate Needs: Leverage trends and shifts identified in the summaries to anticipate users' future questions or needs.
 - Future contributions
-  - We currently extract the top N entities from the entitiy knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques such as passing only entities that are in the agent's response to the context window. We look forward to related community contributions.
+  - We currently extract the top N entities from the entity knowledge store and pass these entities into the context window for inference. memary can future benefit from more advanced memory compression techniques such as passing only entities that are in the agent's response to the context window. We look forward to related community contributions.
 
 ![Memory Compression](diagrams/memory_compression.png)
 
@@ -231,7 +245,7 @@ Currently memary is structured so that the ReAct agent can only process one quer
   - In a parallel system, the agent will be able to parse multiple queries at once. The query decomposer (QD) will pass all subqueries (or original query if no subqueries exist) to the agent at once.
   - Simultaneously, QD will pass the original query to the reranking module to rerank the agent responses based on their relevance to the pre-decomposed query.
 - Future contributions
-  - Once agent multiprocessing is integrated, QD will be valuable to leverage. All user queries will be passed to QD, and the (sub)queries wil be passed to the routing agent for parallel processing.
+  - Once agent multiprocessing is integrated, QD will be valuable to leverage. All user queries will be passed to QD, and the (sub)queries will be passed to the routing agent for parallel processing.
   - Self-Learning: Whenever queries are decomposed, those examples will be appended to the engine’s example store as a feedback loop for improved future performance.
 
 ### Reranking
