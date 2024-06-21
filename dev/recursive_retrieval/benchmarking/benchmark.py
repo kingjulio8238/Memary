@@ -1,11 +1,9 @@
 import os
-from collections import defaultdict
 from typing import List
 
 from dotenv import load_dotenv
 from llama_index.core.llms import ChatMessage
 from llama_index.llms.perplexity import Perplexity
-from pandas import DataFrame
 
 from judge import custom_response_evaluator
 

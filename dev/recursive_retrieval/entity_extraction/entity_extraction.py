@@ -2,7 +2,6 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import OpenAI
@@ -17,7 +16,7 @@ def custom_entity_extract_fn(query: str) -> List[str]:
 
     template = """
     You are an expert entity extraction system. Extract the following entities from the given text:
-    
+
     Format: {format_instructions}
 
     Text: {query}
@@ -26,20 +25,18 @@ def custom_entity_extract_fn(query: str) -> List[str]:
     prompt = PromptTemplate(
         template=template,
         input_variables=["query"],
-        partial_variables={
-            "format_instructions": parser.get_format_instructions()
-        },
+        partial_variables={"format_instructions": parser.get_format_instructions()},
     )
 
     chain = prompt | llm | parser
     result = chain.invoke({"query": query})
 
-    l = []
+    entity_list = []
     for category in result:
         for entity in result[category]:
-            l.append(entity)
+            entity_list.append(entity)
 
-    return l
+    return entity_list
 
 
 # testing
