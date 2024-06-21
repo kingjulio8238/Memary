@@ -14,22 +14,6 @@
 
 Agents promote human-type reasoning and are a great advancement towards building AGI and understanding ourselves as humans. Memory is a key component of how humans approach tasks and should be weighted the same when building AI agents. **memary emulates human memory to advance these agents.**
 
-## Memory Dashboard 🧠
-(coming soon)
-                                                                                                 
-| Features                                           |  Benefits                                                   |
-|---------------------------------------------------|----------------------------------------------------------------|
-| 🗣️ Chat to Agent Memory                        | Access certain memories             |
-| 🧠 Analyze Agent Progress | Track how agents develop their memories over time        |
-| ⏮️ Rewind Executions                                 | Review agent memories to understand specific responses |
-| 🧑‍🧑‍🧒‍🧒 Audience Preferences                      | Understand audiences' best and most recent preferences                    |
-| ✍🏻 memaryParse                            | Inject proprietary data into agent memory & combine parsers for advanced data ingestion      |
-| 🗂️ memaryRetrieval                          | Access memories & combine retrievers for advanced memory retrieval                       |
-| 🧪 Configure Agent Memory                   | Search and combine memory databases            |
-| 🛝 Playgrounds                    | Specify models and tools used as well as benchmark different memory techniques       |
-| 🔍 Stay Up To Date                       | Receive notifications when agent memories have been added, updated or removed          |
-
-
 ## Quickstart 🏁
 
 ### Install memary 
@@ -80,24 +64,16 @@ memary will default to the locally run models unless explicitly specified. Addit
 3. Fetch API credentials:
    <details>
      <summary>API Info</summary>
-   ```
-   OpenAI key: https://openai.com/index/openai-api
 
-   Neo4j: https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta
-      Click 'Start for free'
-      Create a free instance
-      Open auto-downloaded txt file and use the credentials
-
-   Perplexity key: https://www.perplexity.ai/settings/api
-
-   Google Maps:
-      Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console                
-      https://console.cloud.google.com/apis/credentials
-
-   Alpha Vantage: (this key is for getting real time stock data)
-     https://www.alphavantage.co/support/#api-key
-     Reccomend use https://10minutemail.com/ to generate a temporary email to use
-   ```
+    - [**OpenAI key**](https://openai.com/index/openai-api)
+    - [**Neo4j**](https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta)
+      - Click 'Start for free` &rarr; Create a free instance &rarr; Open auto-downloaded txt file and use the credentials
+    - [**Perplexity key**](https://www.perplexity.ai/settings/api)
+    - [**Google Maps**](https://console.cloud.google.com/apis/credentials)
+      - Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console
+    - [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
+      - Recommended to use https://10minutemail.com/ to generate a temporary email to use
+    
     </details>
 
 4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
@@ -111,7 +87,7 @@ cd streamlit_app
 streamlit run app.py
 ```
 
-## More Basic Functionality
+## Basic Usage
 ```python
 from memary.agent.chat_agent import ChatAgent
 
@@ -145,6 +121,22 @@ More information about creating custom tools for the LlamaIndex ReAct Agent  can
 ```python
 chat_agent.remove_tool("multiply")
 ```
+
+## Memory Dashboard 🧠
+(coming soon)
+                                                                                                 
+| Features                                           |  Benefits                                                   |
+|---------------------------------------------------|----------------------------------------------------------------|
+| 🗣️ Chat to Agent Memory                        | Access certain memories             |
+| 🧠 Analyze Agent Progress | Track how agents develop their memories over time        |
+| ⏮️ Rewind Executions                                 | Review agent memories to understand specific responses |
+| 🧑‍🧑‍🧒‍🧒 Audience Preferences                      | Understand audiences' best and most recent preferences                    |
+| ✍🏻 memaryParse                            | Inject proprietary data into agent memory & combine parsers for advanced data ingestion      |
+| 🗂️ memaryRetrieval                          | Access memories & combine retrievers for advanced memory retrieval                       |
+| 🧪 Configure Agent Memory                   | Search and combine memory databases            |
+| 🛝 Playgrounds                    | Specify models and tools used as well as benchmark different memory techniques       |
+| 🔍 Stay Up To Date                       | Receive notifications when agent memories have been added, updated or removed          |
+
 ## Core Concepts 🧪
 The current structure of memary is detailed in the diagram below.
 
