@@ -4,3 +4,5 @@
 dist/
 README_hidden.md
 **/__pycache__/
+build/
+*.egg-info

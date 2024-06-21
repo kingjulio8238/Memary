@@ -20,7 +20,7 @@ class ChatAgent(Agent):
         llm_model_name="llama3",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
-    ):
+    ) -> None:
         super().__init__(
             name,
             memory_stream_json,
@@ -58,7 +58,6 @@ class ChatAgent(Agent):
 
     def clearMemory(self):
         """Clears Neo4j database and memory stream/entity knowledge store."""
-
         logging.info("Deleting memory stream and entity knowledge store...")
         self.memory_stream.clear_memory()
         self.entity_knowledge_store.clear_memory()
@@ -75,9 +74,7 @@ class ChatAgent(Agent):
         self.message.llm_message["memory_stream"] = self.memory_stream.get_memory()
 
     def _replace_eks_to_from_message(self):
-        """Replace the entity knowledge store from the llm_message.
-        eks = entity knowledge store"""
-
-        self.message.llm_message["knowledge_entity_store"] = (
-            self.entity_knowledge_store.get_memory()
-        )
+        """Replace the entity knowledge store from the llm_message. eks means entity knowledge store."""
+        self.message.llm_message[
+            "knowledge_entity_store"
+        ] = self.entity_knowledge_store.get_memory()
