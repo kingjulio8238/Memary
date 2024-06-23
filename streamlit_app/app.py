@@ -127,8 +127,9 @@ if selected_llm_model and selected_vision_model:
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
-        selected_llm_model,
-        selected_vision_model,
+        llm_model_name=selected_llm_model,
+        embed_model_name="text-embedding-3-small",
+        vision_model_name=selected_vision_model,
     )
 
     st.write(" ")
