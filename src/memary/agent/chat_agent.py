@@ -18,6 +18,7 @@ class ChatAgent(Agent):
         user_persona_txt,
         past_chat_json,
         llm_model_name="llama3",
+        embed_model_name="text-embedding-3-small",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
     ):
@@ -29,6 +30,7 @@ class ChatAgent(Agent):
             user_persona_txt,
             past_chat_json,
             llm_model_name,
+            embed_model_name,
             vision_model_name,
             include_from_defaults,
         )

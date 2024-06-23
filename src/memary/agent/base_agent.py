@@ -11,6 +11,8 @@ import requests
 from ansistrip import ansi_strip
 from dotenv import load_dotenv
 from llama_index.core import PropertyGraphIndex, Settings, SimpleDirectoryReader
+
+from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.core.agent import ReActAgent
 from llama_index.core.indices.property_graph import (
     ImplicitPathExtractor,
@@ -67,6 +69,7 @@ class Agent(object):
         user_persona_txt,
         past_chat_json,
         llm_model_name="llama3",
+        embed_model_name="text-embedding-3-small",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
         debug=True,
@@ -86,8 +89,8 @@ class Agent(object):
 
         # initialize APIs
         self.load_llm_model(llm_model_name)
+        self.load_embed_model(embed_model_name)
         self.load_vision_model(vision_model_name)
-        self.embed_model = OpenAIEmbedding(model_name="text-embedding-3-small")
         self.query_llm = Perplexity(
             api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
         )
@@ -111,7 +114,7 @@ class Agent(object):
         implicit_path_extractor = ImplicitPathExtractor()
         self._kg_extractors = [simple_llm_path_extractor, implicit_path_extractor]
         self._index = PropertyGraphIndex.from_existing(
-            property_graph_index=self._graph_store,
+            property_graph_store=self._graph_store,
             llm=self.llm,
             embed_model=self.embed_model,
         )
@@ -119,14 +122,14 @@ class Agent(object):
         # retrievers
         vector_context_retriever = VectorContextRetriever(
             graph_store=self._graph_store,
-            embed_model=self.embed_mode,
+            embed_model=self.embed_model,
             similarity_top_k=2,
             path_depth=1,
         )
         llm_synonym_retriever = LLMSynonymRetriever(
             graph_store=self._graph_store,
             llm=self.llm,
-            output_parsing_fn=parse_fn,
+            parse_fn=parse_fn,
             max_keywords=10,
             path_depth=1,
         )
@@ -161,7 +164,19 @@ class Agent(object):
             try:
                 self.llm = Ollama(model=llm_model_name, request_timeout=60.0)
             except:
-                raise ("Please provide a proper llm_model_name.")
+                raise ("llm_model_name not recognized, please provide a different one.")
+            
+    def load_embed_model(self, embed_model_name):
+        if embed_model_name == "text-embedding-3-small":
+            os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+            self.openai_api_key = os.environ["OPENAI_API_KEY"]
+            self.embed_model = OpenAIEmbedding(model_name="text-embedding-3-small")
+        else:
+            try:
+                self.embed_model = OllamaEmbedding(model_name=embed_model_name)
+            except:
+                raise ("embed_model_name not recognized, please provide a different one.")
+
 
     def load_vision_model(self, vision_model_name):
         if vision_model_name == "gpt-4-vision-preview":
@@ -176,7 +191,7 @@ class Agent(object):
             try:
                 self.mm_model = OllamaMultiModal(model=vision_model_name)
             except:
-                raise ("Please provide a proper vision_model_name.")
+                raise ("vision_model_name not recognized, please provide a different one.")
 
     def external_query(self, query: str):
         messages_dict = [
@@ -233,11 +248,6 @@ class Agent(object):
         )
         return request_api.json()
 
-    # def get_news(self, query: str) -> str:
-    #     """Given a keyword, search for news articles related to the keyword"""
-    #     request_api = requests.get(r'https://newsdata.io/api/1/news?apikey=' + self.news_data_key + r'&q=' + query)
-    #     return request_api.json()
-
     def query(self, query: str) -> str:
         # get the response from react agent
         response = self.routing_agent.chat(query)
@@ -253,8 +263,9 @@ class Agent(object):
         documents = SimpleDirectoryReader(
             input_files=["data/external_response.txt"]
         ).load_data()
-
-        self._index.insert(documents)
+        
+        for document in documents:
+            self._index.insert(document)
 
     def check_KG(self, query: str) -> bool:
         """Check if the query is in the knowledge graph.
@@ -266,9 +277,10 @@ class Agent(object):
             bool: True if the query is in the knowledge graph, False otherwise
         """
         response = self._query_engine.query(query)
-
         if response.metadata is None:
             return False
+        print("this is the metadata")
+        print(response.metadata.values())
         return generate_string(
             list(list(response.metadata.values())[0]["kg_rel_map"].keys())
         )
