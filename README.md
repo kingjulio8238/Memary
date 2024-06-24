@@ -163,7 +163,7 @@ memary integrates itself onto your existing agents with as little developer impl
 
 ### Agent
 
-![agent diagram](diagrams/routing_agent.png)
+<img alt="routing agent" src="diagrams/routing_agent.png">
 
 To provide developers, who don't have existing agents, access to memary we setup a simple agent implementation. We use the [ReAct](https://react-lm.github.io/) agent to plan and execute a query given the tools provided. 
 
