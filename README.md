@@ -308,7 +308,7 @@ def _convert_memory_to_knowledge_memory(
 ![Memory Compression](diagrams/memory_compression.png)
 
 ### New Context Window 
-![New_Context_Window](https://github.com/kingjulio8238/memary/blob/tool-flexibility/diagrams/context_window.png?raw=true)
+![New_Context_Window](https://github.com/kingjulio8238/memary/blob/main/diagrams/context_window.png?raw=true)
 
 Note: We utilize the the key categorized entities and themes associated with users to tailor agent responses more closely to the user's current interests/preferences and knowledge level/expertise. The new context window is made up of the following: 
 
