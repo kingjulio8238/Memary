@@ -53,11 +53,15 @@ memary will default to the locally run models unless explicitly specified. Addit
   
    ```
    OPENAI_API_KEY="YOUR_API_KEY"
-   NEO4J_PW="YOUR_NEO4J_PW"
-   NEO4J_URL="YOUR_NEO4J_URL"
    PERPLEXITY_API_KEY="YOUR_API_KEY"
    GOOGLEMAPS_API_KEY="YOUR_API_KEY"
    ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
+   
+   Database usage:
+   FALKORDB_URL="YOUR_FALKORDB_URL"
+   or
+   NEO4J_PW="YOUR_NEO4J_PW"
+   NEO4J_URL="YOUR_NEO4J_URL"
    ```
   
    </details>
@@ -68,6 +72,7 @@ memary will default to the locally run models unless explicitly specified. Addit
      <summary>API Info</summary>
 
     - [**OpenAI key**](https://openai.com/index/openai-api)
+    - [**FalkorDB**](https://www.falkordb.com/try-free/)
     - [**Neo4j**](https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta)
       - Click 'Start for free` &rarr; Create a free instance &rarr; Open auto-downloaded txt file and use the credentials
     - [**Perplexity key**](https://www.perplexity.ai/settings/api)

@@ -57,18 +57,18 @@ class ChatAgent(Agent):
         return self.contexts
 
     def clearMemory(self):
-        """Clears Neo4j database and memory stream/entity knowledge store."""
+        """Clears database and memory stream/entity knowledge store."""
 
         logging.info("Deleting memory stream and entity knowledge store...")
         self.memory_stream.clear_memory()
         self.entity_knowledge_store.clear_memory()
 
-        logging.info("Deleting nodes from Neo4j...")
+        logging.info("Deleting nodes from Database...")
         try:
             self.graph_store.query("MATCH (n) DETACH DELETE n")
         except Exception as e:
             logging.error(f"Error deleting nodes: {e}")
-        logging.info("Nodes deleted from Neo4j.")
+        logging.info("Nodes deleted from Database.")
 
     def _replace_memory_from_llm_message(self):
         """Replace the memory_stream from the llm_message."""

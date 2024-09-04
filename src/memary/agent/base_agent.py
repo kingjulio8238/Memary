@@ -78,6 +78,7 @@ class Agent(object):
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
         Settings.llm = self.llm
         Settings.chunk_size = 512
+        
         self.falkordb_url = os.getenv("FALKORDB_URL")
         if self.url is not None:
             from llama_index.graph_stores import FalkorDBGraphStore
