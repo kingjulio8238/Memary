@@ -1,4 +1,5 @@
 import os
+import re
 import random
 import sys
 import textwrap
@@ -9,6 +10,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
+from falkordb import FalkorDB
 from pyvis.network import Network
 
 # src should sit in the same level as /streamlit_app
@@ -65,22 +67,38 @@ def create_graph(nodes, edges):
 
 def fill_graph(nodes, edges, cypher_query):
     entities = []
-    with GraphDatabase.driver(
-        uri=chat_agent.neo4j_url,
-        auth=(chat_agent.neo4j_username, chat_agent.neo4j_password),
-    ) as driver:
-        with driver.session() as session:
-            result = session.run(cypher_query)
-            for record in result:
-                path = record["p"]
-                rels = [rel.type for rel in path.relationships]
+    
+    if chat_agent.falkordb_url is not None:
+        falkordb = FalkorDB.from_url(chat_agent.falkordb_url)
+        session = falkordb.select_graph('falkor')
+        result = session.query(cypher_query).result_set
+        for record in result:
+            path = record[0]
+            n1_id = re.search(r'\{id:(.*?)\}', path.get_node(0).to_string()).group(1)
+            n2_id = re.search(r'\{id:(.*?)\}', path.get_node(1).to_string()).group(1)
+            rels = [re.search(r':(.*?)\]', str(path.get_edge(i))).group(1) for i in range(path.edge_count())]
 
-                n1_id = record["p"].nodes[0]["id"]
-                n2_id = record["p"].nodes[1]["id"]
-                nodes.add(n1_id)
-                nodes.add(n2_id)
-                edges.append((n1_id, n2_id, rels))
-                entities.extend([n1_id, n2_id])
+            nodes.add(n1_id)
+            nodes.add(n2_id)
+            edges.append((n1_id, n2_id, rels))
+            entities.extend([n1_id, n2_id])
+    else:
+        with GraphDatabase.driver(
+            uri=chat_agent.neo4j_url,
+            auth=(chat_agent.neo4j_username, chat_agent.neo4j_password),
+        ) as driver:
+            with driver.session() as session:
+                result = session.run(cypher_query)
+                for record in result:
+                    path = record["p"]
+                    rels = [rel.type for rel in path.relationships]
+
+                    n1_id = record["p"].nodes[0]["id"]
+                    n2_id = record["p"].nodes[1]["id"]
+                    nodes.add(n1_id)
+                    nodes.add(n2_id)
+                    edges.append((n1_id, n2_id, rels))
+                    entities.extend([n1_id, n2_id])
 
 
 def get_models(llm_models, vision_models):

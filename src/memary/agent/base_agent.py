@@ -80,8 +80,8 @@ class Agent(object):
         Settings.chunk_size = 512
         
         self.falkordb_url = os.getenv("FALKORDB_URL")
-        if self.url is not None:
-            from llama_index.graph_stores import FalkorDBGraphStore
+        if self.falkordb_url is not None:
+            from llama_index.graph_stores.falkordb import FalkorDBGraphStore
             # initialize FalkorDB graph resources
             self.graph_store = FalkorDBGraphStore(self.falkordb_url,  decode_responses=True)
         else:

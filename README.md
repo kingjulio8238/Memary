@@ -205,7 +205,7 @@ def search(self, query: str) -> str:
 ![KG diagram](diagrams/kg.png)
 
 #### Knowledge Graphs ↔ LLMs
-- memary uses a Neo4j graph database to store knoweldge.
+- memary uses a graph database to store knoweldge.
 - Llama Index was used to add nodes into the graph store based on documents.
 - Perplexity (mistral-7b-instruct model) was used for external queries.
 
