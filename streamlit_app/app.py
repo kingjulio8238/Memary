@@ -1,5 +1,4 @@
 import os
-import re
 import random
 import sys
 import textwrap
@@ -74,9 +73,9 @@ def fill_graph(nodes, edges, cypher_query):
         result = session.query(cypher_query).result_set
         for record in result:
             path = record[0]
-            n1_id = re.search(r'\{id:(.*?)\}', path.get_node(0).to_string()).group(1)
-            n2_id = re.search(r'\{id:(.*?)\}', path.get_node(1).to_string()).group(1)
-            rels = [re.search(r':(.*?)\]', str(path.get_edge(i))).group(1) for i in range(path.edge_count())]
+            n1_id = path.get_node(0).properties["id"]
+            n2_id = path.get_node(1).properties["id"]
+            rels = [rel.relation for rel in path.edges()]
 
             nodes.add(n1_id)
             nodes.add(n2_id)
