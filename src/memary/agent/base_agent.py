@@ -83,7 +83,7 @@ class Agent(object):
         if self.falkordb_url is not None:
             from llama_index.graph_stores.falkordb import FalkorDBGraphStore
             # initialize FalkorDB graph resources
-            self.graph_store = FalkorDBGraphStore(self.falkordb_url,  decode_responses=True)
+            self.graph_store = FalkorDBGraphStore(self.falkordb_url, decode_responses=True)
         else:
             from llama_index.graph_stores.neo4j import Neo4jGraphStore
             # Neo4j credentials
