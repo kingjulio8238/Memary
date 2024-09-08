@@ -18,7 +18,7 @@ class ChatAgent(Agent):
         user_persona_txt,
         past_chat_json,
         llm_model_name="llama3",
-        vision_model_name="gpt-4-vision-preview",
+        vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
     ):
         super().__init__(
