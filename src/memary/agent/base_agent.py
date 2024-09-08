@@ -17,7 +17,6 @@ from llama_index.core.llms import ChatMessage
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import KnowledgeGraphRAGRetriever
 from llama_index.core.tools import FunctionTool
-from llama_index.graph_stores.neo4j import Neo4jGraphStore
 from llama_index.llms.ollama import Ollama
 from llama_index.llms.openai import OpenAI
 from llama_index.llms.perplexity import Perplexity
@@ -70,12 +69,6 @@ class Agent(object):
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
         pplx_api_key = os.getenv("PERPLEXITY_API_KEY")
 
-        # Neo4j credentials
-        self.neo4j_username = "neo4j"
-        self.neo4j_password = os.getenv("NEO4J_PW")
-        self.neo4j_url = os.getenv("NEO4J_URL")
-        database = "neo4j"
-
         # initialize APIs
         self.load_llm_model(llm_model_name)
         self.load_vision_model(vision_model_name)
@@ -85,14 +78,27 @@ class Agent(object):
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
         Settings.llm = self.llm
         Settings.chunk_size = 512
+        
+        self.falkordb_url = os.getenv("FALKORDB_URL")
+        if self.falkordb_url is not None:
+            from llama_index.graph_stores.falkordb import FalkorDBGraphStore
+            # initialize FalkorDB graph resources
+            self.graph_store = FalkorDBGraphStore(self.falkordb_url, decode_responses=True)
+        else:
+            from llama_index.graph_stores.neo4j import Neo4jGraphStore
+            # Neo4j credentials
+            self.neo4j_username = "neo4j"
+            self.neo4j_password = os.getenv("NEO4J_PW")
+            self.neo4j_url = os.getenv("NEO4J_URL")
+            database = "neo4j"
 
-        # initialize Neo4j graph resources
-        self.graph_store = Neo4jGraphStore(
-            username=self.neo4j_username,
-            password=self.neo4j_password,
-            url=self.neo4j_url,
-            database=database,
-        )
+            # initialize Neo4j graph resources
+            self.graph_store = Neo4jGraphStore(
+                username=self.neo4j_username,
+                password=self.neo4j_password,
+                url=self.neo4j_url,
+                database=database,
+            )
 
         self.vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
 

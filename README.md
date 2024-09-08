@@ -53,11 +53,15 @@ memary will default to the locally run models unless explicitly specified. Addit
   
    ```
    OPENAI_API_KEY="YOUR_API_KEY"
-   NEO4J_PW="YOUR_NEO4J_PW"
-   NEO4J_URL="YOUR_NEO4J_URL"
    PERPLEXITY_API_KEY="YOUR_API_KEY"
    GOOGLEMAPS_API_KEY="YOUR_API_KEY"
    ALPHA_VANTAGE_API_KEY="YOUR_API_KEY"
+   
+   Database usage (see API info):
+   FALKORDB_URL="falkor://[[username]:[password]]@[falkor_host_url]:port"
+   or
+   NEO4J_PW="YOUR_NEO4J_PW"
+   NEO4J_URL="YOUR_NEO4J_URL"
    ```
   
    </details>
@@ -68,6 +72,8 @@ memary will default to the locally run models unless explicitly specified. Addit
      <summary>API Info</summary>
 
     - [**OpenAI key**](https://openai.com/index/openai-api)
+    - [**FalkorDB**](https://app.falkordb.cloud/)
+      - Login &rarr; Click 'Subscribe` &rarr; Create a free instance on the Dashboard &rarr; use the credentials (username, passward, falkor_host_url and port).  
     - [**Neo4j**](https://neo4j.com/cloud/platform/aura-graph-database/?ref=nav-get-started-cta)
       - Click 'Start for free` &rarr; Create a free instance &rarr; Open auto-downloaded txt file and use the credentials
     - [**Perplexity key**](https://www.perplexity.ai/settings/api)
@@ -185,7 +191,7 @@ def search(self, query: str) -> str:
 ![KG diagram](diagrams/kg.png)
 
 #### Knowledge Graphs ↔ LLMs
-- memary uses a Neo4j graph database to store knoweldge.
+- memary uses a graph database to store knoweldge.
 - Llama Index was used to add nodes into the graph store based on documents.
 - Perplexity (mistral-7b-instruct model) was used for external queries.
 
