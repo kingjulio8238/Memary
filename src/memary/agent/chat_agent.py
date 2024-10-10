@@ -11,23 +11,25 @@ class ChatAgent(Agent):
 
     def __init__(
         self,
-        name,
+        agent_name,
         memory_stream_json,
         entity_knowledge_store_json,
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        user_id='falkor',
         llm_model_name="llama3",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
     ):
         super().__init__(
-            name,
+            agent_name,
             memory_stream_json,
             entity_knowledge_store_json,
             system_persona_txt,
             user_persona_txt,
             past_chat_json,
+            user_id,
             llm_model_name,
             vision_model_name,
             include_from_defaults,

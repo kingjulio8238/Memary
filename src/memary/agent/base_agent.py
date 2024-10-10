@@ -51,19 +51,20 @@ class Agent(object):
 
     def __init__(
         self,
-        name,
+        agent_name,
         memory_stream_json,
         entity_knowledge_store_json,
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        user_id='falkor',
         llm_model_name="llama3",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
         debug=True,
     ):
         load_dotenv()
-        self.name = name
+        self.name = agent_name
         self.model = llm_model_name
 
         googlemaps_api_key = os.getenv("GOOGLEMAPS_API_KEY")
@@ -83,7 +84,7 @@ class Agent(object):
         if self.falkordb_url is not None:
             from llama_index.graph_stores.falkordb import FalkorDBGraphStore
             # initialize FalkorDB graph resources
-            self.graph_store = FalkorDBGraphStore(self.falkordb_url, decode_responses=True)
+            self.graph_store = FalkorDBGraphStore(self.falkordb_url, database=user_id, decode_responses=True)
         else:
             from llama_index.graph_stores.neo4j import Neo4jGraphStore
             # Neo4j credentials
