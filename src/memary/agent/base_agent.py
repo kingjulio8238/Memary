@@ -57,7 +57,7 @@ class Agent(object):
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
-        user_id='__falkor__',
+        user_id='falkor',
         llm_model_name="llama3",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],

@@ -117,7 +117,7 @@ with col2:
     submit = st.button("Switch User ID")
 
 if not submit:
-    user_id = "__falkor__"
+    user_id = "falkor"
     
 llm_models = ["gpt-3.5-turbo"]
 vision_models = ["gpt-4-vision-preview"]
