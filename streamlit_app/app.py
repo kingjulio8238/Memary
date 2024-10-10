@@ -107,16 +107,21 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary")
-col1, col2 = st.columns([3, 1]) 
+# Create a two column layout (HTML table)
+col1, col2 = st.columns([3, 1], vertical_alignment="bottom") 
+
+# Create a text input field for user ID
 with col1:
     user_id = st.text_input(
         "Enter a user ID (Available only with FalkorDB)",
     )
+# Create a button to apply the switch user ID
 with col2:
     st.write("")
     submit = st.button("Switch User ID")
 
-if not submit:
+# If the user ID is empty, set it to "falkor"
+if len(user_id) == 0:
     user_id = "falkor"
     
 llm_models = ["gpt-3.5-turbo"]
