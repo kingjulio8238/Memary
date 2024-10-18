@@ -87,8 +87,10 @@ memary will default to the locally run models unless explicitly specified. Addit
 4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
 
 5. [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`.
-   
-6. Run:
+
+6. [Optional] Multi Graphs - Users who are using FalkorDB can generate multiple graphs and switch between their IDs, which correspond to different agents. This enables seamless transitions and management of different agents' memory and knowledge contexts.
+
+7. Run:
 
 ```
 cd streamlit_app

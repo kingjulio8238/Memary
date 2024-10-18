@@ -118,7 +118,7 @@ with col1:
 # Create a button to apply the switch user ID
 with col2:
     st.write("")
-    submit = st.button("Switch User ID")
+    submit = st.button("Switch Agent ID")
 
 # If the user ID is empty, set it to "falkor"
 if len(user_id) == 0:
