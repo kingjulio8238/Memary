@@ -23,21 +23,11 @@ sys.path.append(parent_dir + "/src")
 from memary.agent.chat_agent import ChatAgent
 
 load_dotenv()
-
 system_persona_txt = "data/system_persona.txt"
 user_persona_txt = "data/user_persona.txt"
 past_chat_json = "data/past_chat.json"
 memory_stream_json = "data/memory_stream.json"
 entity_knowledge_store_json = "data/entity_knowledge_store.json"
-chat_agent = ChatAgent(
-    "Personal Agent",
-    memory_stream_json,
-    entity_knowledge_store_json,
-    system_persona_txt,
-    user_persona_txt,
-    past_chat_json,
-)
-
 
 def create_graph(nodes, edges):
     g = Network(
@@ -69,7 +59,7 @@ def fill_graph(nodes, edges, cypher_query):
     
     if chat_agent.falkordb_url is not None:
         falkordb = FalkorDB.from_url(chat_agent.falkordb_url)
-        session = falkordb.select_graph('falkor')
+        session = falkordb.select_graph(user_id)
         result = session.query(cypher_query).result_set
         for record in result:
             path = record[0]
@@ -117,7 +107,23 @@ cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
 answer = ""
 external_response = ""
 st.title("memary")
+# Create a two column layout (HTML table)
+col1, col2 = st.columns([3, 1], vertical_alignment="bottom") 
 
+# Create a text input field for user ID
+with col1:
+    user_id = st.text_input(
+        "Enter a user ID (Available only with FalkorDB)",
+    )
+# Create a button to apply the switch user ID
+with col2:
+    st.write("")
+    submit = st.button("Switch Agent ID")
+
+# If the user ID is empty, set it to "falkor"
+if len(user_id) == 0:
+    user_id = "falkor"
+    
 llm_models = ["gpt-3.5-turbo"]
 vision_models = ["gpt-4-vision-preview"]
 get_models(llm_models, vision_models)
@@ -143,6 +149,7 @@ if selected_llm_model and selected_vision_model:
         system_persona_txt,
         user_persona_txt,
         past_chat_json,
+        user_id,
         selected_llm_model,
         selected_vision_model,
     )

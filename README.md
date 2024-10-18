@@ -87,8 +87,10 @@ memary will default to the locally run models unless explicitly specified. Addit
 4.  Update user persona which can be found in `streamlit_app/data/user_persona.txt` using the user persona template which can be found in `streamlit_app/data/user_persona_template.txt`. Instructions have been provided - replace the curly brackets with relevant information. 
 
 5. [Optional] Update system persona, if needed, which can be found in `streamlit_app/data/system_persona.txt`.
-   
-6. Run:
+
+6. [Optional] Multi Graphs - Users who are using FalkorDB can generate multiple graphs and switch between their IDs, which correspond to different agents. This enables seamless transitions and management of different agents' memory and knowledge contexts.
+
+7. Run:
 
 ```
 cd streamlit_app
@@ -114,6 +116,33 @@ chat_agent = ChatAgent(
 )
 ```
 Pass in subset of `['search', 'vision', 'locate', 'stocks']` as `include_from_defaults` for different set of default tools upon initialization.
+
+### Multi-Graph
+When using FalkorDB database, you can create multi-agents. Here is an example of how to set up personal agents for different users:
+
+```python
+# User A personal agent
+chat_agent_user_a = ChatAgent(
+    "Personal Agent",
+    memory_stream_json_user_a,
+    entity_knowledge_store_json_user_a,
+    system_persona_txt_user_a,
+    user_persona_txt_user_a,
+    past_chat_json_user_a,
+    user_id='user_a_id'
+)
+
+# User B personal agent
+chat_agent_user_b = ChatAgent(
+    "Personal Agent",
+    memory_stream_json_user_b,
+    entity_knowledge_store_json_user_b,
+    system_persona_txt_user_b,
+    user_persona_txt_user_b,
+    past_chat_json_user_b,
+    user_id='user_b_id'
+)
+```
 
 ### Adding Custom Tools
 ```python
