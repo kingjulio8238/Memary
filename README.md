@@ -164,7 +164,7 @@ The current structure of memary is detailed in the diagram below.
 
 <img width="1410" alt="memary overview" src="diagrams/system.png">
 
-At the time of writing, the above system design includes the routing agent, knoweldge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
+At the time of writing, the above system design includes the routing agent, knowledge graph and memory module are all integrated into the `ChatAgent` class located in the `src/agent` directory.
 
 Raw source code for these components can also be found in their respective directories including benchmarks, notebooks, and updates.
 
@@ -220,7 +220,7 @@ def search(self, query: str) -> str:
 ![KG diagram](diagrams/kg.png)
 
 #### Knowledge Graphs ↔ LLMs
-- memary uses a graph database to store knoweldge.
+- memary uses a graph database to store knowledge.
 - Llama Index was used to add nodes into the graph store based on documents.
 - Perplexity (mistral-7b-instruct model) was used for external queries.
 
