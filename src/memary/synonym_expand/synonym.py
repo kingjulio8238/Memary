@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 def custom_synonym_expand_fn(keywords: str) -> List[str]:
     load_dotenv()
-    llm = OpenAI(openai_api_key=os.getenv("OPENAI_KEY"), temperature=0)
+    llm = OpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"), temperature=0)
     parser = JsonOutputParser(pydantic_object=Output)
 
     template = """

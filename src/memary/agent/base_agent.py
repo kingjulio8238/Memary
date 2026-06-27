@@ -150,7 +150,7 @@ class Agent(object):
             self.openai_api_key = os.environ["OPENAI_API_KEY"]
             self.mm_model = OpenAIMultiModal(
                 model="gpt-4-vision-preview",
-                api_key=os.getenv("OPENAI_KEY"),
+                api_key=os.getenv("OPENAI_API_KEY"),
                 max_new_tokens=300,
             )
         else:
