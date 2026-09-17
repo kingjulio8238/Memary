@@ -81,6 +81,7 @@ memary will default to the locally run models unless explicitly specified. Addit
       - Keys are generated in the 'Credentials' page of the 'APIs & Services' tab of Google Cloud Console
     - [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
       - Recommended to use https://10minutemail.com/ to generate a temporary email to use
+* [Mailfo](https://mailfo.pages.dev) - Instant disposable burner email & OTP receiver
     
     </details>
 
