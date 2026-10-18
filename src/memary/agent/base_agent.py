@@ -24,6 +24,7 @@ from llama_index.multi_modal_llms.ollama import OllamaMultiModal
 from llama_index.multi_modal_llms.openai import OpenAIMultiModal
 
 from memary.agent.data_types import Context, Message
+from memary.agent.parallel_search import ParallelSearch
 from memary.agent.llm_api.tools import (ollama_chat_completions_request,
                                         openai_chat_completions_request)
 from memary.memory import EntityKnowledgeStore, MemoryStream
@@ -62,6 +63,8 @@ class Agent(object):
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
         debug=True,
+        search_provider=None,
+        search_timeout=30.0,
     ):
         load_dotenv()
         self.name = agent_name
@@ -73,9 +76,21 @@ class Agent(object):
         # initialize APIs
         self.load_llm_model(llm_model_name)
         self.load_vision_model(vision_model_name)
-        self.query_llm = Perplexity(
-            api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
-        )
+        self.search_provider = search_provider
+        if self.search_provider is None:
+            self.search_provider = os.getenv("MEMARY_SEARCH_PROVIDER", "auto")
+        if self.search_provider == "auto":
+            self.search_provider = "perplexity" if pplx_api_key else "parallel"
+        if self.search_provider not in ("parallel", "perplexity", "disabled"):
+            raise ValueError("search_provider must be auto, parallel, perplexity or disabled")
+        self.query_llm = None
+        if self.search_provider == "perplexity":
+            if not pplx_api_key:
+                raise ValueError("Perplexity search requires PERPLEXITY_API_KEY")
+            self.query_llm = Perplexity(
+                api_key=pplx_api_key, model="mistral-7b-instruct", temperature=0.5
+            )
+        self.parallel_search = ParallelSearch(timeout=search_timeout)
         self.gmaps = googlemaps.Client(key=googlemaps_api_key)
         Settings.llm = self.llm
         Settings.chunk_size = 512
@@ -160,6 +175,11 @@ class Agent(object):
                 raise ("Please provide a proper vision_model_name.")
 
     def external_query(self, query: str):
+        if self.search_provider == "disabled":
+            return "External web search is disabled."
+        # Preserve applications that replace query_llm with their own model.
+        if self.query_llm is None:
+            return self.parallel_search.search(query)
         messages_dict = [
             {"role": "system", "content": "Be precise and concise."},
             {"role": "user", "content": query},

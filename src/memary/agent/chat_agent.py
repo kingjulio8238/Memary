@@ -21,6 +21,8 @@ class ChatAgent(Agent):
         llm_model_name="llama3",
         vision_model_name="llava",
         include_from_defaults=["search", "locate", "vision", "stocks"],
+        search_provider=None,
+        search_timeout=30.0,
     ):
         super().__init__(
             agent_name,
@@ -33,6 +35,8 @@ class ChatAgent(Agent):
             llm_model_name,
             vision_model_name,
             include_from_defaults,
+            search_provider=search_provider,
+            search_timeout=search_timeout,
         )
 
     def add_chat(self, role: str, content: str, entities: Optional[List[str]] = None):
