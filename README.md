@@ -117,6 +117,28 @@ chat_agent = ChatAgent(
 ```
 Pass in subset of `['search', 'vision', 'locate', 'stocks']` as `include_from_defaults` for different set of default tools upon initialization.
 
+### Web search without a search API key
+
+When the knowledge graph has no answer, the default `search` tool uses
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp)
+if `PERPLEXITY_API_KEY` is unset. It returns web excerpts and source URLs without
+a Parallel account or API key. Pass a standalone `https://` or `http://` URL as
+the search query to fetch that page's content. Search uses Fast mode; free usage
+is subject to service limits.
+
+Existing `PERPLEXITY_API_KEY` credentials continue to select Perplexity. Set
+`search_provider="parallel"` or `search_provider="perplexity"` on `ChatAgent`
+to choose explicitly, or set `MEMARY_SEARCH_PROVIDER` in your environment or
+`.env` file. The constructor takes precedence over the environment; the default
+`"auto"` selects Perplexity when its key is present and Parallel otherwise.
+Explicit provider failures propagate without switching services.
+
+Set `search_provider="disabled"` to keep searches within the knowledge graph.
+Omitting `"search"` from `include_from_defaults`, removing the tool, and replacing
+it with a custom tool continue to control the ReAct agent's access to search.
+`search_timeout=30.0` sets each Parallel HTTP connection/read timeout in seconds.
+The other model, database and tool configuration requirements still apply.
+
 ### Multi-Graph
 When using FalkorDB database, you can create multi-agents. Here is an example of how to set up personal agents for different users:
 
