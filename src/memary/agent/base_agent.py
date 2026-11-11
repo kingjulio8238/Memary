@@ -141,7 +141,7 @@ class Agent(object):
         else:
             try:
                 self.llm = Ollama(model=llm_model_name, request_timeout=60.0)
-            except:
+            except Exception:
                 raise ("Please provide a proper llm_model_name.")
 
     def load_vision_model(self, vision_model_name):
@@ -156,7 +156,7 @@ class Agent(object):
         else:
             try:
                 self.mm_model = OllamaMultiModal(model=vision_model_name)
-            except:
+            except Exception:
                 raise ("Please provide a proper vision_model_name.")
 
     def external_query(self, query: str):
