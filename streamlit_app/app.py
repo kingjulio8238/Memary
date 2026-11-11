@@ -100,7 +100,7 @@ def get_models(llm_models, vision_models):
             vision_models.append("llava:latest")
             models.remove("llava:latest")
         llm_models.extend(list(models))
-    except:
+    except Exception:
         print("No Ollama instance detected.")
 
 cypher_query = "MATCH p = (:Entity)-[r]-()  RETURN p, r LIMIT 1000;"
