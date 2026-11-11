@@ -80,7 +80,7 @@ class Message:
                 data_dicts = json.load(file)
 
             return [Context(**data_dict) for data_dict in data_dicts]
-        except:
+        except Exception:
             logging.info(
                 f"{self.past_chat_json} file does not exist. Starts from empty contexts."
             )
